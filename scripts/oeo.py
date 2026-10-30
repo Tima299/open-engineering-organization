@@ -388,8 +388,8 @@ def validate_sources(src):
         if dev and dev not in role_ids:
             errs.append(f"org/routing.yaml developer_by_class.{cls}: unknown role '{dev}'")
     sk = routing["skills"]
-    for group in ("by_class", "by_domain", "by_signal"):
-        for key, names in sk[group].items():
+    for group in ("by_class", "by_domain", "by_signal", "by_type"):
+        for key, names in sk.get(group, {}).items():
             errs += [f"org/routing.yaml skills.{group}.{key}: unknown skill '{n}'" for n in names if n not in skills]
     for group, table in sk["adapters"].items():
         for key, names in table.items():
@@ -577,15 +577,18 @@ def route(lock, task_type, touches=(), signals=(), files=None, lines=None, profi
 
     sk = routing["skills"]
     skills = list(sk["by_class"].get(cls, []))
-    for key in sorted(facts):
-        for s in sk["by_domain"].get(key, []) + sk["by_signal"].get(key, []):
-            if s not in skills:
-                skills.append(s)
+    for s in sk.get("by_type", {}).get(task_type, []) + \
+            [s for key in sorted(facts) for s in sk["by_domain"].get(key, []) + sk["by_signal"].get(key, [])]:
+        if s not in skills:
+            skills.append(s)
     adapters = []
     if cls != "A":
-        for key in sorted(touches):
-            adapters += [a for a in sk["adapters"]["by_domain"].get(key, []) if a not in adapters]
-        adapters += [a for a in sk["adapters"]["by_type"].get(task_type, []) if a not in adapters]
+        ad = sk["adapters"]
+        for a in [a for key in sorted(touches) for a in ad.get("by_domain", {}).get(key, [])] + \
+                ad.get("by_type", {}).get(task_type, []) + \
+                [a for key in sorted(facts) for a in ad.get("by_signal", {}).get(key, [])]:
+            if a not in adapters:
+                adapters.append(a)
     gates, stages = list(cfg["gates"]), list(cfg["stages"])
     if cls != "A":
         for key in sorted(facts):
