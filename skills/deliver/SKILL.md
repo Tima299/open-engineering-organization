@@ -35,7 +35,7 @@ the FinOps log shows which model actually ran.
 |---|---|
 | A | Make the fix yourself (junior-developer role, no subagent), then `oeo:qa-verifier` checks it independently. No brief, no plan file. |
 | B | 3-5 testable acceptance criteria -> `oeo:middle-developer` -> `oeo:qa-verifier` -> outcome note. |
-| C | brief (`oeo:business-analyst`) -> user approves -> plan -> ADR if structure changes -> `oeo:senior-developer` + activated specialists -> `oeo:qa-verifier` + domain reviewers -> outcome review. |
+| C | brief (`oeo:business-analyst`; see the reference for fully specified requests) -> user approves -> plan -> ADR if structure changes -> `oeo:senior-developer` + activated specialists -> `oeo:qa-verifier` + domain reviewers -> outcome review. |
 | D | Maintainer-led with routed advisors; `oeo:release` only when a release is part of the task. |
 | `research` | `market-researcher` runs `oeo:research`; the deliverable is a ledger + teardown, not a diff. |
 | `marketing` | `product-marketer` runs `oeo:launch`; you ask the user its open questions. |
