@@ -1,6 +1,6 @@
 {
   "name": "oeo",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Open Engineering Organization: a proportional, evidence-driven operating model for Claude Code. Triage (Class A-D), role contracts, decision rights, right-sized model routing, independent verification and cost tracking.",
   "author": {"name": "Tima299", "url": "https://github.com/Tima299"},
   "homepage": "https://github.com/Tima299/open-engineering-organization",

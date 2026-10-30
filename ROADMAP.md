@@ -3,7 +3,7 @@
 Honest status labels: **Works** (implemented and tested), **Experimental** (implemented, little
 real-world evidence), **Planned** (not built). Updated with every release.
 
-## Status of v0.1.0
+## Status of v0.2.0
 | Capability | Status | Evidence / gap |
 |---|---|---|
 | Role contracts, schema, decision matrix, validation in CI | Works | `oeo validate`, unit tests |

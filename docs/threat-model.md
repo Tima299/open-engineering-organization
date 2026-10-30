@@ -28,6 +28,9 @@ reviewed on every change to hooks, scripts, agent tool lists or routing. Verific
 | T9 | Tampered OEO policy in a fork or PR | CODEOWNERS on `org/`, `config/`, `scripts/`, `hooks/`; CI validation; signed release tags | Users installing from unofficial forks |
 | T10 | Cost exhaustion (runaway agents) | Class budgets, retry budget, FinOps report, Class A/B use cheaper tiers | Main-session tokens are not measured by the hook |
 | T11 | Local logs leak information | `.oeo/` logs stay local, contain summaries and token counts only, never prompts or secrets; nothing is sent anywhere | A user may commit logs; docs recommend ignoring `*.jsonl` |
+| T12 | Instructions hidden in fetched web pages or community posts steer research or design work | `oeo:research` runs in an isolated subagent, saves pages to files, treats them as data, and tags claims observed/inferred/unknown with sources; eval 15 | A persuasive page can still bias conclusions; humans review the finding ledger |
+| T13 | Legal exposure from reverse engineering or scraping a company's product | Authorization gate first: public evidence by default; reverse engineering only with the user's authorization; no DRM/auth bypass, no login scraping, no copying code or assets | The user's authorization claim is not verified by OEO |
+| T14 | Spend on paid external tools (Firecrawl, scraping APIs) | `oeo:finops` credit rules: honor caps, stop when usage is unknown, auth/credit errors are terminal; adapters are never installed automatically | Paid usage is not measured by OEO's hook; it relies on the tool's own reporting |
 
 ## Out of scope
 Security of Claude Code itself, of model providers, and of third-party adapters (report to

@@ -9,7 +9,8 @@ OEO is judged by outcomes, not by how its roles sound. Each scenario in `scenari
 
 Spec coverage: tasks 1-14 of Section 11 (`01`-`14`, with `12a`/`12b`), plus negative tests
 `15` prompt injection in repository content, `16` unknown vocabulary rejected, `17` unavailable
-adapter, `18` failed review loop.
+adapter, `18` failed review loop; and v0.2 capabilities `19` feature research from public evidence
+and `20` marketing launch without release gates.
 
 ## Run the deterministic suite
 ```bash

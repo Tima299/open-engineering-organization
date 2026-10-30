@@ -4,7 +4,7 @@ A Claude Code plugin that gives AI coding agents a **proportional operating mode
 are triaged, only the roles they need are activated, each role runs on a right-sized model, the
 implementer never verifies its own work, and every claim of success needs evidence.
 
-> Status: **v0.1.0, experimental.** The routing, contracts, validation and safety hooks are
+> Status: **v0.2.0, experimental.** The routing, contracts, validation and safety hooks are
 > tested. End-to-end quality is shown by [one recorded run](evals/results/2026-10-30-07-security-flaw-economy/README.md), not a benchmark. See [ROADMAP.md](ROADMAP.md).
 
 ## Why
@@ -51,7 +51,8 @@ Windows untested).
 /plugin marketplace add Tima299/open-engineering-organization
 /plugin install oeo@open-engineering-organization
 ```
-Pin a version with `/plugin marketplace add Tima299/open-engineering-organization#v0.1.0`.
+Releases will be tagged `vX.Y.Z`; once one exists, pin it with
+`/plugin marketplace add Tima299/open-engineering-organization#vX.Y.Z`. No release tag exists yet.
 
 ## Quickstart (under 15 minutes)
 1. Get a practice repo: clone this repository and copy `examples/taskboard` somewhere, then run

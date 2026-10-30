@@ -6,6 +6,8 @@ While the version is 0.x, minor releases may contain breaking changes (called ou
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-30
+
 ### Added
 - Skills `research` (feature/competitor/recency research from public or authorized evidence),
   `chief-of-staff` (cross-engagement brief, issue triage, decision meetings) and `launch`
@@ -42,5 +44,6 @@ While the version is 0.x, minor releases may contain breaking changes (called ou
   fixture project (`examples/taskboard`).
 - Community health files, governance, threat model, ADRs 0001-0007, CI.
 
-[Unreleased]: https://github.com/Tima299/open-engineering-organization/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Tima299/open-engineering-organization/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Tima299/open-engineering-organization/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Tima299/open-engineering-organization/releases/tag/v0.1.0
