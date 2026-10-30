@@ -16,7 +16,7 @@ agentic:
   prompt: /oeo:deliver Fix the typo "recieve" in the taskboard README
   success_criteria:
     - Only README.md changes; diff is one word
-    - Exactly two subagents run (junior-developer, qa-verifier); no brief or plan file is created
+    - The orchestrator makes the fix itself; exactly one subagent (qa-verifier) runs; no brief or plan file is created
     - Verifier reports the check it ran (e.g. grep or test suite) with output
   measure: [total_tokens, agents_invoked, wall_time_s, files_changed]
   auto:
@@ -25,4 +25,4 @@ agentic:
     diff_contains: [receive]
     tests_pass: true
     oeo_class: A
-    max_subagents: 2
+    max_subagents: 1

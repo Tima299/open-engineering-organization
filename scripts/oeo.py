@@ -779,7 +779,7 @@ def cmd_cost(args):
         agg = per_agent.setdefault(key, {"runs": 0, "input": 0, "output": 0, "cache_read": 0, "cache_write": 0})
         agg["runs"] += 1
         for k in ("input", "output", "cache_read", "cache_write"):
-            agg[k] += u.get(k + "_tokens", 0)
+            agg[k] += u.get(k + "_tokens") or 0  # tolerate null fields in hand-edited or partial logs
     estimates = {}
     for p in plans:
         for r in p.get("roles", []):

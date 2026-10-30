@@ -32,7 +32,10 @@ class ClassificationTests(RouterTestCase):
         plan = self.route("trivial", touches=["frontend", "ui", "docs"], files=1, lines=1)
         self.assertEqual((plan["class"], plan["rule"]), ("A", "trivial-change"))
         self.assertEqual(self.ids(plan), CLASS_A_ROLES)  # no Tier 2 even though ui domains are touched
-        self.assertEqual({r["mode"] for r in plan["roles"]}, {"subagent"})
+        # eval 11 (real run): a fix subagent cost more than the fix, so the orchestrator fixes and
+        # only verification is a separate agent
+        self.assertEqual({r["id"]: r["mode"] for r in plan["roles"]},
+                         {"junior-developer": "orchestrator", "qa-verifier": "subagent"})
         self.assertEqual([g["id"] for g in plan["gates"]], ["diff-reviewed", "checks-pass"])
         self.assertLessEqual(plan["estimate_tokens"], plan["budget_tokens"])
 
@@ -334,7 +337,7 @@ class ValidationAndShapeTests(RouterTestCase):
         self.assertEqual(len(with_release["skills"]), len(set(with_release["skills"])))
         text = oeo.format_plan(class_a)
         self.assertIn("OEO triage: Class A (Trivial)", text)
-        self.assertIn("oeo:junior-developer", text)
+        self.assertIn("oeo:qa-verifier", text)
         self.assertIn(f"est {class_a['estimate_tokens']:,} subagent tokens of {class_a['budget_tokens']:,}", text)
 
 

@@ -39,9 +39,11 @@ class RouteCommandTests(IsolatedTestCase):
         self.assertEqual((entry["session"], entry["summary"], entry["class"], entry["rule"]),
                          ("s1", "fix typo", "A", "trivial-change"))
         self.assertEqual({r["id"] for r in entry["roles"]}, {"junior-developer", "qa-verifier"})
+        qa = next(r for r in entry["roles"] if r["id"] == "qa-verifier")
+        self.assertEqual(sorted(qa), sorted(["id", "mode", "reason", "agent", "model", "effort", "estimate_tokens"]))
+        self.assertEqual(qa["agent"], "oeo:qa-verifier")
         junior = next(r for r in entry["roles"] if r["id"] == "junior-developer")
-        self.assertEqual(sorted(junior), sorted(["id", "mode", "reason", "agent", "model", "effort", "estimate_tokens"]))
-        self.assertEqual(junior["agent"], "oeo:junior-developer")
+        self.assertEqual((junior["mode"], junior["agent"]), ("orchestrator", None))
         self.assertEqual(entry["inputs"], {"type": "trivial", "touches": [], "signals": [], "files": 1, "lines": 2})
         self.assertGreater(entry["estimate_tokens"], 0)
         self.assertEqual(entry["budget_tokens"], 100000)
@@ -79,20 +81,20 @@ class CostCommandTests(IsolatedTestCase):
     def test_report_flags_over_estimate_unplanned_and_excludes_cache_reads(self):
         self.run_cli("route", "--type", "trivial", "--files", "1", "--lines", "1", "--log", "--session", "s1")
         plan = json.loads((self.oeo_dir / "activation-log.jsonl").read_text(encoding="utf-8"))
-        junior_estimate = next(r for r in plan["roles"] if r["id"] == "junior-developer")["estimate_tokens"]
+        qa_estimate = next(r for r in plan["roles"] if r["id"] == "qa-verifier")["estimate_tokens"]
         self.write_jsonl("finops.jsonl", [
-            self.use("oeo:junior-developer", inp=junior_estimate, out=1000, cache_read=900000),   # over estimate
-            self.use("oeo:qa-verifier", inp=1000, out=500),                                      # within estimate
+            self.use("oeo:qa-verifier", inp=qa_estimate, out=1000, cache_read=900000),   # over estimate
+            self.use("oeo:junior-developer", inp=None, out=500),                     # unplanned; null field tolerated
             self.use("oeo:security-engineer", inp=100),                                          # not in the plan
             self.use("oeo:senior-developer", session="s2", inp=999999),                          # other session
         ], garbage=True)
         code, out, _ = self.run_cli("cost", "--session", "s1")
         self.assertIsNone(code)
-        self.assertIn("OVER ESTIMATE", self.row(out, "oeo:junior-developer"))
-        self.assertNotIn("OVER ESTIMATE", self.row(out, "oeo:qa-verifier"))
+        self.assertIn("OVER ESTIMATE", self.row(out, "oeo:qa-verifier"))
+        self.assertIn("unplanned", self.row(out, "oeo:junior-developer"))  # Class A runs the fix inline
         self.assertIn("unplanned", self.row(out, "oeo:security-engineer"))
         self.assertNotIn("oeo:senior-developer", out)
-        total = junior_estimate + 1000 + 1000 + 500 + 100   # input + output + cache writes; cache reads excluded
+        total = qa_estimate + 1000 + 500 + 100   # input + output + cache writes; cache reads and nulls excluded
         self.assertIn(f"Total subagent tokens (input+output+cache writes): {total:,}; "
                       f"planned {plan['estimate_tokens']:,}; class budget {plan['budget_tokens']:,}", out)
         self.assertNotIn("BUDGET EXCEEDED", out)

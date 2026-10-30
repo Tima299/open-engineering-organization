@@ -27,9 +27,13 @@ Tell the user the class, rule and roles in 3-5 lines. Engagement files go to the
 `.oeo/<engagement>/` folder. If the class looks wrong, re-run and say why.
 
 ## 2. Run the printed stages
+Call every `subagent` role with the Agent tool: `subagent_type` = the router's `agent`, and
+**always** `model` = the router's model alias. The agent file's own model is only a fallback, and
+the FinOps log shows which model actually ran.
+
 | Class / type | Path |
 |---|---|
-| A | `oeo:junior-developer` fixes, then `oeo:qa-verifier`. No brief, no plan file. |
+| A | Make the fix yourself (junior-developer role, no subagent), then `oeo:qa-verifier` checks it independently. No brief, no plan file. |
 | B | 3-5 testable acceptance criteria -> `oeo:middle-developer` -> `oeo:qa-verifier` -> outcome note. |
 | C | brief (`oeo:business-analyst`) -> user approves -> plan -> ADR if structure changes -> `oeo:senior-developer` + activated specialists -> `oeo:qa-verifier` + domain reviewers -> outcome review. |
 | D | Maintainer-led with routed advisors; `oeo:release` only when a release is part of the task. |

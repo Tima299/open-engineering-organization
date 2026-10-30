@@ -842,7 +842,7 @@
     ],
     "name": "Trivial",
     "roles": {
-     "junior-developer": "subagent",
+     "junior-developer": "orchestrator",
      "qa-verifier": "subagent"
     },
     "stages": [

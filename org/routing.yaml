@@ -69,7 +69,7 @@ classes:
     name: Trivial
     description: typo, config tweak, single-line fix. One developer + one verifier.
     stages: [intake, implement, verify]
-    roles: {junior-developer: subagent, qa-verifier: subagent}
+    roles: {junior-developer: orchestrator, qa-verifier: subagent}   # eval 11: a fix subagent cost more than the fix
     gates: [diff-reviewed, checks-pass]
     tier2: false
     tier3: false

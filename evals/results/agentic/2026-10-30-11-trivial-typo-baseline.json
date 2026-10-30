@@ -1,0 +1,76 @@
+{
+ "scenario": "11-trivial-typo",
+ "arm": "baseline",
+ "model": "sonnet",
+ "profile": null,
+ "date": "2026-10-30",
+ "claude_code": "2.1.314 (Claude Code)",
+ "exit_code": 0,
+ "is_error": false,
+ "cost_usd": 0.052071299999999994,
+ "duration_s": 12.0,
+ "num_turns": 3,
+ "usage": {
+  "input_tokens": 6,
+  "cache_creation_input_tokens": 9687,
+  "cache_read_input_tokens": 101913,
+  "output_tokens": 312,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 9687,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 56,
+    "cache_read_input_tokens": 37190,
+    "cache_creation_input_tokens": 218,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 218
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "subagents": [],
+ "activation": null,
+ "files_changed": [
+  "README.md"
+ ],
+ "checks": [
+  {
+   "check": "max_files_changed",
+   "pass": true,
+   "detail": "['README.md']"
+  },
+  {
+   "check": "files_changed_subset",
+   "pass": true,
+   "detail": "['README.md']"
+  },
+  {
+   "check": "diff_contains 'receive'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "tests_pass",
+   "pass": true,
+   "detail": "['OK']"
+  }
+ ],
+ "checks_passed": "4/4",
+ "final_message": "I fixed the typo in `README.md` line 33, changing \"recieve\" to \"receive\". It was the only occurrence in the Markdown files. I haven't committed the change."
+}

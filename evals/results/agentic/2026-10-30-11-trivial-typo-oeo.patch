@@ -1,0 +1,13 @@
+diff --git a/README.md b/README.md
+index 8bbaf88..7700acb 100644
+--- a/README.md
++++ b/README.md
+@@ -30,7 +30,7 @@ print(store.list("ana"))
+ - `taskboard/reporting.py` - open-task counts per owner.
+ - `tests/` - happy-path unit tests (they pass today, and they deliberately do not cover the defects below).
+ 
+-Reports recieve their rows straight from the store, so there is no caching layer to invalidate.
++Reports receive their rows straight from the store, so there is no caching layer to invalidate.
+ 
+ ## Seeded defects (for OEO evals)
+ 

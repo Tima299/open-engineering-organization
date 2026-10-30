@@ -129,6 +129,8 @@ def run(scenario_id, arm, model, profile, timeout, budget):
     record = {
         "scenario": scenario["id"], "arm": arm, "model": model, "profile": profile if arm == "oeo" else None,
         "date": started.date().isoformat(), "claude_code": sh(["claude", "--version"], work)[1].strip(),
+        "oeo_commit": sh(["git", "rev-parse", "--short", "HEAD"], ROOT)[1].strip()
+        + ("-dirty" if sh(["git", "status", "--porcelain"], ROOT)[1].strip() else ""),
         "exit_code": code, "is_error": result.get("is_error"), "cost_usd": result.get("total_cost_usd"),
         "duration_s": round((result.get("duration_ms") or 0) / 1000, 1), "num_turns": result.get("num_turns"),
         "usage": result.get("usage"), "subagents": [{k: s.get(k) for k in ("agent_type", "models", "input_tokens",
