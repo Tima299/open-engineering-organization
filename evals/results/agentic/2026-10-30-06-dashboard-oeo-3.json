@@ -1,0 +1,332 @@
+{
+ "scenario": "06-dashboard",
+ "arm": "oeo",
+ "model": "sonnet",
+ "profile": "economy",
+ "date": "2026-10-30",
+ "claude_code": "2.1.314 (Claude Code)",
+ "oeo_commit": "9ed25ff",
+ "exit_code": 0,
+ "is_error": false,
+ "cost_usd": 0.8187395099999999,
+ "duration_s": 21.1,
+ "num_turns": 2,
+ "wall_s": 613,
+ "usage": {
+  "input_tokens": 4,
+  "cache_creation_input_tokens": 5299,
+  "cache_read_input_tokens": 143134,
+  "output_tokens": 2165,
+  "output_tokens_details": {
+   "thinking_tokens": 76
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 5299,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 1357,
+    "cache_read_input_tokens": 73571,
+    "cache_creation_input_tokens": 1291,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 1291
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "subagents": [
+  {
+   "agent_type": "oeo:design-lead",
+   "models": [
+    "claude-sonnet-5-5"
+   ],
+   "input_tokens": 6,
+   "output_tokens": 4706,
+   "cache_write_tokens": 8936
+  },
+  {
+   "agent_type": "oeo:senior-frontend-engineer",
+   "models": [
+    "claude-sonnet-5-5"
+   ],
+   "input_tokens": 14,
+   "output_tokens": 7695,
+   "cache_write_tokens": 16007
+  },
+  {
+   "agent_type": "oeo:advisor",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 12,
+   "output_tokens": 4363,
+   "cache_write_tokens": 22148
+  },
+  {
+   "agent_type": "oeo:qa-verifier",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 26,
+   "output_tokens": 27103,
+   "cache_write_tokens": 44469
+  },
+  {
+   "agent_type": "oeo:senior-frontend-engineer",
+   "models": [
+    "claude-sonnet-5-5"
+   ],
+   "input_tokens": 4,
+   "output_tokens": 2115,
+   "cache_write_tokens": 9339
+  },
+  {
+   "agent_type": "oeo:qa-verifier",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 20,
+   "output_tokens": 13340,
+   "cache_write_tokens": 34040
+  },
+  {
+   "agent_type": "oeo:senior-frontend-engineer",
+   "models": [
+    "claude-sonnet-5-5"
+   ],
+   "input_tokens": 4,
+   "output_tokens": 2251,
+   "cache_write_tokens": 8995
+  },
+  {
+   "agent_type": "oeo:qa-verifier",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 14,
+   "output_tokens": 17451,
+   "cache_write_tokens": 43875
+  }
+ ],
+ "activation": [
+  {
+   "ts": "2026-10-30T12:15:21+00:00",
+   "session": "ee21670c-d8e7-443b-bd4c-b7a3d64f8692",
+   "engagement": "20261030-html-dashboard-of-open-tasks-per-owner-w",
+   "summary": "HTML dashboard of open tasks per owner with overdue highlight",
+   "class": "C",
+   "rule": "risk-signal",
+   "inputs": {
+    "type": "feature",
+    "touches": [
+     "frontend",
+     "ui"
+    ],
+    "signals": [
+     "new-surface",
+     "user-facing"
+    ],
+    "files": 2,
+    "lines": 150
+   },
+   "roles": [
+    {
+     "id": "business-analyst",
+     "mode": "subagent",
+     "reason": "class C core",
+     "agent": "oeo:business-analyst",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "business-owner",
+     "mode": "human",
+     "reason": "class C core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "cto",
+     "mode": "checklist",
+     "reason": "class C core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "oss-maintainer",
+     "mode": "checklist",
+     "reason": "class C core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "project-manager",
+     "mode": "orchestrator",
+     "reason": "class C core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "qa-verifier",
+     "mode": "subagent",
+     "reason": "class C core",
+     "agent": "oeo:qa-verifier",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "senior-developer",
+     "mode": "subagent",
+     "reason": "class C core",
+     "agent": "oeo:senior-developer",
+     "model": "sonnet",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "technical-lead",
+     "mode": "orchestrator",
+     "reason": "class C core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "design-lead",
+     "mode": "subagent",
+     "reason": "domain: new-surface, ui",
+     "agent": "oeo:design-lead",
+     "model": "sonnet",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "senior-frontend-engineer",
+     "mode": "subagent",
+     "reason": "domain: frontend, ui",
+     "agent": "oeo:senior-frontend-engineer",
+     "model": "sonnet",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "finops-controller",
+     "mode": "checklist",
+     "reason": "trigger: multi-agent",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "ux-researcher",
+     "mode": "subagent",
+     "reason": "trigger: new-surface",
+     "agent": "oeo:advisor",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    }
+   ],
+   "estimate_tokens": 180000,
+   "budget_tokens": 400000
+  }
+ ],
+ "files_changed": [
+  ".gitignore",
+  "taskboard/dashboard.py",
+  "tests/test_dashboard.py"
+ ],
+ "checks": [
+  {
+   "check": "unchanged taskboard/db.py",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "exists .oeo/*/screen-spec.md",
+   "pass": false,
+   "detail": ""
+  },
+  {
+   "check": "diff_contains '<!'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_contains 'lang='",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_contains 'viewport'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_contains ':root'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_contains '<script>alert('",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains 'src=\"http'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains \"src='http\"",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains 'href=\"http'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains \"href='http\"",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "tests_pass",
+   "pass": true,
+   "detail": "['OK']"
+  },
+  {
+   "check": "oeo_class",
+   "pass": true,
+   "detail": "C"
+  }
+ ],
+ "checks_passed": "12/13",
+ "final_message": "**Verdict: delivered, with one open risk.** `render_dashboard(store, today=None)` in `taskboard/dashboard.py` returns one self-contained HTML document. All 28 tests pass (`python3 -m unittest discover -s tests`). I could not check the layout in a real browser, because none is installed here.\n\n**1. Class and roles.** I triaged this as Class C because the dashboard is a new user-facing page (rule: risk-signal).\n- I wrote the brief myself, since your request already fixed the scope.\n- The design lead wrote the UI spec.\n- The senior frontend engineer built it.\n- The QA verifier checked it independently, in three rounds.\n- The UX advisor reviewed the design.\n\n**2. Files changed.** All are new:\n- `taskboard/dashboard.py`\n- `tests/test_dashboard.py`\n- `.gitignore`\n\nThe engagement files are in `.oeo/20261030-html-dashboard-of-open-tasks-per-owner-w/` (brief, design, verification).\n\n**3. Gates.**\n\n| Gate | Result |\n|---|---|\n| acceptance-criteria-defined | PASS |\n| business-review-passed | N/A: scope fixed by your request |\n| adr-recorded | N/A: no structural change |\n| diff-reviewed | PASS |\n| checks-pass | PASS (28 tests) |\n| regression-test | PASS: 24 of 27 mutants caught; the 3 survivors are equivalent, per QA |\n| domain-reviews-passed | PASS, with a caveat: the UX advisor said \"changes\", all its items were fixed, and QA confirmed them, but the advisor did not re-review |\n| acceptance-criteria-met | PASS, but the responsive layout (AC6) was checked from the code only |\n| outcome-measurable | N/A: no usage metric exists for this fixture |\n\nThe full table is in `verification.md`. I wrote it myself because a guard blocked the QA agent from writing it.\n\n**4. Acceptance criteria.**\n- **Self-contained HTML:** the output has no external resources and no scripts.\n- **Counts:** open tasks per owner, with done tasks excluded and an empty-state message when nothing is open.\n- **Ordering:** owners sort case-insensitively and tasks by due date, with undated tasks last.\n- **Overdue:** a task is overdue only if its date is before today, and it is marked with text as well as color. A task due today is labelled \"Due today\". An unparseable date shows \"Invalid date\" and never crashes.\n- **Escaping:** owner, title and due text are HTML-escaped.\n- **Responsive:** it has a viewport meta tag, breakpoints at 600px and 960px, and light and dark themes. Contrast is at least 4.5:1 for text and 3:1 for borders, computed by script.\n- **Tests:** the dashboard has 18 tests.\n\n**5. Outcome.** There is no usage data. The only evidence is the tests, QA's probes and the contrast script.\n\n**6. Cost.**\n- **Subagents:** about 267k tokens against 180k planned and a 400k class budget. QA and the frontend engineer ran over their estimates because of the extra fix rounds.\n- **All-in:** about 315k tokens, which is under the 400k class budget.\n\n**7. Open risks.**\n- **No browser check.** I haven't seen the page at 320px, 600px or 960px, nor the dark-mode toggle, long-title wrapping or keyboard focus. Rows turn into blocks on narrow screens, which could drop table semantics for screen readers.\n- **Minor, not fixed:**\n  - `ruff` style findings on the new files (the existing files also fail `ruff`).\n  - The date regex accepts a trailing newline, which is harmless.\n  - The brief's literal `python3 -m unittest` runs zero tests, because `tests/` has no `__init__.py`. I corrected the brief to the `discover` command.\n\n**Next step.** You decide whether to install a headless browser for a screenshot pass before release. Until you do, the responsive layout stays unverified."
+}

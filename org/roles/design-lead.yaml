@@ -22,8 +22,8 @@ role:
     - Existing design system and UI patterns
     - User research or feedback, where it exists
   outputs:
-    - Design brief with flows, states and information architecture
-    - Design acceptance criteria
+    - Screen spec at .oeo/<engagement>/screen-spec.md (flows, states, information architecture)
+    - Visual acceptance criteria inside the screen spec; DESIGN.md updated when direction changes
     - Design review notes from the running UI
   tools_and_permissions: [read, search, edit, web]
   relevant_skills: ["oeo:design-direction"]
