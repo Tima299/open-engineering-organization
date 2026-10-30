@@ -1384,7 +1384,7 @@
     "id": "discovery",
     "n": 1,
     "name": "Business Discovery",
-    "output": ".oeo/brief.md (users, problem, outcome, metrics, scope/non-goals, constraints, evidence, risks)",
+    "output": ".oeo/<engagement>/brief.md (users, problem, outcome, metrics, scope/non-goals, constraints, evidence, risks)",
     "owner": "business-analyst"
    },
    {
@@ -1400,7 +1400,7 @@
     "id": "planning",
     "n": 3,
     "name": "Product & Delivery Planning",
-    "output": ".oeo/plan.md (deliverables, acceptance criteria, sequencing, owners, file partition, tests, risks, DoD)",
+    "output": ".oeo/<engagement>/plan.md (deliverables, acceptance criteria, sequencing, owners, file partition, tests, risks, DoD)",
     "owner": "project-manager"
    },
    {
@@ -1424,7 +1424,7 @@
     "id": "verify",
     "n": 6,
     "name": "Independent Verification",
-    "output": ".oeo/verification.md (gate, command, result, evidence) and findings",
+    "output": ".oeo/<engagement>/verification.md (gate, command, result, evidence) and findings",
     "owner": "qa-verifier"
    },
    {

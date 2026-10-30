@@ -9,9 +9,12 @@ description: OEO cross-engagement brief (needs you, blocked, status, budget, one
 it makes the state visible and gets decisions made.
 
 ## Brief (`/oeo:chief-of-staff brief`)
-Reconstruct engagements from `.oeo/activation-log.jsonl` (one row per triage: summary, class, date),
-the current brief/plan/risks/decisions/verification, `oeo cost`, and `git log` since the last brief.
-Only the current engagement has a step count; older ones show class and last activity date. Output, in this order, at most 5 items per section:
+Start from the facts: `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/oeo.py" status`. It reads every
+`.oeo/<engagement>/` folder (plan status column, verification gates), `.oeo/decisions.md`
+(`review_by` dates), the activation log and the token logs, and prints the sections below with a
+suggested next action. Add judgement only on top: options and a recommendation for each
+"Needs you" item, and anything `git log` shows since the last brief. Keep at most 5 items per
+section, in this order:
 1. **Needs you**: decisions or approvals waiting for the user, each with options and a
    recommendation, plus decisions whose `review_by` date has passed.
 2. **Blocked**: item, blocker, blocker owner, since when.

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""OEO SubagentStop hook: append one subagent's token usage to <project>/.oeo/finops.jsonl.
+"""OEO FinOps hook. SubagentStop: append one subagent's token usage to <project>/.oeo/finops.jsonl.
+Stop: snapshot the main session's cumulative usage to <project>/.oeo/sessions/<session_id>.json.
 
 Local only (nothing leaves the machine) and opt-in by presence: it writes only when the
 project already has a .oeo/ directory (created by `oeo route --log`). Disable with
@@ -44,6 +45,27 @@ def usage_from_transcript(path):
     return totals, sorted(models), len(per_message)
 
 
+def snapshot_session(log_dir, payload):
+    """Overwrite the main session's usage snapshot (cumulative, so repeated Stop events are idempotent)."""
+    transcript, sid = payload.get("transcript_path"), str(payload.get("session_id") or "")
+    if not log_dir.is_dir() or log_dir.is_symlink() or not transcript or not Path(transcript).is_file() or not sid:
+        return 0
+    totals, models, responses = usage_from_transcript(transcript)
+    folder = log_dir / "sessions"
+    folder.mkdir(exist_ok=True)
+    name = "".join(c for c in sid if c.isalnum() or c in "-_")[:80] or "session"
+    snap = {"session_id": sid, "ts": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+            "models": models, "api_responses": responses, **totals,
+            "total_tokens": totals["input_tokens"] + totals["output_tokens"] + totals["cache_write_tokens"],
+            "source": "best-effort main transcript parse"}
+    tmp = folder / f".{name}.tmp"
+    if tmp.is_symlink() or (folder / f"{name}.json").is_symlink():
+        return 0
+    tmp.write_text(json.dumps(snap), encoding="utf-8")
+    os.replace(tmp, folder / f"{name}.json")
+    return 0
+
+
 def main():
     if os.environ.get("OEO_FINOPS", "").lower() in ("off", "0", "false"):
         return 0
@@ -51,6 +73,8 @@ def main():
         raw = sys.stdin.buffer.read() if hasattr(sys.stdin, "buffer") else sys.stdin.read().encode("utf-8")
         payload = json.loads(raw.decode("utf-8"))
         log_dir = project_dir(payload.get("cwd")) / ".oeo"
+        if payload.get("hook_event_name") == "Stop":
+            return snapshot_session(log_dir, payload)
         transcript = payload.get("agent_transcript_path")
         if not log_dir.is_dir() or not transcript or not Path(transcript).is_file():
             return 0

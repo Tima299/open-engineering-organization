@@ -9,9 +9,12 @@ description: OEO cost governance - token use per agent vs. estimate and class bu
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/scripts/oeo.py" cost --session "${CLAUDE_SESSION_ID}"
    ```
-   Data comes from `.oeo/activation-log.jsonl` (router estimates) and `.oeo/finops.jsonl`
-   (the SubagentStop hook's best-effort token counts; transcript format is not a stable API,
-   so treat numbers as estimates and say so). Main-session tokens are not included.
+   Data comes from three logs:
+   - `.oeo/activation-log.jsonl`: router estimates.
+   - `.oeo/finops.jsonl`: per-subagent tokens, written by the SubagentStop hook.
+   - `.oeo/sessions/<id>.json`: the orchestrator's own tokens, written by the Stop hook.
+   Both hooks parse Claude Code's internal transcript format, so call the numbers estimates.
+   `oeo cost` reports subagents, the main session and the all-in total separately.
 2. Flag: any agent OVER ESTIMATE, any unplanned agent, class budget exceeded, any role run at
    a higher tier or effort than its contract without a recorded reason.
 3. Recommend, in order: fewer agents (one specialist instead of several), smaller prompts (paths

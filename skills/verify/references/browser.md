@@ -22,7 +22,7 @@ they exist. Install tooling only with user approval.
 | Errors | console errors and failed network requests during the flow = FAIL unless explained |
 | States | force loading / empty / error (mock route or fixture) and capture each |
 
-Save artifacts under `.oeo/evidence/` (gitignored) and cite paths in the verification table. Turn
+Save artifacts under `.oeo/<engagement>/evidence/` (gitignored) and cite paths in the verification table. Turn
 exploration that found a defect into a regression test with generated locators.
 
 ## Safety

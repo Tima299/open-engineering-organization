@@ -5,7 +5,10 @@
 Runtime commands (stdlib only, read org/org.lock.json):
   route     Stage 0 triage: classify a request and print the activation plan.
   license   Legal gate: check SPDX identifiers against the license policy.
-  cost      FinOps report from .oeo/finops.jsonl and .oeo/activation-log.jsonl.
+  cost      FinOps report from .oeo/finops.jsonl, .oeo/sessions/ and .oeo/activation-log.jsonl.
+  status    Cross-engagement brief data (oeo:chief-of-staff).
+  copy-lint Copy gate for marketing text (oeo:launch).
+  ledger-check  Finding-ledger rules (oeo:research).
   models    Show the effective model/effort per role for a profile.
 
 Authoring commands (need PyYAML, see requirements-dev.txt):
@@ -21,6 +24,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "scripts"))
+import checks  # noqa: E402  (stdlib-only deterministic checks)
 LOCK = ROOT / "org" / "org.lock.json"
 TIERS = ("light", "standard", "advanced")
 EFFORTS = ("low", "medium", "high")
@@ -712,10 +717,11 @@ def cmd_route(args):
     print(json.dumps(plan, indent=1) if args.json else format_plan(plan))
     if args.log:
         log_dir = project_dir() / ".oeo"
+        eid = checks.engagement_id(args.summary, args.engagement)
         if not log_dir.is_symlink():
-            log_dir.mkdir(exist_ok=True)
+            (log_dir / eid).mkdir(parents=True, exist_ok=True)
         entry = {"ts": _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds"), "session": args.session,
-                 "summary": args.summary, "class": plan["class"], "rule": plan["rule"], "inputs": plan["inputs"],
+                 "engagement": eid, "summary": args.summary, "class": plan["class"], "rule": plan["rule"], "inputs": plan["inputs"],
                  "roles": [{k: r.get(k) for k in ("id", "mode", "reason", "agent", "model", "effort", "estimate_tokens")}
                            for r in plan["roles"]],
                  "estimate_tokens": plan["estimate_tokens"], "budget_tokens": plan["budget_tokens"]}
@@ -723,7 +729,7 @@ def cmd_route(args):
             append_jsonl(log_dir / "activation-log.jsonl", entry)
         except OSError as exc:
             sys.exit(f"not logged: {exc}")
-        print(f"(logged to {log_dir / 'activation-log.jsonl'})", file=sys.stderr)
+        print(f"(logged to {log_dir / 'activation-log.jsonl'}; engagement files: .oeo/{eid}/)", file=sys.stderr)
 
 
 # --------------------------------------------------------------------------- license / cost / models
@@ -760,9 +766,13 @@ def cmd_cost(args):
         print(f"No FinOps data in {base} (logs appear after `oeo route --log` and subagent runs).")
         return
     latest = {}
-    for p in plans:  # a re-triage supersedes the earlier plan of the same session
-        latest[p.get("session")] = p
+    for p in plans:  # a re-triage supersedes the earlier plan of the same engagement (or session)
+        latest[p.get("engagement") or p.get("session")] = p
     plans = list(latest.values())
+    sessions = [json.loads(f.read_text(encoding="utf-8")) for f in sorted((base / "sessions").glob("*.json"))] \
+        if (base / "sessions").is_dir() else []
+    if args.session:
+        sessions = [x for x in sessions if x.get("session_id") == args.session]
     per_agent = {}
     for u in usage:
         key = u.get("agent_type") or "unknown"
@@ -789,9 +799,37 @@ def cmd_cost(args):
     print(f"\nTotal subagent tokens (input+output+cache writes): {total:,}; planned {planned:,}; class budget {budget:,}")
     if budget and total > budget:
         print("BUDGET EXCEEDED: record a justification in .oeo/decisions.md (FinOps guardrail).")
+    main = sum(x.get("total_tokens", 0) for x in sessions)
+    if sessions:
+        print(f"Main session (orchestrator) tokens: {main:,} over {len(sessions)} session(s); "
+              f"all-in total {total + main:,}")
     invoked = len(per_agent)
     print(f"Coordination: {invoked} distinct agent types, {sum(a['runs'] for a in per_agent.values())} runs; "
           "cache reads are reported but excluded from the budget total.")
+
+
+def cmd_status(args):
+    data = checks.status(project_dir() / ".oeo")
+    print(json.dumps(data, indent=1) if args.json else checks.format_status(data))
+
+
+def cmd_copy_lint(args):
+    worst = 0
+    for name in args.files:
+        for f in checks.copy_lint(Path(name).read_text(encoding="utf-8")):
+            worst = max(worst, 2 if f["severity"] == "must-fix" else 1)
+            print(f"{name}:{f['line']}: {f['severity']}: {f['rule']}: {f['text']!r}")
+    print({0: "copy gate: no findings", 1: "copy gate: fix or justify the findings",
+           2: "copy gate: FAIL (must-fix findings)"}[worst])
+    sys.exit(1 if worst == 2 else 0)
+
+
+def cmd_ledger_check(args):
+    problems = checks.ledger_check(Path(args.file).read_text(encoding="utf-8"))
+    for p in problems:
+        print(f"{args.file}: {p}")
+    print("ledger: OK" if not problems else f"ledger: FAIL ({len(problems)} problem(s))")
+    sys.exit(1 if problems else 0)
 
 
 def cmd_models(args):
@@ -822,6 +860,7 @@ def main(argv=None):
     r.add_argument("--profile", help="model profile (default: $OEO_MODEL_PROFILE or config default)")
     r.add_argument("--summary", default="", help="one-line request summary for the log")
     r.add_argument("--session", default=None, help="session id for cost correlation")
+    r.add_argument("--engagement", default=None, help="engagement id (default: <date>-<slug of summary>)")
     r.add_argument("--json", action="store_true")
     r.add_argument("--log", action="store_true", help="append to .oeo/activation-log.jsonl in the project")
     r.set_defaults(fn=cmd_route)
@@ -831,6 +870,15 @@ def main(argv=None):
     c = sub.add_parser("cost", help="FinOps report for the current project")
     c.add_argument("--session")
     c.set_defaults(fn=cmd_cost)
+    st = sub.add_parser("status", help="cross-engagement brief data from .oeo/ (oeo:chief-of-staff)")
+    st.add_argument("--json", action="store_true")
+    st.set_defaults(fn=cmd_status)
+    cl = sub.add_parser("copy-lint", help="copy gate for marketing text (oeo:launch); exit 1 on must-fix")
+    cl.add_argument("files", nargs="+")
+    cl.set_defaults(fn=cmd_copy_lint)
+    lc2 = sub.add_parser("ledger-check", help="finding-ledger rules (oeo:research); exit 1 on problems")
+    lc2.add_argument("file")
+    lc2.set_defaults(fn=cmd_ledger_check)
     m = sub.add_parser("models", help="effective model routing per role")
     m.add_argument("--profile")
     m.set_defaults(fn=cmd_models)

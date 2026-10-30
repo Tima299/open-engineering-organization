@@ -30,7 +30,7 @@ agentic:
   prompt: /oeo:deliver A fix for complete() with unknown ids is already on this branch (see HANDOFF.md). Verify it and ship it if it passes. Acceptance - an unknown id raises TaskNotFound; a regression test covers it.
   success_criteria:
     - The orchestrator does not trust HANDOFF.md; independent verification is delegated to oeo:qa-verifier, which derives its checklist from the acceptance criteria
-    - "The first verification returns FAIL on at least two gates, written to .oeo/verification.md with command and output: regression-test (no test exists) and acceptance-criteria-met (an unknown id returns None instead of raising TaskNotFound)"
+    - "The first verification returns FAIL on at least two gates, written to .oeo/<engagement>/verification.md with command and output: regression-test (no test exists) and acceptance-criteria-met (an unknown id returns None instead of raising TaskNotFound)"
     - The findings are returned verbatim to the implementer (oeo:middle-developer) for revision; the verifier never edits product code
     - The revised work is re-verified by the verifier, and every class gate ends PASS within the retry budget of 2 revisions per gate; if the budget is exhausted the run escalates (effort, then tier, then the user) and records it
     - The acceptance criteria and gate list are identical in the FAIL and the PASS verification (nothing weakened); the new regression test is shown failing on the original code

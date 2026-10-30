@@ -14,7 +14,7 @@ stages:
     n: 1
     name: Business Discovery
     owner: business-analyst
-    output: .oeo/brief.md (users, problem, outcome, metrics, scope/non-goals, constraints, evidence, risks)
+    output: .oeo/<engagement>/brief.md (users, problem, outcome, metrics, scope/non-goals, constraints, evidence, risks)
     exit: business-owner confirms the objective; Class B may use a 5-line brief (outcome + acceptance criteria)
   - id: business-review
     n: 2
@@ -26,7 +26,7 @@ stages:
     n: 3
     name: Product & Delivery Planning
     owner: project-manager
-    output: .oeo/plan.md (deliverables, acceptance criteria, sequencing, owners, file partition, tests, risks, DoD)
+    output: .oeo/<engagement>/plan.md (deliverables, acceptance criteria, sequencing, owners, file partition, tests, risks, DoD)
     exit: every task has one owner and testable acceptance criteria
   - id: architecture
     n: 4
@@ -44,7 +44,7 @@ stages:
     n: 6
     name: Independent Verification
     owner: qa-verifier
-    output: .oeo/verification.md (gate, command, result, evidence) and findings
+    output: .oeo/<engagement>/verification.md (gate, command, result, evidence) and findings
     exit: all class gates PASS; the implementer is never the sole authority on correctness
   - id: release
     n: 7a
@@ -83,16 +83,16 @@ gates:
 # Shared memory. Lives in the target project, under .oeo/. `owner` decides the content;
 # `written_by: orchestrator` means a read-only role returns it and the orchestrator saves it.
 memory:
-  - {path: .oeo/brief.md, owner: business-analyst, written_by: orchestrator, freshness: per engagement; superseded briefs are deleted, not kept}
-  - {path: .oeo/plan.md, owner: project-manager, freshness: updated at every stage exit}
+  - {path: .oeo/<engagement>/brief.md, owner: business-analyst, written_by: orchestrator, freshness: per engagement; superseded briefs are deleted, not kept}
+  - {path: .oeo/<engagement>/plan.md, owner: project-manager, freshness: updated at every stage exit}
   - {path: .oeo/decisions.md, owner: project-manager, freshness: "append-only log of decisions, vetoes, deadlock resolutions; reversible bets carry a review_by date"}
   - {path: .oeo/research/, owner: market-researcher, freshness: per research question; ledger kept, raw fetches deleted when the question closes}
   - {path: .oeo/product-marketing.md, owner: product-marketer, freshness: refreshed before each launch; learnings retired, never deleted}
-  - {path: .oeo/evidence/, owner: qa-verifier, freshness: per verification run; gitignored}
-  - {path: .oeo/screen-spec.md, owner: design-lead, freshness: per UI task}
+  - {path: .oeo/<engagement>/evidence/, owner: qa-verifier, freshness: per verification run; gitignored}
+  - {path: .oeo/<engagement>/screen-spec.md, owner: design-lead, freshness: per UI task}
   - {path: DESIGN.md, owner: design-lead, freshness: changed only through a design decision; stale tokens removed}
-  - {path: .oeo/risks.md, owner: project-manager, freshness: reviewed at each stage exit; closed risks removed}
-  - {path: .oeo/verification.md, owner: qa-verifier, written_by: orchestrator, freshness: rewritten per verification run}
+  - {path: .oeo/<engagement>/risks.md, owner: project-manager, freshness: reviewed at each stage exit; closed risks removed}
+  - {path: .oeo/<engagement>/verification.md, owner: qa-verifier, written_by: orchestrator, freshness: rewritten per verification run}
   - {path: .oeo/activation-log.jsonl, owner: project-manager, freshness: append-only, written by `oeo route --log`}
   - {path: .oeo/finops.jsonl, owner: finops-controller, freshness: append-only, written by the SubagentStop hook}
   - {path: docs/adr/, owner: technical-architect, freshness: ADRs are superseded explicitly, never edited silently}

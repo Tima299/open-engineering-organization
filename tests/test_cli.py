@@ -33,7 +33,7 @@ class RouteCommandTests(IsolatedTestCase):
         code, out, err = self.run_cli(*argv)
         self.assertIsNone(code)
         log = self.tmp / ".oeo" / "activation-log.jsonl"
-        self.assertIn(f"(logged to {log})", err)  # stderr, so `--json --log` stdout stays valid JSON
+        self.assertIn(f"(logged to {log}; engagement files: .oeo/", err)  # stderr keeps --json stdout valid
         self.assertNotIn("logged to", out)
         entry = json.loads(log.read_text(encoding="utf-8").splitlines()[0])
         self.assertEqual((entry["session"], entry["summary"], entry["class"], entry["rule"]),

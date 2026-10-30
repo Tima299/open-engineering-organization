@@ -12,6 +12,19 @@ Brand-agnostic rules; DESIGN.md tokens decide the specifics.
 - Data: tables align numbers right with tabular figures; charts start at zero for bars, label
   axes and units, and offer a table alternative.
 
+## Scoring anchors (each lens, 0-10)
+| Score | Meaning |
+|---|---|
+| 10 | Every visual acceptance criterion met with evidence. No must-fix or should-fix items. A deliberate distinctive move. |
+| 8 | All criteria met. No must-fix items. At most 2 should-fix items, each with a reason. **Ship threshold.** |
+| 5 | Works, but generic or inconsistent: 3+ should-fix items, or a criterion only partly met. |
+| 2 | A must-fix item is open, or a primary state (empty, error, loading) is missing. |
+| 0 | The screen fails its primary task, or an AA contrast or keyboard failure blocks use. |
+
+Score each lens (design, critic, brand fit, accessibility, copy) by the lowest row whose
+condition is true, and cite the evidence (screenshot path or snapshot line) for every point lost.
+Run `oeo copy-lint` on visible copy for the copy lens.
+
 ## Anti-slop tiers (critic lens)
 **Must fix (blocks shipping):**
 - Default framework accent (stock indigo/violet) used as the brand color without a decision.

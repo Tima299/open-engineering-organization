@@ -10,7 +10,7 @@ owns **why anyone should care**, and it never invents numbers, customers or clai
 
 ## 1. One shared context file first
 Create or refresh `.oeo/product-marketing.md` before writing any copy; every later step reads it.
-Draft it from `.oeo/brief.md` (if present) and the repository (README, docs, changelog, issues),
+Draft it from `.oeo/<engagement>/brief.md` (if present) and the repository (README, docs, changelog, issues),
 then list what is wrong or missing; the orchestrator asks the user. Competitor facts come from an
 `oeo:research` ledger, not from guesses. Sections: category · ideal customer · job to be done (push, pull, habit, anxiety) ·
 alternatives (direct, adjacent, do-nothing) · customer phrases (verbatim, with source) ·
@@ -27,6 +27,8 @@ For [customer] who [job/pain], [product] is a [category] that [key benefit]. Unl
 point, drop it or name the evidence that would unlock it.
 
 ## 3. Copy gate (every headline and claim)
+Run `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/oeo.py" copy-lint <file>` on every draft. Must-fix
+findings block the copy. Should-fix findings are fixed or justified in one line each.
 Load [copy rules](references/copy.md). First diagnose the input: blank, existing real voice, or
 a point edit. The diagnosis caps how much you may change. Each line must pass three questions.
 Can the reader picture it? Could it be proven false? Could a competitor say it word for word?

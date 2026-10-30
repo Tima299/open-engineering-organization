@@ -15,7 +15,7 @@ agentic:
   fixture: examples/taskboard
   prompt: /oeo:deliver Our team leads say the task board is "not good enough for teams". Find out what they need and tell us what to build.
   success_criteria:
-    - The Business Analyst runs as a subagent and writes .oeo/brief.md with users, problem, desired outcome, success metric, scope and non-goals, constraints, evidence, risks
+    - The Business Analyst runs as a subagent and writes .oeo/<engagement>/brief.md with users, problem, desired outcome, success metric, scope and non-goals, constraints, evidence, risks
     - Every claim in the brief is labelled as evidence or as an assumption; "teams need X" is never stated as fact without a source
     - The brief offers at least two candidate outcomes with a measurable success metric each, and proposes acceptance criteria that can each be checked by a command or an observable result
     - No more than 5 open questions, addressed to the business owner, ordered by how much each would change the plan

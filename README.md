@@ -87,7 +87,7 @@ Files OEO writes in your project, and only when you ask for that kind of work:
   `research/`, `evidence/`, and two `.jsonl` logs.
 - Deliverables: `DESIGN.md`, `docs/adr/*`, `CHANGELOG.md`.
 
-Suggested `.gitignore`: `.oeo/*.jsonl`, `.oeo/evidence/`, `.oeo/research/*/raw/`.
+Suggested `.gitignore`: `.oeo/*.jsonl`, `.oeo/<engagement>/evidence/`, `.oeo/research/*/raw/`.
 
 ## Uninstall
 ```

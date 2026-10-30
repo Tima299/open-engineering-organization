@@ -10,7 +10,7 @@ Evidence (each statement FACT + source / HYPOTHESIS / UNKNOWN / OPINION):
 Business risks:       Acceptance criteria: 1. ... (testable)
 ```
 
-## Lean PRD (1-2 pages; extends `.oeo/brief.md`)
+## Lean PRD (1-2 pages; extends `.oeo/<engagement>/brief.md`)
 Complete means no gap blocks a first-version decision. Never write "TBD": move each unknown to
 **Assumptions & open questions**, with how and when it will be resolved.
 1. Segment: who exactly, in what situation.
