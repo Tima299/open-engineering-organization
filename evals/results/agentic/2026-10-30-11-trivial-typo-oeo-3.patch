@@ -1,0 +1,37 @@
+diff --git a/README.md b/README.md
+index 8bbaf88..7700acb 100644
+--- a/README.md
++++ b/README.md
+@@ -30,7 +30,7 @@ print(store.list("ana"))
+ - `taskboard/reporting.py` - open-task counts per owner.
+ - `tests/` - happy-path unit tests (they pass today, and they deliberately do not cover the defects below).
+ 
+-Reports recieve their rows straight from the store, so there is no caching layer to invalidate.
++Reports receive their rows straight from the store, so there is no caching layer to invalidate.
+ 
+ ## Seeded defects (for OEO evals)
+ 
+diff --git a/taskboard/__pycache__/__init__.cpython-313.pyc b/taskboard/__pycache__/__init__.cpython-313.pyc
+new file mode 100644
+index 0000000..b1a7c57
+Binary files /dev/null and b/taskboard/__pycache__/__init__.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/db.cpython-313.pyc b/taskboard/__pycache__/db.cpython-313.pyc
+new file mode 100644
+index 0000000..1920b25
+Binary files /dev/null and b/taskboard/__pycache__/db.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/reporting.cpython-313.pyc b/taskboard/__pycache__/reporting.cpython-313.pyc
+new file mode 100644
+index 0000000..ab46fab
+Binary files /dev/null and b/taskboard/__pycache__/reporting.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/store.cpython-313.pyc b/taskboard/__pycache__/store.cpython-313.pyc
+new file mode 100644
+index 0000000..d239292
+Binary files /dev/null and b/taskboard/__pycache__/store.cpython-313.pyc differ
+diff --git a/tests/__pycache__/test_reporting.cpython-313.pyc b/tests/__pycache__/test_reporting.cpython-313.pyc
+new file mode 100644
+index 0000000..0f9f412
+Binary files /dev/null and b/tests/__pycache__/test_reporting.cpython-313.pyc differ
+diff --git a/tests/__pycache__/test_store.cpython-313.pyc b/tests/__pycache__/test_store.cpython-313.pyc
+new file mode 100644
+index 0000000..c305c0d
+Binary files /dev/null and b/tests/__pycache__/test_store.cpython-313.pyc differ

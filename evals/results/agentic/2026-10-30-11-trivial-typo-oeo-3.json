@@ -1,0 +1,166 @@
+{
+ "scenario": "11-trivial-typo",
+ "arm": "oeo",
+ "model": "sonnet",
+ "profile": "economy",
+ "date": "2026-10-30",
+ "claude_code": "2.1.314 (Claude Code)",
+ "oeo_commit": "d8a9dee",
+ "exit_code": 0,
+ "is_error": false,
+ "cost_usd": 0.09004038500000001,
+ "duration_s": 5.6,
+ "num_turns": 1,
+ "wall_s": 29,
+ "usage": {
+  "input_tokens": 2,
+  "cache_creation_input_tokens": 1155,
+  "cache_read_input_tokens": 42250,
+  "output_tokens": 413,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 1155,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 413,
+    "cache_read_input_tokens": 42250,
+    "cache_creation_input_tokens": 1155,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 1155
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "subagents": [
+  {
+   "agent_type": "oeo:qa-verifier",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 6,
+   "output_tokens": 1087,
+   "cache_write_tokens": 9380
+  }
+ ],
+ "activation": [
+  {
+   "ts": "2026-10-30T12:40:46+00:00",
+   "session": "a029cc7d-ff78-4b22-83e0-409f722e2c74",
+   "engagement": "20261030-fix-typo-recieve-in-taskboard-readme",
+   "summary": "Fix typo recieve in taskboard README",
+   "class": "A",
+   "rule": "trivial-change",
+   "inputs": {
+    "type": "trivial",
+    "touches": [
+     "docs"
+    ],
+    "signals": [],
+    "files": 1,
+    "lines": 1
+   },
+   "roles": [
+    {
+     "id": "junior-developer",
+     "mode": "orchestrator",
+     "reason": "class A core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "qa-verifier",
+     "mode": "subagent",
+     "reason": "class A core",
+     "agent": "oeo:qa-verifier",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    }
+   ],
+   "gates": [
+    "diff-reviewed",
+    "checks-pass"
+   ],
+   "estimate_tokens": 30000,
+   "budget_tokens": 60000
+  }
+ ],
+ "files_changed": [
+  "README.md"
+ ],
+ "checks": [
+  {
+   "check": "max_files_changed",
+   "pass": true,
+   "detail": "['README.md']"
+  },
+  {
+   "check": "files_changed_subset",
+   "pass": true,
+   "detail": "['README.md']"
+  },
+  {
+   "check": "diff_contains 'receive'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "tests_pass",
+   "pass": true,
+   "detail": "['OK']"
+  },
+  {
+   "check": "skill_used qa-verifier",
+   "pass": true,
+   "detail": "['oeo:qa-verifier']"
+  },
+  {
+   "check": "oeo_command_used route",
+   "pass": true,
+   "detail": "['o recieve in taskboard README\" --session \"a029cc7d-ff78-4b22']"
+  },
+  {
+   "check": "oeo_class",
+   "pass": true,
+   "detail": "A"
+  },
+  {
+   "check": "max_subagents",
+   "pass": true,
+   "detail": "['oeo:qa-verifier']"
+  }
+ ],
+ "workdir": "/tmp/oeo-eval-11-trivial-typo-oeo-yr9tdaie/repo",
+ "trace_summary": {
+  "tools": {
+   "Agent": 1,
+   "Bash": 5
+  },
+  "skills": [],
+  "agents": [
+   "oeo:qa-verifier"
+  ],
+  "oeo_commands": [
+   "\" route --type trivial --touches docs --files 1 --lines 1 --summary \"Fix typo re"
+  ]
+ },
+ "checks_passed": "8/8",
+ "final_message": "**Verdict: done, both gates PASS.** I fixed \"recieve\" \u2192 \"receive\" in `README.md` line 33.\n\n**Class:** A (trivial-change). I made the fix as the junior developer, then `oeo:qa-verifier` (haiku) checked it independently.\n\n**Files changed:** `README.md`, one line.\n\n| Gate | Method | Result | Evidence |\n|---|---|---|---|\n| diff-reviewed | `git diff --stat` | PASS | 1 insertion and 1 deletion, only the one word changed |\n| checks-pass | `python3 -m unittest discover -s tests` | PASS | 10 tests ran, OK |\n\n`grep -rni recieve` over the repo (excluding `.git` and `.oeo`) found no other occurrences.\n\n**Acceptance criterion:** The typo is gone and nothing else changed. QA confirmed this with the diff and the grep.\n\n**Cost:** QA used about 10k subagent tokens, against the 60k Class A budget. Class A doesn't require `oeo cost`, so I didn't run it.\n\n**Open risks:** None. The repo has no lint config, so there was no lint gate to run. The change is uncommitted.\n\n**Next step:** You decide whether to commit it."
+}
