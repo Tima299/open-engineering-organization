@@ -1,6 +1,6 @@
 {
   "name": "open-engineering-organization",
-  "owner": {"name": "Open Engineering Organization maintainers", "url": "https://github.com/Tima299/open-engineering-organization"},
+  "owner": {"name": "Tima299", "url": "https://github.com/Tima299"},
   "plugins": [
     {
       "name": "oeo",
