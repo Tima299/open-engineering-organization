@@ -1,0 +1,234 @@
+diff --git a/taskboard/__pycache__/__init__.cpython-313.pyc b/taskboard/__pycache__/__init__.cpython-313.pyc
+new file mode 100644
+index 0000000..fb5f347
+Binary files /dev/null and b/taskboard/__pycache__/__init__.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/dashboard.cpython-313.pyc b/taskboard/__pycache__/dashboard.cpython-313.pyc
+new file mode 100644
+index 0000000..12a7a2a
+Binary files /dev/null and b/taskboard/__pycache__/dashboard.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/db.cpython-313.pyc b/taskboard/__pycache__/db.cpython-313.pyc
+new file mode 100644
+index 0000000..ca0022a
+Binary files /dev/null and b/taskboard/__pycache__/db.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/reporting.cpython-313.pyc b/taskboard/__pycache__/reporting.cpython-313.pyc
+new file mode 100644
+index 0000000..d39ee3c
+Binary files /dev/null and b/taskboard/__pycache__/reporting.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/store.cpython-313.pyc b/taskboard/__pycache__/store.cpython-313.pyc
+new file mode 100644
+index 0000000..85850de
+Binary files /dev/null and b/taskboard/__pycache__/store.cpython-313.pyc differ
+diff --git a/taskboard/dashboard.py b/taskboard/dashboard.py
+new file mode 100644
+index 0000000..e6a9445
+--- /dev/null
++++ b/taskboard/dashboard.py
+@@ -0,0 +1,73 @@
++# SPDX-License-Identifier: Apache-2.0
++"""Dashboard: one self-contained HTML page of open tasks per owner."""
++from datetime import date
++from html import escape
++
++from .reporting import open_task_counts
++
++_CSS = """
++:root{color-scheme:light dark;--bg:#fff;--fg:#1a1a1a;--card:#f4f5f7;--muted:#555;--bad-bg:#fde8e8;--bad-fg:#8a1010;--bad-bd:#c62828}
++@media (prefers-color-scheme: dark){:root{--bg:#121417;--fg:#eceff1;--card:#1f2329;--muted:#aab2bb;--bad-bg:#4a1c1c;--bad-fg:#ffd6d6;--bad-bd:#ff6b6b}}
++*{box-sizing:border-box}
++body{margin:0;padding:1rem;background:var(--bg);color:var(--fg);font:1rem/1.5 system-ui,sans-serif;overflow-wrap:anywhere}
++h1{font-size:1.5rem;margin:0 0 1rem}
++h2{font-size:1.1rem;margin:0 0 .5rem}
++ul{list-style:none;margin:0;padding:0}
++.summary{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem}
++.summary li{background:var(--card);border-radius:.5rem;padding:.25rem .75rem}
++.count{font-weight:700}
++.owners{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr));gap:1rem}
++.owner{background:var(--card);border-radius:.5rem;padding:1rem}
++.task{padding:.4rem .5rem;border-left:.3rem solid transparent}
++.due{display:block;color:var(--muted);font-size:.875rem}
++.task.overdue{background:var(--bad-bg);color:var(--bad-fg);border-left-color:var(--bad-bd)}
++.task.overdue .due{color:inherit}
++.flag{font-weight:700}
++"""
++
++
++def _is_overdue(due, today):
++    try:
++        return date.fromisoformat(due[:10]) < today
++    except (TypeError, ValueError):
++        return False
++
++
++def render_dashboard(store, today=None):
++    """Return a self-contained HTML5 page: open tasks per owner, overdue flagged."""
++    today = today or date.today()
++    counts = open_task_counts(store)
++    rows = store.conn.execute(
++        "SELECT id, owner, title, due FROM tasks WHERE NOT done").fetchall()
++    by_owner = {}
++    for r in sorted(rows, key=lambda r: (not r["due"], r["due"] or "", r["id"])):
++        by_owner.setdefault(r["owner"], []).append(r)
++    owners = sorted(counts, key=lambda o: (-counts[o], o))
++
++    summary, sections = [], []
++    for owner in owners:
++        name = escape(owner)
++        late = sum(_is_overdue(r["due"], today) for r in by_owner[owner])
++        extra = f' <span class="due">{late} overdue</span>' if late else ""
++        summary.append(f'<li><span class="name">{name}</span> '
++                       f'<span class="count">{counts[owner]}</span>{extra}</li>')
++        items = []
++        for r in by_owner[owner]:
++            over = _is_overdue(r["due"], today)
++            due = f"due {escape(r['due'])}" if r["due"] else "no due date"
++            flag = '<span class="flag">OVERDUE</span> ' if over else ""
++            cls = "task overdue" if over else "task"
++            items.append(f'<li class="{cls}">{escape(r["title"])}'
++                         f'<span class="due">{flag}{due}</span></li>')
++        sections.append(f'<section class="owner"><h2>{name}</h2>'
++                        f'<ul>{"".join(items)}</ul></section>')
++
++    if owners:
++        body = (f'<h2>Open tasks per owner</h2><ul class="summary">'
++                f'{"".join(summary)}</ul><div class="owners">{"".join(sections)}</div>')
++    else:
++        body = "<p>No open tasks.</p>"
++    return ('<!DOCTYPE html>\n<html lang="en"><head><meta charset="utf-8">'
++            '<meta name="viewport" content="width=device-width, initial-scale=1">'
++            f'<title>Taskboard dashboard</title><style>{_CSS}</style></head>'
++            f'<body><h1>Taskboard dashboard</h1>{body}</body></html>\n')
+diff --git a/tests/__pycache__/test_dashboard.cpython-313.pyc b/tests/__pycache__/test_dashboard.cpython-313.pyc
+new file mode 100644
+index 0000000..da6e0f9
+Binary files /dev/null and b/tests/__pycache__/test_dashboard.cpython-313.pyc differ
+diff --git a/tests/__pycache__/test_reporting.cpython-313.pyc b/tests/__pycache__/test_reporting.cpython-313.pyc
+new file mode 100644
+index 0000000..cd73865
+Binary files /dev/null and b/tests/__pycache__/test_reporting.cpython-313.pyc differ
+diff --git a/tests/__pycache__/test_store.cpython-313.pyc b/tests/__pycache__/test_store.cpython-313.pyc
+new file mode 100644
+index 0000000..72554c9
+Binary files /dev/null and b/tests/__pycache__/test_store.cpython-313.pyc differ
+diff --git a/tests/test_dashboard.py b/tests/test_dashboard.py
+new file mode 100644
+index 0000000..481a97f
+--- /dev/null
++++ b/tests/test_dashboard.py
+@@ -0,0 +1,117 @@
++# SPDX-License-Identifier: Apache-2.0
++import re
++import unittest
++from datetime import date
++
++from taskboard import TaskStore
++from taskboard.dashboard import render_dashboard
++
++TODAY = date(2026, 10, 30)
++
++
++def render(store):
++    return render_dashboard(store, today=TODAY)
++
++
++class DashboardTests(unittest.TestCase):
++    def test_self_contained_document(self):
++        store = TaskStore()
++        store.add("ana", "x", due="2026-01-01")
++        html = render(store)
++        self.assertTrue(html.lstrip().lower().startswith("<!doctype html>"))
++        self.assertIn('<html lang="en">', html)
++        self.assertIn("<title>", html)
++        self.assertIn('name="viewport"', html)
++        self.assertIn("prefers-color-scheme: dark", html)
++        self.assertNotIn("<script", html)
++        self.assertNotRegex(html, r"(?i)(src|href)=|url\(|@import|https?://")
++
++    def test_counts_per_owner_exclude_done(self):
++        store = TaskStore()
++        store.add("ana", "a1")
++        store.add("ana", "a2")
++        store.add("ben", "b1")
++        done = store.add("cy", "finished")
++        store.complete("cy", done)
++        html = render(store)
++        self.assertRegex(html, r'<span class="name">ana</span>\s*<span class="count">2</span>')
++        self.assertRegex(html, r'<span class="name">ben</span>\s*<span class="count">1</span>')
++        self.assertNotIn("finished", html)
++        self.assertNotIn(">cy<", html)
++        # ordered by count desc then name
++        self.assertLess(html.index(">ana<"), html.index(">ben<"))
++
++    def test_tasks_listed_with_due_and_ordered(self):
++        store = TaskStore()
++        store.add("ana", "undated")
++        store.add("ana", "later", "2026-12-01")
++        store.add("ana", "sooner", "2026-11-01")
++        store.add("ana", "same-day-b", "2026-11-01")
++        html = render(store)
++        order = [html.index(t) for t in ("sooner", "same-day-b", "later", "undated")]
++        self.assertEqual(order, sorted(order))
++        self.assertIn("2026-11-01", html)
++        self.assertIn("no due date", html)
++
++    def test_overdue_marked_with_text_but_today_is_not(self):
++        store = TaskStore()
++        store.add("ana", "late", "2026-10-29")
++        store.add("ana", "today", "2026-10-30")
++        store.add("ana", "future", "2026-10-31")
++        html = render(store)
++        rows = re.findall(r"<li[^>]*>.*?</li>", html, re.DOTALL)
++        by_title = {t: next(r for r in rows if t in r) for t in ("late", "today", "future")}
++        self.assertIn("OVERDUE", by_title["late"])
++        self.assertIn("overdue", by_title["late"])
++        self.assertNotIn("OVERDUE", by_title["today"])
++        self.assertNotIn("OVERDUE", by_title["future"])
++        self.assertIn("1 overdue", html)
++
++    def test_datetime_style_due_counts_as_overdue(self):
++        store = TaskStore()
++        store.add("ana", "dt", due="2026-10-29T10:00")
++        self.assertIn("OVERDUE", render(store))
++
++    def test_done_overdue_task_not_shown(self):
++        store = TaskStore()
++        tid = store.add("ana", "stale-done", "2020-01-01")
++        store.add("ana", "keep")
++        store.complete("ana", tid)
++        html = render(store)
++        self.assertNotIn("stale-done", html)
++        self.assertNotIn("OVERDUE", html)
++
++    def test_user_data_is_escaped(self):
++        store = TaskStore()
++        store.add("<b>eve</b>", "<script>alert(1)</script>", "<i>x</i>")
++        html = render(store)
++        self.assertNotIn("<script>alert(1)</script>", html)
++        self.assertNotIn("<b>eve</b>", html)
++        self.assertNotIn("<i>x</i>", html)
++        self.assertIn("&lt;script&gt;alert(1)&lt;/script&gt;", html)
++        self.assertIn("&lt;b&gt;eve&lt;/b&gt;", html)
++
++    def test_quotes_in_owner_are_escaped(self):
++        store = TaskStore()
++        store.add('a" onmouseover="x', "t")
++        self.assertNotIn('" onmouseover="x', render(store))
++
++    def test_empty_store_shows_message(self):
++        html = render(TaskStore())
++        self.assertIn("No open tasks", html)
++
++    def test_malformed_due_shown_and_not_overdue(self):
++        store = TaskStore()
++        store.add("ana", "odd", "next tuesday")
++        html = render(store)
++        self.assertIn("next tuesday", html)
++        self.assertNotIn("OVERDUE", html)
++
++    def test_default_today_does_not_crash(self):
++        store = TaskStore()
++        store.add("ana", "ancient", "2000-01-01")
++        self.assertIn("OVERDUE", render_dashboard(store))
++
++
++if __name__ == "__main__":
++    unittest.main()

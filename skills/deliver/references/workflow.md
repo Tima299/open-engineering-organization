@@ -89,6 +89,8 @@ team wants them public.
   `regression-test` without a code change. Write `N/A: <reason>` and pass it to the verifier.
 - Class C with a fully specified request: when the user's request already fixes scope and
   acceptance criteria, you may write the brief yourself and skip the business-analyst subagent.
+  This exception covers only the business analyst; design, security and other activated reviewers
+  still run.
   Record `business-review-passed | N/A: scope fixed by the user ("<quote>")`. Any open question
   about value, users or scope means the business analyst runs (eval 07, run 1).
   `domain-reviews-passed`, `license-gate` and `rollback-plan` are never N/A without the user's

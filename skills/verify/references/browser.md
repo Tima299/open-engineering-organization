@@ -5,6 +5,9 @@ Playwright CLI with its agent skill (`@playwright/cli`). It is more token-effici
 Playwright MCP server for coding agents. Use the project's own Playwright/Cypress tests first if
 they exist. Install tooling only with user approval.
 
+Before reporting "no browser", check: `npx playwright --version`, `python3 -c "import playwright"`,
+`which chromium chromium-browser google-chrome`. Many CI and cloud sandboxes ship one.
+
 ## Loop: snapshot → act on refs → re-snapshot
 1. Find the running dev server; if several exist, ask which one. Never start a production deploy.
 2. Take an accessibility snapshot (saved to a file; depth-limit large pages, grep it rather than

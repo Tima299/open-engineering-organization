@@ -50,6 +50,9 @@ Stage details, the delegation prompt, checklist roles and gate rules: [workflow]
 Load only the part for the step you are in.
 
 ## 3. Gates
+Every role the router printed as `subagent` runs. A skip needs the user's OK, recorded as
+`skipped: <role>: <reason>`. `domain-reviews-passed` means each activated Tier 2 reviewer gave
+its own verdict; QA cannot stand in for a design or security review (eval 06).
 Every printed gate needs evidence in `.oeo/<engagement>/verification.md`, as
 `| gate | method | result | evidence |` with result PASS, FAIL or N/A: reason. On FAIL, return the
 findings to the implementer. The retry budget is 2 per gate, then escalate (effort, then tier,
