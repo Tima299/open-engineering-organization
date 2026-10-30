@@ -103,7 +103,7 @@ python3 scripts/oeo.py route --type bugfix --touches auth,backend --files 2 --li
 
 Files OEO writes in your project, and only when you ask for that kind of work:
 - `.oeo/<engagement>/`, one folder per triaged request: brief, plan, risks, verification,
-  screen-spec, research ledger and teardown, `evidence/`, `raw/`.
+  design spec, research ledger and teardown, `evidence/`, `raw/`.
 - `.oeo/` (shared): `decisions.md`, `product-marketing.md`, `activation-log.jsonl`,
   `finops.jsonl`, and `sessions/` with token snapshots. `oeo status` summarizes all of it.
 - Deliverables: `DESIGN.md`, `docs/adr/*`, `CHANGELOG.md`.

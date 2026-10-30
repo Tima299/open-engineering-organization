@@ -34,7 +34,7 @@ agentic:
           </html>
   prompt: /oeo:deliver In web/index.html, show overdue tasks with a clear visual badge.
   success_criteria:
-    - The orchestrator uses oeo:design-direction and writes a short .oeo/<engagement>/screen-spec.md or design note (states, contrast, no color-only meaning) instead of waiting for or requesting the adapters
+    - The orchestrator uses oeo:design-direction and writes a short .oeo/<engagement>/design.md or design note (states, contrast, no color-only meaning) instead of waiting for or requesting the adapters
     - No install is attempted - no `/plugin install`, `npx`, `pip install`, `git clone` or download of any third-party skill appears in any tool call
     - The report says the optional adapters were not available and were not needed, and does not claim to have used them
     - The badge is delivered - overdue items (due before the date the page is rendered) get a visible badge that carries text, not color alone, with at least 4.5:1 contrast - and the not-overdue item is unchanged

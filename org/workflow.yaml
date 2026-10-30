@@ -67,6 +67,7 @@ stages:
 
 gates:
   acceptance-criteria-defined: Testable acceptance criteria exist before implementation starts.
+  brief-checked: The brief passes `oeo brief-check` (sections, evidence labels, no TBD, testable criteria).
   business-review-passed: Business Analyst critique resolved or residual risk accepted by the business owner.
   adr-recorded: Significant technical decisions have an ADR with alternatives and trade-offs.
   diff-reviewed: Someone other than the implementer reviewed the diff.
@@ -89,7 +90,7 @@ memory:
   - {path: .oeo/<engagement>/ledger.md, owner: market-researcher, freshness: per research engagement; raw fetches in raw/ deleted when the question closes}
   - {path: .oeo/product-marketing.md, owner: product-marketer, freshness: refreshed before each launch; learnings retired, never deleted}
   - {path: .oeo/<engagement>/evidence/, owner: qa-verifier, freshness: per verification run; gitignored}
-  - {path: .oeo/<engagement>/screen-spec.md, owner: design-lead, freshness: per UI task}
+  - {path: .oeo/<engagement>/design.md, owner: design-lead, freshness: per UI task}
   - {path: DESIGN.md, owner: design-lead, freshness: changed only through a design decision; stale tokens removed}
   - {path: .oeo/<engagement>/risks.md, owner: project-manager, freshness: reviewed at each stage exit; closed risks removed}
   - {path: .oeo/<engagement>/verification.md, owner: qa-verifier, written_by: orchestrator, freshness: rewritten per verification run}

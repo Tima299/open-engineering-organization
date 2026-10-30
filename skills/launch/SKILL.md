@@ -51,5 +51,8 @@ For a recurring check (e.g. weekly metrics or community questions), write down:
 - the stop condition;
 - the human approval point before anything is published.
 
+Never leave template slots such as `[REPOSITORY URL]` or `{{date}}`. If a fact is unknown, write the
+line so that it does not need the fact, and list the question for the orchestrator to ask (eval 20).
+
 Output: positioning, channel plan with owners and metrics, and copy drafts that passed the gate.
 Publishing anything needs explicit user approval.

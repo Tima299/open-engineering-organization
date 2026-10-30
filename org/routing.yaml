@@ -51,6 +51,7 @@ signals:
   long-running: engagement spans many sessions
   multi-agent: more than two subagents will run (derived automatically)
   external-research: studies other companies, products or public sources (feature teardown, market signal)
+  unclear-scope: the request does not state users, outcome or acceptance criteria ("find out what they need")
 
 # Stage 0 classification. First matching rule wins. Conditions in one `when` are ANDed.
 classification:
@@ -122,6 +123,7 @@ classes:
 # Extra gates and stages whenever a fact (type, domain or signal) is present, in any class
 # except A. Example: a failed-release incident is Class C but still needs a rollback plan.
 fact_rules:
+  unclear-scope: {modes: {business-analyst: subagent}, gates: [brief-checked], stages: [discovery]}   # eval 03
   release: {gates: [changelog-entry, version-bump, rollback-plan, license-gate], stages: [release]}   # license conflicts are release-blocking
   research:   # deliverable is a finding ledger + teardown, not a code change
     remove_roles: [junior-developer, middle-developer, senior-developer]

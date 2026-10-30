@@ -21,7 +21,7 @@ agent prompt guide. "Make it look like <site>": ask the orchestrator for an `oeo
 (screenshots, computed styles), then label each value **extracted**, **estimated** or
 **proposed**. Copy structure, not brand assets or proprietary fonts; name deliberate fallbacks.
 
-## 3. Screen spec (`.oeo/<engagement>/screen-spec.md`, under ~60 lines)
+## 3. Screen spec (`.oeo/<engagement>/design.md`, under ~60 lines)
 - **Users and primary task**: top 3 questions the screen answers; above the fold at 1280px and 375px.
 - **Components**: reuse list; new ones with props and states.
 - **States** for every data view: loading, empty, error, partial, success, permission-denied.

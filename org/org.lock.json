@@ -1133,6 +1133,17 @@
     "remove_stages": [
      "implement"
     ]
+   },
+   "unclear-scope": {
+    "gates": [
+     "brief-checked"
+    ],
+    "modes": {
+     "business-analyst": "subagent"
+    },
+    "stages": [
+     "discovery"
+    ]
    }
   },
   "generic_agents": {
@@ -1229,6 +1240,7 @@
    "redistribution": "redistributes third-party code or content",
    "release": "a version will be published",
    "research-exists": "user research already exists for this surface",
+   "unclear-scope": "the request does not state users, outcome or acceptance criteria (\"find out what they need\")",
    "user-facing": "change is visible to end users",
    "user-feedback": "post-release feedback loop"
   },
@@ -1367,6 +1379,7 @@
    "acceptance-criteria-defined": "Testable acceptance criteria exist before implementation starts.",
    "acceptance-criteria-met": "Each acceptance criterion is mapped to evidence.",
    "adr-recorded": "Significant technical decisions have an ADR with alternatives and trade-offs.",
+   "brief-checked": "The brief passes `oeo brief-check` (sections, evidence labels, no TBD, testable criteria).",
    "business-review-passed": "Business Analyst critique resolved or residual risk accepted by the business owner.",
    "changelog-entry": "CHANGELOG.md has an entry for the change.",
    "checks-pass": "Repository tests, lint, type-check and build pass (or are proven not applicable), with output.",

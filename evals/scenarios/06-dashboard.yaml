@@ -14,7 +14,7 @@ agentic:
   fixture: examples/taskboard
   prompt: /oeo:deliver Add a responsive HTML dashboard to Taskboard - open-task counts per owner, plus each owner's open tasks with due dates (overdue highlighted). Return one self-contained HTML document from taskboard/dashboard.py.
   success_criteria:
-    - The Design Lead writes .oeo/<engagement>/screen-spec.md (users, information architecture, states, interaction, accessibility, responsive rules, 5-10 visual acceptance criteria) BEFORE implementation, and the frontend engineer's handoff cites it
+    - The Design Lead writes .oeo/<engagement>/design.md (users, information architecture, states, interaction, accessibility, responsive rules, 5-10 visual acceptance criteria) BEFORE implementation, and the frontend engineer's handoff cites it
     - "Output is one self-contained HTML document: lang attribute, <title>, viewport meta, inline CSS, no external URLs or scripts (grep for http finds none beyond a namespace)"
     - "Colors, spacing and type scale are CSS custom properties on :root; at most 2 font families and one accent color; a layout rule that adapts (media query or auto-fit/minmax grid) with no horizontal scroll at 375px and a multi-column layout at 1280px"
     - "Accessibility: landmarks (header/main), h1 then h2 without skipped levels, task data in a real table or list with caption/headers, body text contrast >= 4.5:1 computed in the verification report, visible focus style, overdue state conveyed by text or icon as well as color"
@@ -26,7 +26,7 @@ agentic:
   auto:
     tests_pass: true
     unchanged: [taskboard/db.py]
-    exists_glob: [.oeo/*/screen-spec.md]
+    exists_glob: [.oeo/*/design.md]
     diff_contains: ["<!", "lang=", "viewport", ":root"]
     probes:
       - name: a <script> task title is rendered escaped

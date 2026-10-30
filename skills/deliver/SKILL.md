@@ -30,6 +30,8 @@ Report each signal that is true of **this task**. Too few and the work is under-
 - `release`: this task itself publishes a version. Announcing a release is not.
 - `external-research`: this task must study other products or public sources. Reading your own
   repository is not.
+- `unclear-scope`: the request does not say who it is for, what outcome is wanted, or how to
+  tell when it is done ("find out what they need"). The business analyst then runs as a subagent.
 - Others: `user-facing`, `production`, `new-dependency`, `breaking-change`, `ai-feature`,
   `multi-locale`.
 If the router warns that the estimate exceeds the budget, re-check the signals before starting.

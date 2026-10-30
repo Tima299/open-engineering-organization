@@ -417,7 +417,8 @@ def validate_sources(src):
         errs += [f"org/routing.yaml fact_rules.{key}: unknown stage '{s}'"
                  for s in rule.get("stages", []) + rule.get("remove_stages", []) if s not in stage_ids]
         errs += [f"org/routing.yaml fact_rules.{key}: unknown gate '{g}'" for g in rule.get("remove_gates", []) if g not in workflow["gates"]]
-        errs += [f"org/routing.yaml fact_rules.{key}: unknown role '{r}'" for r in rule.get("remove_roles", []) if r not in role_ids]
+        errs += [f"org/routing.yaml fact_rules.{key}: unknown role '{r}'"
+                 for r in rule.get("remove_roles", []) + list((rule.get("modes") or {})) if r not in role_ids]
     for rule in routing["classification"]:
         w = f"org/routing.yaml classification '{rule.get('rule')}'"
         if rule["class"] not in routing["classes"]:
@@ -609,8 +610,12 @@ def route(lock, task_type, touches=(), signals=(), files=None, lines=None, profi
 
     if cls != "A":
         for key in sorted(facts):
-            for rid in routing.get("fact_rules", {}).get(key, {}).get("remove_roles", []):
+            rule_ = routing.get("fact_rules", {}).get(key, {})
+            for rid in rule_.get("remove_roles", []):
                 active.pop(rid, None)
+            for rid, mode in (rule_.get("modes") or {}).items():
+                if rid in active:
+                    active[rid] = {"mode": mode, "reason": active[rid]["reason"] + f"; {mode} because {key}"}
 
     budgets = models["budgets"]
     estimate = 0

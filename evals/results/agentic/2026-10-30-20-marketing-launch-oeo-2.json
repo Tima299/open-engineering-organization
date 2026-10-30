@@ -1,0 +1,222 @@
+{
+ "scenario": "20-marketing-launch",
+ "arm": "oeo",
+ "model": "sonnet",
+ "profile": "economy",
+ "date": "2026-10-30",
+ "claude_code": "2.1.314 (Claude Code)",
+ "oeo_commit": "d8a9dee",
+ "exit_code": 0,
+ "is_error": false,
+ "cost_usd": 0.32599319500000007,
+ "duration_s": 22.0,
+ "num_turns": 3,
+ "wall_s": 423,
+ "usage": {
+  "input_tokens": 6,
+  "cache_creation_input_tokens": 2594,
+  "cache_read_input_tokens": 172948,
+  "output_tokens": 1661,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 2594,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 1268,
+    "cache_read_input_tokens": 58628,
+    "cache_creation_input_tokens": 251,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 251
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "subagents": [
+  {
+   "agent_type": "oeo:researcher",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 38,
+   "output_tokens": 36270,
+   "cache_write_tokens": 64609
+  },
+  {
+   "agent_type": "oeo:qa-verifier",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 12,
+   "output_tokens": 16843,
+   "cache_write_tokens": 30613
+  },
+  {
+   "agent_type": "oeo:qa-verifier",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 8,
+   "output_tokens": 6823,
+   "cache_write_tokens": 11657
+  }
+ ],
+ "activation": [
+  {
+   "ts": "2026-10-30T12:40:55+00:00",
+   "session": "cb306727-b185-423c-83a1-fab824c8e519",
+   "engagement": "20261030-launch-announcement-and-landing-page-cop",
+   "summary": "Launch announcement and landing-page copy for taskboard 1.0",
+   "class": "D",
+   "rule": "organizational-work",
+   "inputs": {
+    "type": "marketing",
+    "touches": [
+     "docs"
+    ],
+    "signals": [
+     "user-facing"
+    ],
+    "files": null,
+    "lines": null
+   },
+   "roles": [
+    {
+     "id": "business-owner",
+     "mode": "human",
+     "reason": "class D core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "oss-maintainer",
+     "mode": "orchestrator",
+     "reason": "class D core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "project-manager",
+     "mode": "orchestrator",
+     "reason": "class D core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "qa-verifier",
+     "mode": "subagent",
+     "reason": "class D core",
+     "agent": "oeo:qa-verifier",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "product-marketer",
+     "mode": "subagent",
+     "reason": "trigger: marketing",
+     "agent": "oeo:researcher",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 100000
+    }
+   ],
+   "gates": [
+    "diff-reviewed",
+    "checks-pass"
+   ],
+   "estimate_tokens": 130000,
+   "budget_tokens": 150000
+  }
+ ],
+ "files_changed": [],
+ "checks": [
+  {
+   "check": "exists .oeo/product-marketing.md",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains 'Trusted by'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains 'trusted by'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains 'lorem ipsum'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "copy_lint (no must-fix in the copy files)",
+   "pass": false,
+   "detail": "['announcement.md:8 unfilled template slot', 'announcement.md:35 unfilled template slot', 'announcement.md:36 unfilled template slot', 'announcement.md:42 unfilled template slot', 'copy-gate.md:40 placeholder or filler text', 'copy-gate.md:41 placeholder or filler text', 'landing-page.md:50 unfilled"
+  },
+  {
+   "check": "no_git_tags",
+   "pass": true,
+   "detail": "[]"
+  },
+  {
+   "check": "skill_used researcher",
+   "pass": true,
+   "detail": "['oeo:launch', 'oeo:qa-verifier', 'oeo:researcher']"
+  },
+  {
+   "check": "oeo_class",
+   "pass": true,
+   "detail": "D"
+  }
+ ],
+ "workdir": "/tmp/oeo-eval-20-marketing-launch-oeo-rlwuuis4/repo",
+ "trace_summary": {
+  "tools": {
+   "Agent": 3,
+   "Bash": 38,
+   "Edit": 4,
+   "Skill": 1,
+   "Write": 7
+  },
+  "skills": [
+   "oeo:launch"
+  ],
+  "agents": [
+   "oeo:researcher",
+   "oeo:qa-verifier",
+   "oeo:qa-verifier"
+  ],
+  "oeo_commands": [
+   "\" route --type marketing --touches doc",
+   " cost --check 2>&1 | tail -3",
+   " cost --check | tail -2; git status --short",
+   " copy-lint /tmp/oeo-eval-20-marketing-launch-oeo-rlwuuis4/repo/.oeo/20261030-lau",
+   " verification-check .oeo/2026*/verification.md; python3 /home/user/open-enginee"
+  ]
+ },
+ "checks_passed": "7/8",
+ "final_message": "**Verdict:** The launch copy is drafted and verified against the code, but it can't be published yet. Five placeholders are unfilled, and I recommend not launching a \"1.0\" at all while two known defects remain. Nothing was published.\n\n**1. Class and roles.** Class D (organizational work). The roles were the product-marketer (`oeo:researcher`) and `oeo:qa-verifier`, which ran twice because I edited the copy after the first pass.\n\n**2. Files changed.** No repo source changed. All new files are untracked under `.oeo/`:\n- `.oeo/product-marketing.md`\n- In `.oeo/20261030-launch-announcement-and-landing-page-cop/`: `positioning.md`, `landing-page.md`, `announcement.md`, `launch-plan.md`, `copy-gate.md`, `open-questions.md`, `verification.md`\n\n**3. Gates.**\n\n| gate | result | evidence |\n|---|---|---|\n| diff-reviewed | PASS | `git status` shows only `?? .oeo/` |\n| checks-pass | N/A: blocked on 5 Business Owner values | The 10 unit tests pass. `copy-lint` fails only on the 5 unfilled slots: `[REPOSITORY URL]`, `[RELEASE DATE]`, `[RELEASE NOTES URL]` (twice) and `[CHANGELOG URL]`. |\n\n`oeo verification-check` passes. I left the slots visible instead of renaming them to get past the lint, so a missing value can't slip through.\n\n**4. What the copy can and can't claim.**\n- **Claims:** Python standard library only, SQLite storage, `add`/`list`/`complete`/`delete`, forward-only migrations that are safe to re-run, and open-task counts per owner. QA traced each claim to the code. The copy has no invented numbers, customers or competitor claims.\n- **Disclosed:** `delete()` lets any caller remove any task, and `complete()` raises `TypeError` for an unknown or another owner's id. QA confirmed both with a probe. I added the delete caveat next to the delete line after QA flagged \"per-user\" as implying isolation. QA's second pass confirmed that edit against `store.py`.\n- **Readiness verdict:** the product-marketer's gate says not ready for a public 1.0, and `launch-plan.md` has the full reasoning.\n\n**5. Outcome lines.** I did not run `oeo:business-review`. Class D has no outcome-review stage, and the open questions below are the Business Owner's decision.\n\n**6. Cost.** Subagents used 166,873 tokens against the 150,000 class budget. The overrun comes from the second QA pass. I recorded the justification in `.oeo/decisions.md`.\n\n**7. Open risks.**\n- Publishing a 1.0 with the `delete()` gap exposes cross-user deletion. A disclosure doesn't fix that.\n- There is no LICENSE file, CHANGELOG or version tag. The source headers say Apache-2.0, but nobody has chosen a license.\n- The README quickstart points to `examples/taskboard`, which doesn't exist.\n- The README calls taskboard an OEO evaluation fixture. If that's what it is, a launch may not make sense.\n- This pass did not re-run QA's earlier claim audit or probe. The disclosure edit was checked by reading `store.py`.\n\n**Next step (owner: you, as Business Owner):** answer `open-questions.md` items 1\u20132:\n1. Is taskboard a real product or the evaluation fixture?\n2. If it's a product, do you hold 1.0 and fix the defects first (my recommendation), ship a 0.x preview, or skip the launch?\n\nThen supply the five slot values, and QA will re-run `copy-lint` and the release gate."
+}

@@ -29,7 +29,7 @@ agentic:
         content: |
           | id | goal | owner | files | depends | status |
           |---|---|---|---|---|---|
-          | T1 | AC1 | design-lead | .oeo/20261025-dashboard/screen-spec.md | - | done |
+          | T1 | AC1 | design-lead | .oeo/20261025-dashboard/design.md | - | done |
           | T2 | AC2 | senior-frontend-engineer | taskboard/dashboard.py | T1 | in_review |
           | T3 | AC3 | qa-verifier | - | T2 | blocked (waiting for staging data) |
       - path: .oeo/20261025-dashboard/verification.md

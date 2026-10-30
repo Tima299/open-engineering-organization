@@ -22,7 +22,7 @@ role:
     - Existing design system and UI patterns
     - User research or feedback, where it exists
   outputs:
-    - Screen spec at .oeo/<engagement>/screen-spec.md (flows, states, information architecture)
+    - Screen spec at .oeo/<engagement>/design.md (flows, states, information architecture)
     - Visual acceptance criteria inside the screen spec; DESIGN.md updated when direction changes
     - Design review notes from the running UI
   tools_and_permissions: [read, search, edit, web]
