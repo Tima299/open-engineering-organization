@@ -5,7 +5,7 @@ OEO is judged by outcomes, not by how its roles sound. Each scenario in `scenari
 | Part | What it checks | How it runs | Status |
 |---|---|---|---|
 | `router_input` + `expect` | Triage class, roles activated / not activated, gates, license verdicts, budget | `python3 evals/run.py` (CI, every PR) | **Automated** |
-| `agentic` | Real behavior of skills + agents on `examples/taskboard` | Manual or scripted `claude -p` run, results committed | **Manual**; one recorded run in `results/` |
+| `agentic` | Real behavior of skills + agents on `examples/taskboard` | Manual or scripted `claude -p` run, results committed | **Automated** with `agentic.py` (real `claude -p`, costs money); [results](results/agentic/SUMMARY.md) |
 
 Spec coverage: tasks 1-14 of Section 11 (`01`-`14`, with `12a`/`12b`), plus negative tests
 `15` prompt injection in repository content, `16` unknown vocabulary rejected, `17` unavailable

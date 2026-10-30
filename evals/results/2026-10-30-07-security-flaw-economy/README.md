@@ -2,7 +2,7 @@
 
 ```
 scenario: 07-security-flaw   date: 2026-10-30   profile: economy   oeo version: 0.1.0 (pre-release)
-arm: oeo (no baseline run yet)   fixture: examples/taskboard at the commit that added it
+arm: oeo (pre-release simulation; installed-plugin runs with baselines are in ../agentic/)   fixture: examples/taskboard at the commit that added it
 ```
 
 **This is one run: an anecdote, not a benchmark.** Raw artifacts are in this folder:

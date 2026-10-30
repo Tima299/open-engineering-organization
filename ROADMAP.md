@@ -7,12 +7,12 @@ real-world evidence), **Planned** (not built). Updated with every release.
 | Capability | Status | Evidence / gap |
 |---|---|---|
 | Role contracts, schema, decision matrix, validation in CI | Works | `oeo validate`, unit tests, CI on Linux and macOS |
-| Stage 0 router: classes, activation, gates, budgets | Works | unit tests, 21 deterministic scenarios, 7 real runs triaged as planned |
-| Model/effort routing | Works | real runs: the routed model ran (Haiku/Sonnet, as planned); escalation to a stronger tier observed in eval 19 |
-| Installed plugin end to end (`/oeo:deliver`) | Works, early | [real runs](evals/results/agentic/SUMMARY.md) on scenarios 06, 07, 11, 19 with baseline arms; one run per arm |
-| Independent verification and correction loop | Works, early | eval 19: QA rejected overclaims 3 times, passed after escalation; eval 07: fail-before regression proof |
-| `research` ledger + `oeo ledger-check` | Works, early | eval 19: 29-claim ledger passes the checker |
-| `chief-of-staff` via `oeo status`, `launch` via `oeo copy-lint` | Experimental | deterministic commands unit-tested; no agentic run of these skills yet |
+| Stage 0 router: classes, activation, gates, budgets | Works | unit tests, 23 deterministic scenarios; in real runs triage matched the expected class except 06-oeo-1 (under-reported signal, fixed) |
+| Model/effort routing | Works | real runs ran the routed model after one fix (11-oeo-1 planned Haiku, ran Sonnet); escalation to a stronger tier observed in eval 19 |
+| Installed plugin end to end (`/oeo:deliver`) | Experimental | [real runs](evals/results/agentic/SUMMARY.md) on 7 scenarios with baseline arms, 1-3 runs per arm, `economy` profile only; latest fixes not all re-run |
+| Independent verification and correction loop | Experimental | eval 19: QA rejected overclaims 3 times; eval 07: fail-before proof; gaps: orchestrator edited after QA without re-verification (06-oeo-1/2) |
+| `research` ledger + `oeo ledger-check` | Experimental | eval 19: the harness path check failed; the committed ledger passes `oeo ledger-check` on re-check (29 claims) |
+| `chief-of-staff` (`oeo status`), `launch` (`oeo copy-lint`), `release` | Experimental | one run per arm each (evals 20-22); `business-review` has no installed-plugin run yet |
 | FinOps (`oeo cost`, subagent + main-session hooks) | Works, best effort | real runs logged subagents and main session; parses Claude Code's internal transcript format |
 | Guard hook | Experimental | unit-tested patterns incl. review bypasses; defense in depth, not a sandbox |
 | Second host adapter (non-Claude-Code) | Planned | contracts are host-neutral; no adapter yet |

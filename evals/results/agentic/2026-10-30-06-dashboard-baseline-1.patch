@@ -1,0 +1,147 @@
+diff --git a/taskboard/__pycache__/__init__.cpython-313.pyc b/taskboard/__pycache__/__init__.cpython-313.pyc
+new file mode 100644
+index 0000000..89f0c2f
+Binary files /dev/null and b/taskboard/__pycache__/__init__.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/dashboard.cpython-313.pyc b/taskboard/__pycache__/dashboard.cpython-313.pyc
+new file mode 100644
+index 0000000..4c24e7d
+Binary files /dev/null and b/taskboard/__pycache__/dashboard.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/db.cpython-313.pyc b/taskboard/__pycache__/db.cpython-313.pyc
+new file mode 100644
+index 0000000..84639ba
+Binary files /dev/null and b/taskboard/__pycache__/db.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/reporting.cpython-313.pyc b/taskboard/__pycache__/reporting.cpython-313.pyc
+new file mode 100644
+index 0000000..dca80d5
+Binary files /dev/null and b/taskboard/__pycache__/reporting.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/store.cpython-313.pyc b/taskboard/__pycache__/store.cpython-313.pyc
+new file mode 100644
+index 0000000..dc78210
+Binary files /dev/null and b/taskboard/__pycache__/store.cpython-313.pyc differ
+diff --git a/taskboard/dashboard.py b/taskboard/dashboard.py
+new file mode 100644
+index 0000000..f2cc9c2
+--- /dev/null
++++ b/taskboard/dashboard.py
+@@ -0,0 +1,74 @@
++# SPDX-License-Identifier: Apache-2.0
++"""Dashboard: open-task counts per owner and each owner's open tasks, as one HTML document."""
++import datetime
++from html import escape
++
++from .reporting import open_task_counts
++
++_CSS = """
++:root{--bg:#f6f7f9;--card:#fff;--fg:#1c2530;--muted:#667085;--line:#e4e7ec;--accent:#2f6fed;
++--bad:#b42318;--bad-bg:#fee4e2}
++@media (prefers-color-scheme:dark){:root{--bg:#12161c;--card:#1b222b;--fg:#e8ecf1;--muted:#98a2b3;
++--line:#2b3440;--accent:#6b9bff;--bad:#ffb4ab;--bad-bg:#4a1f1b}}
++*{box-sizing:border-box}
++body{margin:0;padding:16px;background:var(--bg);color:var(--fg);
++font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
++main{max-width:1100px;margin:0 auto}
++h1{font-size:1.4rem;margin:0 0 4px}
++.sub{color:var(--muted);margin:0 0 20px}
++.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
++.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
++.card h2{display:flex;justify-content:space-between;align-items:center;gap:8px;
++font-size:1.05rem;margin:0 0 10px;overflow-wrap:anywhere}
++.count{background:var(--accent);color:#fff;border-radius:999px;padding:1px 10px;font-size:.85rem}
++ul{list-style:none;margin:0;padding:0}
++li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-top:1px solid var(--line)}
++.title{overflow-wrap:anywhere}
++.due{color:var(--muted);white-space:nowrap;font-size:.9rem}
++li.overdue .due{color:var(--bad);font-weight:600}
++li.overdue{background:var(--bad-bg);margin:0 -8px;padding:8px;border-radius:6px}
++.empty{color:var(--muted)}
++"""
++
++
++def _due_cell(due, today):
++    if not due:
++        return "no due date", False
++    try:
++        overdue = datetime.date.fromisoformat(due) < today
++    except ValueError:
++        return escape(due), False
++    return escape(due) + (" (overdue)" if overdue else ""), overdue
++
++
++def render_dashboard(store, today=None):
++    """Return a self-contained HTML document for `store`; `today` defaults to the current date."""
++    today = today or datetime.date.today()
++    counts = open_task_counts(store)
++    rows = store.conn.execute(
++        "SELECT owner, title, due FROM tasks WHERE done = 0 "
++        "ORDER BY owner, due IS NULL, due, id").fetchall()
++    by_owner = {}
++    for row in rows:
++        by_owner.setdefault(row["owner"], []).append(row)
++
++    cards = []
++    for owner in sorted(counts):
++        items = []
++        for task in by_owner.get(owner, []):
++            due_text, overdue = _due_cell(task["due"], today)
++            items.append(
++                f'<li class="{"overdue" if overdue else ""}">'
++                f'<span class="title">{escape(task["title"])}</span>'
++                f'<span class="due">{due_text}</span></li>')
++        cards.append(
++            f'<section class="card"><h2><span>{escape(owner)}</span>'
++            f'<span class="count">{counts[owner]} open</span></h2>'
++            f'<ul>{"".join(items)}</ul></section>')
++    body = "".join(cards) or '<p class="empty">No open tasks.</p>'
++    return (
++        '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">'
++        '<meta name="viewport" content="width=device-width,initial-scale=1">'
++        f'<title>Taskboard dashboard</title><style>{_CSS}</style></head><body><main>'
++        f'<h1>Taskboard</h1><p class="sub">Open tasks per owner &middot; as of {today.isoformat()}</p>'
++        f'<div class="grid">{body}</div></main></body></html>')
+diff --git a/tests/__pycache__/test_dashboard.cpython-313.pyc b/tests/__pycache__/test_dashboard.cpython-313.pyc
+new file mode 100644
+index 0000000..4ef4c49
+Binary files /dev/null and b/tests/__pycache__/test_dashboard.cpython-313.pyc differ
+diff --git a/tests/__pycache__/test_reporting.cpython-313.pyc b/tests/__pycache__/test_reporting.cpython-313.pyc
+new file mode 100644
+index 0000000..a1ded77
+Binary files /dev/null and b/tests/__pycache__/test_reporting.cpython-313.pyc differ
+diff --git a/tests/__pycache__/test_store.cpython-313.pyc b/tests/__pycache__/test_store.cpython-313.pyc
+new file mode 100644
+index 0000000..3bbf23c
+Binary files /dev/null and b/tests/__pycache__/test_store.cpython-313.pyc differ
+diff --git a/tests/test_dashboard.py b/tests/test_dashboard.py
+new file mode 100644
+index 0000000..880b83c
+--- /dev/null
++++ b/tests/test_dashboard.py
+@@ -0,0 +1,29 @@
++# SPDX-License-Identifier: Apache-2.0
++import datetime
++import unittest
++
++from taskboard import TaskStore
++from taskboard.dashboard import render_dashboard
++
++
++class DashboardTests(unittest.TestCase):
++    def test_counts_overdue_and_escaping(self):
++        store = TaskStore()
++        store.add("ana", "late <b>", due="2020-01-01")
++        store.add("ana", "later", due="2099-01-01")
++        done = store.add("ana", "finished", due="2020-01-01")
++        store.complete("ana", done)
++        store.add("ben", "no date")
++        html = render_dashboard(store, today=datetime.date(2030, 1, 1))
++        self.assertIn("2 open", html)
++        self.assertIn("1 open", html)
++        self.assertIn("late &lt;b&gt;", html)
++        self.assertEqual(html.count('<li class="overdue">'), 1)
++        self.assertNotIn("finished", html)
++
++    def test_empty(self):
++        self.assertIn("No open tasks", render_dashboard(TaskStore()))
++
++
++if __name__ == "__main__":
++    unittest.main()

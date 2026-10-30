@@ -10,15 +10,23 @@ implementer never verifies its own work, and every claim of success needs eviden
 > [results and costs](evals/results/agentic/SUMMARY.md) and [what each run changed](evals/results/agentic/NOTES.md).
 > That is one or two runs per arm, so it is evidence, not a benchmark. See [ROADMAP.md](ROADMAP.md).
 
-**What the runs show.** OEO costs more than plain Claude:
-- 2.5x for a typo, $0.13 vs $0.05;
-- about 4-6x for significant work.
+**What the runs show** (one to three runs per arm; main session `sonnet`, subagents `economy`).
+OEO costs more than plain Claude and takes longer:
+- 2.5x the cost for a typo ($0.13 vs $0.05);
+- 2-8.5x for significant work ($0.20-0.82 vs $0.09-0.11);
+- up to 10x the wall time on the dashboard (613 s vs about 30 s).
 
-In return you get independent verification with evidence. On the auth fix, that meant a
-security review, a proof that the regression test fails without the fix, and 3 extra findings. On
-research, it meant a cited ledger whose overclaims QA rejected until they were fixed. On the
-dashboard, the baseline wrote no XSS-escaping test and OEO did. Use OEO when being wrong costs
-more than the extra tokens.
+On the automated outcome checks (files touched, tests, behavior probes), plain Claude matched
+OEO on the typo, the auth fix and the dashboard, and did better on launch copy. What OEO adds is
+process with evidence:
+- **Release:** OEO refused to publish a changelog claim the code contradicted; plain Claude
+  published it.
+- **Auth fix:** an independent security review, a test proven to fail without the fix, and two
+  findings the baseline missed.
+- **Research:** a ledger tagging every claim observed, inferred or unknown, whose overclaims QA
+  rejected until fixed.
+
+Use OEO when being wrong costs more than the extra time and tokens.
 
 ## Why
 Agents usually fail in one of two ways. A single agent writes code and declares it done with no
@@ -27,7 +35,7 @@ OEO's answer is **proportionality**, decided by a deterministic router instead o
 
 | Request | Class | What activates |
 |---|---|---|
-| Fix a README typo | A, trivial | junior developer (Sonnet, low effort) + independent verifier: 2 roles |
+| Fix a README typo | A, trivial | the orchestrator fixes it; one independent verifier subagent checks |
 | Well-defined bug fix | B, standard | Tier 1 core; most roles are checklists, 2 subagents |
 | Auth change / new product surface | C, significant | + business analyst, architect, security, design... only those whose domain is touched |
 | Release, licensing, governance | D, organizational | maintainer-led + triggered advisors (release, legal, ...) |
@@ -72,13 +80,13 @@ Releases will be tagged `vX.Y.Z`; once one exists, pin it with
 1. Get a practice repo: clone this repository and copy `examples/taskboard` somewhere, then run
    `git init` in it and commit. It is a tiny Python to-do service with seeded defects.
 2. Open Claude Code in that folder and try a trivial task:
-   `/oeo:deliver Fix the typo "recieve" in README.md`. Expect Class A, two subagents, a
+   `/oeo:deliver Fix the typo "recieve" in README.md`. Expect Class A, one verifier subagent, a
    one-word diff, and a verifier report with the command it ran.
 3. Try a significant one:
    `/oeo:deliver Users say they can delete other people's tasks. Fix it.` Expect Class C (auth
    domain): a short brief with acceptance criteria for you to approve, a fix with a regression
-   test, a security review, and a verification table. This is the expensive path: the recorded
-   Class C run used about 320k subagent tokens.
+   test, a security review, and a verification table. This is the expensive path: the
+   installed-plugin auth run (eval 07) cost $0.40, about 4.6x plain Claude, with the economy profile.
 4. See what it cost: run `/oeo:finops`.
 
 Preview triage without running agents (from a clone of this repo):

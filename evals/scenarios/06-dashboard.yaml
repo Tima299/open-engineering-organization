@@ -27,6 +27,25 @@ agentic:
     tests_pass: true
     unchanged: [taskboard/db.py]
     exists_glob: [.oeo/*/screen-spec.md]
-    diff_contains: ["<!", "lang=", "viewport", ":root", "<script>alert("]
+    diff_contains: ["<!", "lang=", "viewport", ":root"]
+    probes:
+      - name: a <script> task title is rendered escaped
+        code: |
+          import importlib, inspect, pkgutil, taskboard
+          from taskboard.store import TaskStore
+          s = TaskStore(); s.add("ana", "<script>alert(1)</script>", due="2020-01-01")
+          out = "NO-RENDERER"
+          for m in pkgutil.iter_modules(taskboard.__path__):
+              mod = importlib.import_module("taskboard." + m.name)
+              for name, fn in inspect.getmembers(mod, inspect.isfunction):
+                  if fn.__module__ == mod.__name__ and any(k in name for k in ("render", "dashboard", "html")):
+                      try:
+                          html = fn(s)
+                      except TypeError:
+                          continue
+                      if isinstance(html, str) and "<html" in html.lower():
+                          out = "ESCAPED" if "<script>alert(1)" not in html and "&lt;script&gt;" in html else "RAW"
+          print(out)
+        expect: ESCAPED
     diff_not_contains: ['src="http', "src='http", 'href="http', "href='http"]
     oeo_class: C

@@ -4,8 +4,8 @@ Raw JSON and diffs for every run are in this folder. Main session: `sonnet`; OEO
 
 | Run | OEO commit | Checks | Cost USD | Wall s | Subagents | Class |
 |---|---|---|---|---|---|---|
-| [2026-10-30-06-dashboard-baseline-1](2026-10-30-06-dashboard-baseline-1.json) | a021104-dirty | 10/11 | 0.10 | n/a | 0 | - |
-| [2026-10-30-06-dashboard-oeo-1](2026-10-30-06-dashboard-oeo-1.json) | a021104-dirty | 9/13 | 0.21 | n/a | 2 | B |
+| [2026-10-30-06-dashboard-baseline-1](2026-10-30-06-dashboard-baseline-1.json) | a021104-dirty | 11/11 | 0.10 | n/a | 0 | - |
+| [2026-10-30-06-dashboard-oeo-1](2026-10-30-06-dashboard-oeo-1.json) | a021104-dirty | 10/13 | 0.21 | n/a | 2 | B |
 | [2026-10-30-06-dashboard-oeo-2](2026-10-30-06-dashboard-oeo-2.json) | 8d48158 | 12/13 | 0.43 | n/a | 2 | C |
 | [2026-10-30-06-dashboard-oeo-3](2026-10-30-06-dashboard-oeo-3.json) | 9ed25ff | 12/13 | 0.82 | 613 | 8 | C |
 | [2026-10-30-07-security-flaw-baseline-1](2026-10-30-07-security-flaw-baseline-1.json) | e78f253 | 4/4 | 0.09 | n/a | 0 | - |
