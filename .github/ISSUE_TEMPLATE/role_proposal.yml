@@ -1,0 +1,69 @@
+name: Role proposal
+description: Propose a new OEO role (roles are capabilities, not headcount)
+title: "role: "
+labels: ["role-proposal"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        OEO keeps the number of roles small on purpose. A new role needs a real task need that
+        existing roles (see docs/roles.md) and the generic `specialist` and `advisor` agents cannot meet.
+        If the role would change routing, an eval scenario in `evals/scenarios/` is required.
+        Role files use model **tiers** only, never provider model names.
+  - type: textarea
+    id: need
+    attributes:
+      label: Task need and evidence
+      description: |
+        The real task(s) this role is for, and your evidence that the need is real and recurring:
+        links to issues or PRs, a transcript excerpt, a failure you observed, or a concrete example request.
+        Remove secrets and private code.
+    validations:
+      required: true
+  - type: dropdown
+    id: tier
+    attributes:
+      label: Proposed tier
+      description: Tier 1 is the core set chosen by task class. Tier 2 specialists activate by domain. Tier 3 advisors activate by signal.
+      options:
+        - "Tier 1: core (active by task class)"
+        - "Tier 2: specialist (activated by domain)"
+        - "Tier 3: advisor (activated by trigger signal)"
+    validations:
+      required: true
+  - type: textarea
+    id: activation
+    attributes:
+      label: Activation trigger
+      description: |
+        What makes the router activate this role, and what suppresses it?
+        Use domains and signals from `org/routing.yaml` (for example `domains: [api]` or `triggers: [a+b]`),
+        or propose new ones and say why.
+    validations:
+      required: true
+  - type: textarea
+    id: insufficient
+    attributes:
+      label: Why existing roles and generic agents are not enough
+      description: Name the closest existing roles and the specific gap. Explain why extending one of them does not work.
+    validations:
+      required: true
+  - type: textarea
+    id: contract
+    attributes:
+      label: Draft contract
+      description: |
+        A draft that implements `schemas/role.schema.json`: id, purpose, responsibilities, decision rights,
+        inputs, outputs, tools and permissions (capabilities only), escalation conditions, acceptance criteria.
+      render: yaml
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Checks
+      options:
+        - label: I checked docs/roles.md and no existing role covers this need.
+          required: true
+        - label: The draft uses tiers (light, standard, advanced) and contains no provider model names.
+          required: true
