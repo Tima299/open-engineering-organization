@@ -52,6 +52,8 @@ def snapshot_session(log_dir, payload):
         return 0
     totals, models, responses = usage_from_transcript(transcript)
     folder = log_dir / "sessions"
+    if folder.is_symlink():
+        return 0
     folder.mkdir(exist_ok=True)
     name = "".join(c for c in sid if c.isalnum() or c in "-_")[:80] or "session"
     snap = {"session_id": sid, "ts": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),

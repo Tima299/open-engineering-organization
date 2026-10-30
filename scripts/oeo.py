@@ -769,8 +769,12 @@ def cmd_cost(args):
     for p in plans:  # a re-triage supersedes the earlier plan of the same engagement (or session)
         latest[p.get("engagement") or p.get("session")] = p
     plans = list(latest.values())
-    sessions = [json.loads(f.read_text(encoding="utf-8")) for f in sorted((base / "sessions").glob("*.json"))] \
-        if (base / "sessions").is_dir() else []
+    sessions = []
+    for f in sorted((base / "sessions").glob("*.json")) if (base / "sessions").is_dir() else []:
+        try:
+            sessions.append(json.loads(f.read_text(encoding="utf-8")))
+        except (json.JSONDecodeError, OSError):
+            continue  # one unreadable snapshot must not break the report
     if args.session:
         sessions = [x for x in sessions if x.get("session_id") == args.session]
     per_agent = {}

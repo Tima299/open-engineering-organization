@@ -60,6 +60,10 @@ def md_tables(text):
 
 
 def column(header, *names):
+    """Index of the first header equal to a name, else the first header containing one."""
+    for n in names:
+        if n in header:
+            return header.index(n)
     for n in names:
         for idx, h in enumerate(header):
             if n in h:
@@ -118,7 +122,11 @@ def _due_decisions(path, today):
             continue
         for r in rows:
             m = re.search(r"\d{4}-\d{2}-\d{2}", r[rb]) if rb < len(r) else None
-            if m and dt.date.fromisoformat(m.group(0)) <= today:
+            try:
+                when = dt.date.fromisoformat(m.group(0)) if m else None
+            except ValueError:  # malformed date in a hand-edited log: skip the row, keep the brief
+                continue
+            if when and when <= today:
                 due.append(f"review due {m.group(0)}: {r[dc] if dc is not None and dc < len(r) else r[0]}")
     return due
 
@@ -198,7 +206,8 @@ def format_status(s):
 COPY_RULES = [
     ("must-fix", "placeholder or filler text", re.compile(r"lorem ipsum|\bTBD\b|\bTODO\b|\[insert|\bplaceholder\b", re.I)),
     ("must-fix", "testimonial or customer claim without a source",
-     re.compile(r"(trusted by|loved by|used by)\s+[\d,.]+\+?\s*(k|m)?\s*(teams|users|developers|companies)", re.I)),
+     re.compile(r"(trusted by|loved by|used by|chosen by)\s+(over\s+|more than\s+)?[\d,.]+\+?\s*"
+                r"(k|m|thousand|million|billion)?\s*(teams|users|developers|companies|customers|people)", re.I)),
     ("should-fix", "stock opener or hype word",
      re.compile(r"in today'?s (fast-paced|digital)|\bunlock\b|\bsupercharge|\bseamless(ly)?\b|game[- ]chang|"
                 r"\brevolutioni[sz]|\bcutting[- ]edge\b|\bnext[- ]gen\b|\bworld[- ]class\b|\bleverage\b|\bempower", re.I)),
@@ -206,11 +215,13 @@ COPY_RULES = [
      re.compile(r"\b(it'?s|it is|this is|we'?re|we are)\s+not\s+(just\s+)?[^.!?]{1,60}[.!?]\s+(it'?s|it is|this is|we'?re|we are)\b", re.I)),
     ("should-fix", "stacked negation list", re.compile(r"\bno\s+\w+[^.!?]{0,30}[.!?]\s+no\s+\w+[^.!?]{0,30}[.!?]\s+no\s+\w+", re.I)),
     ("should-fix", "number or percentage without a source on the line",
-     re.compile(r"(?<![\w.])(\d+(\.\d+)?\s?%|\d+x\s+(faster|more|better)|\d{2,}[,\d]*\+)(?![^\n]*(\[\^|\]\(|source|\bper\b|measured))", re.I)),
+     re.compile(r"(?<![\w.])(\d+(\.\d+)?\s?%|\d+x\s+(faster|more|better)|\d{2,}[,\d]*\+)", re.I)),
     ("should-fix", "vague call to action", re.compile(r"^\W*(learn more|click here|read more)\W*$", re.I)),
     ("polish", "intensifier", re.compile(r"\b(very|truly|incredibly|extremely|really|super)\s+\w+", re.I)),
 ]
 SHORT_LINE = 90  # em dashes are flagged only in short-form copy (headlines, buttons, posts)
+SOURCE_MARKER = re.compile(r"\[\^|\]\(|\bsource\b|\bper\b|\bmeasured\b", re.I)
+NUMBER_RULE = "number or percentage without a source on the line"
 
 
 def copy_lint(text):
@@ -222,9 +233,10 @@ def copy_lint(text):
             continue
         if in_code or not line.strip():
             continue
+        line = line.replace("\u2019", "'").replace("\u2018", "'")  # curly apostrophes
         for severity, what, rx in COPY_RULES:
             m = rx.search(line)
-            if m:
+            if m and not (what == NUMBER_RULE and SOURCE_MARKER.search(line)):
                 findings.append({"line": n, "severity": severity, "rule": what, "text": m.group(0)})
         if "—" in line and len(line.strip()) <= SHORT_LINE:
             findings.append({"line": n, "severity": "should-fix", "rule": "em dash in short-form copy", "text": "—"})
