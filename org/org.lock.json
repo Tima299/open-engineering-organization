@@ -180,15 +180,15 @@
  "models": {
   "budgets": {
    "per_class_tokens": {
-    "A": 100000,
-    "B": 300000,
-    "C": 900000,
-    "D": 300000
+    "A": 60000,
+    "B": 150000,
+    "C": 400000,
+    "D": 150000
    },
    "per_invocation_tokens": {
-    "high": 120000,
-    "low": 25000,
-    "medium": 60000
+    "high": 60000,
+    "low": 15000,
+    "medium": 30000
    }
   },
   "default_profile": "default",

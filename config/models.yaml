@@ -29,9 +29,10 @@ overrides:
   # default:
   #   security-engineer: {preferred_model: advanced, effort: high}
 
-# FinOps budgets (oeo:finops guardrails). Per-invocation estimates are keyed by effort;
-# class budgets cover all subagents of one engagement. `oeo cost` flags overruns.
-# INITIAL, UNCALIBRATED values: recalibrate from .oeo/finops.jsonl data (see evals/README.md).
+# FinOps budgets (oeo:finops guardrails). Tokens = input + output + cache writes; cache reads are
+# excluded (cheap, and they dominate raw counts). Per-invocation estimates are keyed by effort.
+# Calibrated 2026-10-30 from real installed-plugin runs (evals/results/agentic: 6 subagent runs,
+# 8k-21k tokens each) with about 1.5-2x headroom. Recalibrate as more runs land.
 budgets:
-  per_invocation_tokens: {low: 25000, medium: 60000, high: 120000}
-  per_class_tokens: {A: 100000, B: 300000, C: 900000, D: 300000}
+  per_invocation_tokens: {low: 15000, medium: 30000, high: 60000}
+  per_class_tokens: {A: 60000, B: 150000, C: 400000, D: 150000}

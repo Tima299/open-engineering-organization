@@ -46,7 +46,7 @@ class RouteCommandTests(IsolatedTestCase):
         self.assertEqual((junior["mode"], junior["agent"]), ("orchestrator", None))
         self.assertEqual(entry["inputs"], {"type": "trivial", "touches": [], "signals": [], "files": 1, "lines": 2})
         self.assertGreater(entry["estimate_tokens"], 0)
-        self.assertEqual(entry["budget_tokens"], 100000)
+        self.assertEqual(entry["budget_tokens"], oeo.load_lock()["models"]["budgets"]["per_class_tokens"]["A"])
         datetime.fromisoformat(entry["ts"])
         self.run_cli(*argv)
         self.assertEqual(len(log.read_text(encoding="utf-8").splitlines()), 2)
