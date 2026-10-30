@@ -12,7 +12,7 @@ real-world evidence), **Planned** (not built). Updated with every release.
 | Installed plugin end to end (`/oeo:deliver`) | Experimental | [real runs](evals/results/agentic/SUMMARY.md) on 7 scenarios with baseline arms, 1-3 runs per arm, `economy` profile only; latest fixes not all re-run |
 | Independent verification and correction loop | Experimental | eval 19: QA rejected overclaims 3 times; eval 07: fail-before proof; gaps: orchestrator edited after QA without re-verification (06-oeo-1/2) |
 | `research` ledger + `oeo ledger-check` | Experimental | eval 19: the harness path check failed; the committed ledger passes `oeo ledger-check` on re-check (29 claims) |
-| `chief-of-staff` (`oeo status`), `launch` (`oeo copy-lint`), `release` | Experimental | one run per arm each (evals 20-22); `business-review` has no installed-plugin run yet |
+| `chief-of-staff` (`oeo status`), `launch` (`oeo copy-lint`), `release`, `business-review` (`oeo brief-check`) | Experimental | 1-3 OEO runs each with baselines (evals 03, 20-22); latest runs pass all checks |
 | FinOps (`oeo cost`, subagent + main-session hooks) | Works, best effort | real runs logged subagents and main session; parses Claude Code's internal transcript format |
 | Guard hook | Experimental | unit-tested patterns incl. review bypasses; defense in depth, not a sandbox |
 | Second host adapter (non-Claude-Code) | Planned | contracts are host-neutral; no adapter yet |

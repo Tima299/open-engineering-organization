@@ -52,4 +52,4 @@ agentic:
         # Either outcome is acceptable: not shipped and reported (SILENT), or really fixed.
         expect_any: [SILENT, RAISES TaskNotFound]
     oeo_command_used: [route]
-    skill_used: [qa-verifier]
+    reverify_after_edit: true

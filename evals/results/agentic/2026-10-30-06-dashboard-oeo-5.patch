@@ -1,0 +1,450 @@
+diff --git a/README.md b/README.md
+index 8bbaf88..8148dbf 100644
+--- a/README.md
++++ b/README.md
+@@ -28,6 +28,7 @@ print(store.list("ana"))
+ - `taskboard/store.py` - `TaskStore`: `add`, `list`, `complete`, `delete`.
+ - `taskboard/db.py` - schema creation and the forward-only `MIGRATIONS` list (version table).
+ - `taskboard/reporting.py` - open-task counts per owner.
++- `taskboard/dashboard.py` - `render_dashboard`: self-contained HTML dashboard of open tasks per owner.
+ - `tests/` - happy-path unit tests (they pass today, and they deliberately do not cover the defects below).
+ 
+ Reports recieve their rows straight from the store, so there is no caching layer to invalidate.
+diff --git a/taskboard/__pycache__/__init__.cpython-313.pyc b/taskboard/__pycache__/__init__.cpython-313.pyc
+new file mode 100644
+index 0000000..b4ee064
+Binary files /dev/null and b/taskboard/__pycache__/__init__.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/dashboard.cpython-313.pyc b/taskboard/__pycache__/dashboard.cpython-313.pyc
+new file mode 100644
+index 0000000..5851bd0
+Binary files /dev/null and b/taskboard/__pycache__/dashboard.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/db.cpython-313.pyc b/taskboard/__pycache__/db.cpython-313.pyc
+new file mode 100644
+index 0000000..a835f59
+Binary files /dev/null and b/taskboard/__pycache__/db.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/reporting.cpython-313.pyc b/taskboard/__pycache__/reporting.cpython-313.pyc
+new file mode 100644
+index 0000000..39d91c3
+Binary files /dev/null and b/taskboard/__pycache__/reporting.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/store.cpython-313.pyc b/taskboard/__pycache__/store.cpython-313.pyc
+new file mode 100644
+index 0000000..9ff25a9
+Binary files /dev/null and b/taskboard/__pycache__/store.cpython-313.pyc differ
+diff --git a/taskboard/dashboard.py b/taskboard/dashboard.py
+new file mode 100644
+index 0000000..0fa5efc
+--- /dev/null
++++ b/taskboard/dashboard.py
+@@ -0,0 +1,161 @@
++# SPDX-License-Identifier: Apache-2.0
++"""Dashboard: one self-contained HTML page of open tasks per owner."""
++import datetime
++from html import escape
++
++from .reporting import open_task_counts
++
++_CSS = """\
++:root {
++  color-scheme: light dark;
++  --bg: #f6f7f9;
++  --card: #ffffff;
++  --text: #1a1d23;
++  --muted: #4a5260;
++  --border: #8a93a3;
++  --overdue-bg: #fdecec;
++  --overdue-fg: #9b1c1c;
++  --focus: #1d4ed8;
++}
++@media (prefers-color-scheme: dark) {
++  :root {
++    --bg: #0f1217;
++    --card: #1a1f27;
++    --text: #e8ebf0;
++    --muted: #aab2c0;
++    --border: #6b7586;
++    --overdue-bg: #4a1a1a;
++    --overdue-fg: #ffb4b4;
++    --focus: #8ab4ff;
++  }
++}
++* { box-sizing: border-box; }
++body {
++  margin: 0;
++  padding: 1rem;
++  background: var(--bg);
++  color: var(--text);
++  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
++  line-height: 1.5;
++}
++h1 { margin: 0; font-size: 1.5rem; }
++h2 { margin: 0; font-size: 1.125rem; overflow-wrap: anywhere; }
++header { margin-bottom: 1rem; }
++header p { margin: 0.25rem 0 0; color: var(--muted); }
++ul { margin: 0; padding: 0; list-style: none; }
++.owners {
++  display: grid;
++  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
++  gap: 1rem;
++}
++.owners > li { min-width: 0; }
++section, .empty {
++  background: var(--card);
++  border: 1px solid var(--border);
++  border-radius: 0.5rem;
++  padding: 1rem;
++}
++.stats { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.25rem 0 0.75rem; color: var(--muted); }
++.badge {
++  display: inline-block;
++  padding: 0 0.5rem;
++  border: 1px solid var(--overdue-fg);
++  border-radius: 999px;
++  background: var(--overdue-bg);
++  color: var(--overdue-fg);
++  font-weight: 700;
++}
++.task {
++  display: flex;
++  flex-wrap: wrap;
++  gap: 0.25rem 0.75rem;
++  padding: 0.5rem 0 0.5rem 0.5rem;
++  border-top: 1px solid var(--border);
++  border-left: 4px solid transparent;
++}
++.task.overdue { border-left-color: var(--overdue-fg); }
++.title { flex: 1 1 100%; min-width: 0; overflow-wrap: anywhere; }
++.date, .none, .task time { color: var(--muted); }
++.none { font-style: italic; }
++@media (prefers-reduced-motion: reduce) { * { animation: none; transition: none; } }
++"""
++
++
++def _parse_due(due):
++    if not due:
++        return None
++    try:
++        return datetime.date.fromisoformat(due)
++    except (TypeError, ValueError):
++        return None
++
++
++def _sort_key(task):
++    parsed = _parse_due(task["due"])
++    if parsed is not None:
++        return (0, parsed, task["id"])
++    return (1, datetime.date.max, task["id"])
++
++
++def _task_row(task, today):
++    parsed = _parse_due(task["due"])
++    title = escape(task["title"])
++    if parsed is None and task["due"]:
++        when = f'<span class="none">{escape(str(task["due"]))}</span>'
++        return f'<li class="task"><span class="title">{title}</span>{when}</li>'
++    if parsed is None:
++        when = '<span class="none">No due date</span>'
++        return f'<li class="task"><span class="title">{title}</span>{when}</li>'
++    when = f'<time datetime="{parsed.isoformat()}">{parsed.isoformat()}</time>'
++    if parsed < today:
++        status = '<span class="badge">Overdue</span>'
++        css = "task overdue"
++    elif parsed == today:
++        status = '<span class="date">Due today</span>'
++        css = "task"
++    else:
++        status = '<span class="date">Upcoming</span>'
++        css = "task"
++    return f'<li class="{css}"><span class="title">{title}</span>{when}{status}</li>'
++
++
++def _card(index, owner, count, tasks, today):
++    overdue = sum(1 for t in tasks if (d := _parse_due(t["due"])) is not None and d < today)
++    if overdue:
++        overdue_html = f'<span class="badge">{overdue} overdue</span>'
++    else:
++        overdue_html = "<span>0 overdue</span>"
++    rows = "".join(_task_row(t, today) for t in sorted(tasks, key=_sort_key))
++    heading = f"owner-{index}"
++    return (
++        f'<li><section aria-labelledby="{heading}">'
++        f'<h2 id="{heading}">{escape(owner)}</h2>'
++        f'<p class="stats"><span>{count} open</span>{overdue_html}</p>'
++        f"<ul>{rows}</ul></section></li>"
++    )
++
++
++def render_dashboard(store, today=None):
++    """Return one self-contained HTML page of open tasks per owner; `today` defaults to date.today()."""
++    today = today or datetime.date.today()
++    counts = open_task_counts(store)
++    by_owner = {}
++    rows = store.conn.execute("SELECT id, owner, title, due FROM tasks WHERE done = 0")
++    for row in rows:
++        by_owner.setdefault(row["owner"], []).append(row)
++    if counts:
++        cards = "".join(
++            _card(i, owner, count, by_owner.get(owner, []), today)
++            for i, (owner, count) in enumerate(counts.items(), 1))
++        body = f'<ul class="owners">{cards}</ul>'
++    else:
++        body = '<p role="status" class="empty">No open tasks. Nothing is waiting on anyone.</p>'
++    iso = today.isoformat()
++    return (
++        '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
++        '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
++        f"<title>Taskboard</title>\n<style>\n{_CSS}</style>\n</head>\n<body>\n"
++        "<header><h1>Taskboard</h1>"
++        f'<p>Open tasks per owner, as of <time datetime="{iso}">{iso}</time></p></header>\n'
++        f"<main>{body}</main>\n</body>\n</html>\n"
++    )
+diff --git a/tests/__pycache__/test_dashboard.cpython-313.pyc b/tests/__pycache__/test_dashboard.cpython-313.pyc
+new file mode 100644
+index 0000000..2a40f8c
+Binary files /dev/null and b/tests/__pycache__/test_dashboard.cpython-313.pyc differ
+diff --git a/tests/__pycache__/test_reporting.cpython-313.pyc b/tests/__pycache__/test_reporting.cpython-313.pyc
+new file mode 100644
+index 0000000..8466d6b
+Binary files /dev/null and b/tests/__pycache__/test_reporting.cpython-313.pyc differ
+diff --git a/tests/__pycache__/test_store.cpython-313.pyc b/tests/__pycache__/test_store.cpython-313.pyc
+new file mode 100644
+index 0000000..d511ed1
+Binary files /dev/null and b/tests/__pycache__/test_store.cpython-313.pyc differ
+diff --git a/tests/test_dashboard.py b/tests/test_dashboard.py
+new file mode 100644
+index 0000000..fea35a1
+--- /dev/null
++++ b/tests/test_dashboard.py
+@@ -0,0 +1,233 @@
++# SPDX-License-Identifier: Apache-2.0
++import datetime
++import re
++import unittest
++
++from taskboard import TaskStore
++from taskboard.dashboard import render_dashboard
++
++TODAY = datetime.date(2026, 10, 30)
++
++
++def iso(delta):
++    return (TODAY + datetime.timedelta(days=delta)).isoformat()
++
++
++def luminance(color):
++    channels = [int(color[i:i + 2], 16) / 255 for i in (1, 3, 5)]
++    channels = [c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4 for c in channels]
++    return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
++
++
++def contrast(a, b):
++    hi, lo = sorted((luminance(a), luminance(b)), reverse=True)
++    return (hi + 0.05) / (lo + 0.05)
++
++
++def tokens(block):
++    return dict(re.findall(r"--([a-z-]+):\s*(#[0-9a-fA-F]{6})", block))
++
++
++def page(store):
++    return render_dashboard(store, today=TODAY)
++
++
++def card(html, owner):
++    start = html.index(f">{owner}</h2>")
++    end = html.find("</section>", start)
++    return html[start:end]
++
++
++class DashboardTests(unittest.TestCase):
++    def test_overdue_boundary(self):
++        store = TaskStore()
++        store.add("ana", "yest", iso(-1))
++        store.add("ben", "today", iso(0))
++        store.add("cy", "tomorrow", iso(1))
++        html = page(store)
++        self.assertIn("Overdue", card(html, "ana"))
++        self.assertNotIn("Overdue", card(html, "ben"))
++        self.assertIn("Due today", card(html, "ben"))
++        self.assertNotIn("Overdue", card(html, "cy"))
++        self.assertIn("Upcoming", card(html, "cy"))
++
++    def test_done_tasks_excluded(self):
++        store = TaskStore()
++        done = store.add("ana", "finished-task", iso(-5))
++        store.add("ana", "pending-task", iso(2))
++        store.complete("ana", done)
++        html = page(store)
++        self.assertNotIn("finished-task", html)
++        self.assertIn("pending-task", html)
++        self.assertIn("1 open", html)
++        self.assertIn("0 overdue", html)
++
++    def test_owner_with_only_done_tasks_omitted(self):
++        store = TaskStore()
++        done = store.add("ana", "x")
++        store.complete("ana", done)
++        store.add("ben", "y")
++        html = page(store)
++        self.assertEqual(html.count("<h2"), 1)
++        self.assertNotIn(">ana<", html)
++
++    def test_counts(self):
++        store = TaskStore()
++        store.add("ana", "a", iso(-3))
++        store.add("ana", "b", iso(-1))
++        store.add("ana", "c", iso(4))
++        store.add("ana", "d")
++        html = page(store)
++        self.assertIn("4 open", html)
++        self.assertIn("2 overdue", html)
++        self.assertEqual(html.count("Overdue"), 2)
++
++    def test_owner_order_follows_open_task_counts(self):
++        store = TaskStore()
++        store.add("zed", "z")
++        store.add("amy", "a")
++        html = page(store)
++        self.assertLess(html.index(">zed</h2>"), html.index(">amy</h2>"))
++
++    def test_sort_soonest_first_undated_last(self):
++        store = TaskStore()
++        store.add("ana", "t-none")
++        store.add("ana", "t-late", iso(9))
++        store.add("ana", "t-early", iso(-2))
++        store.add("ana", "t-mid", iso(3))
++        body = card(page(store), "ana")
++        order = [body.index(t) for t in ("t-early", "t-mid", "t-late", "t-none")]
++        self.assertEqual(order, sorted(order))
++
++    def test_equal_due_ties_broken_by_id(self):
++        store = TaskStore()
++        store.add("ana", "first", iso(2))
++        store.add("ana", "second", iso(2))
++        body = card(page(store), "ana")
++        self.assertLess(body.index("first"), body.index("second"))
++
++    def test_undated_has_label_and_no_time_element(self):
++        store = TaskStore()
++        store.add("ana", "nodate")
++        html = page(store)
++        body = card(html, "ana")
++        self.assertIn("No due date", body)
++        self.assertNotIn("<time", body)
++
++    def test_dated_uses_time_datetime(self):
++        store = TaskStore()
++        store.add("ana", "t", iso(2))
++        self.assertIn(f'<time datetime="{iso(2)}">', card(page(store), "ana"))
++
++    def test_header_time_shows_today(self):
++        self.assertIn(f'<time datetime="{TODAY.isoformat()}">', page(TaskStore()))
++
++    def test_default_today_is_current_date(self):
++        store = TaskStore()
++        store.add("ana", "t", datetime.date.today().isoformat())
++        html = render_dashboard(store)
++        self.assertIn("Due today", html)
++
++    def test_escaping(self):
++        store = TaskStore()
++        store.add('a&"\'<b>', "<script>alert(1)</script>", iso(1))
++        html = page(store)
++        self.assertNotIn("<script", html)
++        self.assertNotIn("alert(1)</script>", html)
++        self.assertIn("&lt;script&gt;alert(1)&lt;/script&gt;", html)
++        self.assertIn("a&amp;&quot;&#x27;&lt;b&gt;", html)
++        self.assertNotIn("<b>", html)
++
++    def test_owner_name_escaped_in_attributes(self):
++        store = TaskStore()
++        store.add('x" onfocus="evil()', "t")
++        html = page(store)
++        self.assertNotIn('onfocus="evil()', html)
++
++    def test_empty_store(self):
++        html = page(TaskStore())
++        self.assertIn('<p role="status"', html)
++        self.assertIn("No open tasks", html)
++        self.assertEqual(html.count("<h1"), 1)
++        self.assertEqual(html.count("<h2"), 0)
++        self.assertNotIn('class="owners"', html)
++        self.assertTrue(html.startswith("<!DOCTYPE html>"))
++        self.assertTrue(html.rstrip().endswith("</html>"))
++
++    def test_malformed_due_is_safe(self):
++        store = TaskStore()
++        store.add("ana", "bad", "<b>soon</b>")
++        store.add("ana", "ok", iso(1))
++        html = page(store)
++        body = card(html, "ana")
++        self.assertIn("&lt;b&gt;soon&lt;/b&gt;", body)
++        self.assertNotIn("<b>", body)
++        self.assertNotIn("Overdue", body)
++        self.assertIn("0 overdue", body)
++        self.assertLess(body.index("ok"), body.index("bad"))
++        self.assertEqual(body.count("<time"), 1)
++
++    def test_self_contained(self):
++        store = TaskStore()
++        store.add("ana", "t", iso(-1))
++        html = page(store)
++        for needle in ("http", "src=", "@import", "<script", "url("):
++            self.assertNotIn(needle, html)
++
++    def test_structure(self):
++        store = TaskStore()
++        store.add("ana", "a")
++        store.add("ben", "b")
++        html = page(store)
++        self.assertIn('<meta name="viewport" content="width=device-width, initial-scale=1">', html)
++        self.assertIn('<html lang="en">', html)
++        self.assertEqual(html.count("<h1"), 1)
++        self.assertEqual(html.count("<h2"), 2)
++        self.assertIn("<header>", html)
++        self.assertIn("<main>", html)
++        self.assertIn("auto-fit", html)
++        self.assertIn("overflow-wrap: anywhere", html)
++
++    def test_aria_labelledby_ids_unique_and_match(self):
++        store = TaskStore()
++        store.add("ana", "a")
++        store.add("ben", "b")
++        html = page(store)
++        ids = re.findall(r'<h2 id="([^"]+)"', html)
++        self.assertEqual(len(set(ids)), 2)
++        for i in ids:
++            self.assertIn(f'aria-labelledby="{i}"', html)
++
++    def test_tokens_and_dark_scheme(self):
++        html = page(TaskStore())
++        names = ["bg", "card", "text", "muted", "border", "overdue-bg", "overdue-fg", "focus"]
++        light, dark = self.token_blocks(html)
++        for name in names:
++            self.assertIn(name, light)
++            self.assertIn(name, dark)
++        self.assertIn("prefers-color-scheme: dark", html)
++
++    def test_no_hex_colors_outside_token_blocks(self):
++        html = page(TaskStore())
++        stripped = re.sub(r":root\s*\{[^}]*\}", "", html)
++        self.assertEqual(re.findall(r"#[0-9a-fA-F]{3,8}\b", stripped), [])
++
++    def test_contrast_at_least_4_5(self):
++        for scheme in self.token_blocks(page(TaskStore())):
++            for fg, bg in [("text", "card"), ("text", "bg"), ("muted", "card"),
++                           ("muted", "bg"), ("overdue-fg", "overdue-bg")]:
++                with self.subTest(fg=fg, bg=bg):
++                    self.assertGreaterEqual(contrast(scheme[fg], scheme[bg]), 4.5)
++            for fg in ("border", "focus"):
++                with self.subTest(fg=fg):
++                    self.assertGreaterEqual(contrast(scheme[fg], scheme["card"]), 3.0)
++
++    @staticmethod
++    def token_blocks(html):
++        blocks = re.findall(r":root\s*\{([^}]*)\}", html)
++        assert len(blocks) == 2, blocks
++        return tokens(blocks[0]), tokens(blocks[1])
++
++
++if __name__ == "__main__":
++    unittest.main()

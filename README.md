@@ -10,21 +10,23 @@ implementer never verifies its own work, and every claim of success needs eviden
 > [results and costs](evals/results/agentic/SUMMARY.md) and [what each run changed](evals/results/agentic/NOTES.md).
 > That is one or two runs per arm, so it is evidence, not a benchmark. See [ROADMAP.md](ROADMAP.md).
 
-**What the runs show** (one to three runs per arm; main session `sonnet`, subagents `economy`).
-OEO costs more than plain Claude and takes longer:
-- 2.5x the cost for a typo ($0.13 vs $0.05);
-- 2-8.5x for significant work ($0.20-0.82 vs $0.09-0.11);
-- up to 10x the wall time on the dashboard (613 s vs about 30 s).
+**What the runs show.** These are 9 scenarios on the latest version, each with a plain-Claude
+baseline. Each OEO arm ran 1-5 times; the main session ran on `sonnet` and subagents on the
+`economy` profile. Data: [results](evals/results/agentic/SUMMARY.md) · [notes](evals/results/agentic/NOTES.md).
 
-On the automated outcome checks (files touched, tests, behavior probes), plain Claude matched
-OEO on the typo, the auth fix and the dashboard, and did better on launch copy. What OEO adds is
-process with evidence:
+- **Automated checks:** the latest OEO run passes all of its checks in every scenario.
+- **Cost:** OEO costs 1.1-2.3x plain Claude for typo, verify-only, status and release work, and
+  3-7.4x for discovery, auth fix, research, launch and dashboard ($0.29-0.74 vs $0.07-0.11).
+- **Wall time:** up to about 10x longer.
+- **Shared outcome checks:** these are files, tests and behavior probes. Plain Claude matches OEO
+  on the typo, the auth fix, the dashboard, launch copy and the status brief.
+
+OEO's measurable edge is where process matters:
 - **Release:** OEO refused to publish a changelog claim the code contradicted; plain Claude
   published it.
-- **Auth fix:** an independent security review, a test proven to fail without the fix, and two
-  findings the baseline missed.
-- **Research:** a ledger tagging every claim observed, inferred or unknown, whose overclaims QA
-  rejected until fixed.
+- **Vague request:** OEO produced a brief that passes `brief-check`; plain Claude produced none.
+- **Auth fix:** an independent security review, plus a test proven to fail without the fix.
+- **Research:** a ledger tagging every claim observed, inferred or unknown, checked by QA.
 
 Use OEO when being wrong costs more than the extra time and tokens.
 

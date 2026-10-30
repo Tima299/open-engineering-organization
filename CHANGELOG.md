@@ -15,8 +15,18 @@ While the version is 0.x, minor releases may contain breaking changes (called ou
 - `evals/agentic.py`: real Claude Code runs, OEO vs. baseline, with automatic scoring.
 - Design-review scoring anchors (0/2/5/8/10).
 
+- `oeo verification-check`, `brief-check`, `release-check`, `cost --check`; copy-lint rules for
+  fabricated social proof and unfilled template slots; guard asks before pushes to the default
+  branch, version tags, tag creation and `gh pr merge`.
+- `unclear-scope` signal (vague requests run the business analyst and require `brief-check`).
+- Eval harness: stream-json tool traces, trace-based checks, `--rescore`, negative control (18),
+  scenarios 21 (chief of staff) and 22 (release with a planted false changelog claim).
+
 ### Changed
-- `deliver` shortened from 95 to 57 lines; details moved to its workflow reference.
+- `deliver`: triage first (also for verify-only work), narrower signals, one skip rule,
+  re-verification after post-QA edits, Class A fixes inline; details moved to its reference.
+- Budgets recalibrated from real runs; the economy profile runs market-researcher one tier up.
+- Design spec file is `.oeo/<engagement>/design.md`; research files live in the engagement folder.
 
 ### Fixed
 - Found by an independent code review:

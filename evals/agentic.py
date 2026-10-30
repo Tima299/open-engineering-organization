@@ -84,8 +84,10 @@ def parse_trace(stream_out):
     return result, trace
 
 
-def score(auto, work, arm, final="", trace=None):
+def score(auto, work, arm, final="", trace=None, order_known=True):
+    """trace=None means "no trace recorded" (old runs): trace-based checks are skipped, not failed."""
     results = []
+    has_trace = trace is not None
     trace = trace or []
 
     def add(name, ok, detail=""):
@@ -133,14 +135,14 @@ def score(auto, work, arm, final="", trace=None):
     if auto.get("no_git_tags"):
         tags = sh(["git", "tag"], work)[1].split()
         add("no_git_tags", not tags, tags)
-    for name in auto.get("skill_used", []) if arm == "oeo" else []:
+    for name in auto.get("skill_used", []) if arm == "oeo" and has_trace else []:
         used = {x["skill"] for x in trace if x["skill"]} | {x["agent"] for x in trace if x["agent"]}
         add(f"skill_used {name}", any(name in (u or "") for u in used), sorted(u for u in used if u))
-    for sub_cmd in auto.get("oeo_command_used", []) if arm == "oeo" else []:
+    for sub_cmd in auto.get("oeo_command_used", []) if arm == "oeo" and has_trace else []:
         cmds = [x["cmd"] for x in trace if x["cmd"] and "oeo.py" in x["cmd"]]
         add(f"oeo_command_used {sub_cmd}", any(f"oeo.py\" {sub_cmd}" in c or f"oeo.py {sub_cmd}" in c for c in cmds),
             [c[-60:] for c in cmds][:6])
-    if auto.get("reverify_after_edit") and arm == "oeo":
+    if auto.get("reverify_after_edit") and arm == "oeo" and has_trace and order_known:
         idx = lambda pred: max([i for i, x in enumerate(trace) if pred(x)], default=-1)  # noqa: E731
         last_edit = idx(lambda x: x["main"] and x["tool"] in ("Edit", "Write", "MultiEdit")
                         and not str(x["file"] or "").count("/.oeo/"))
@@ -197,7 +199,7 @@ def run(scenario_id, arm, model, profile, timeout, budget):
         "usage": result.get("usage"), "subagents": [{k: s.get(k) for k in ("agent_type", "models", "input_tokens",
                                                      "output_tokens", "cache_write_tokens")} for s in subagents],
         "activation": checks.read_jsonl(work / ".oeo" / "activation-log.jsonl")[-1:] if arm == "oeo" else None,
-        "files_changed": changed_files(work), "checks": checks_, "workdir": str(work),
+        "files_changed": changed_files(work), "checks": checks_, "workdir": str(work), "trace": trace[:400],
         "trace_summary": {"tools": {k: sum(1 for x in trace if x["tool"] == k) for k in sorted({x["tool"] for x in trace})},
                           "skills": sorted({x["skill"] for x in trace if x["skill"]}),
                           "agents": [x["agent"] for x in trace if x["agent"]],
@@ -222,12 +224,22 @@ def rescore(json_path, workdir=None):
     yaml = oeo._yaml()
     path = Path(json_path)
     record = json.loads(path.read_text(encoding="utf-8"))
-    work = Path(workdir or record.get("workdir") or "")
-    if not work.is_dir():
+    if not (workdir or record.get("workdir")):
+        sys.exit(f"{path.name}: no workdir recorded; pass --workdir")
+    work = Path(workdir or record["workdir"])
+    if not work.is_dir() or work.resolve() == ROOT:
         sys.exit(f"workdir {work} is gone; re-run the scenario instead")
     scen = yaml.safe_load(next((ROOT / "evals" / "scenarios").glob(f"{record['scenario']}*.yaml")).read_text())
     old = record["checks_passed"]
-    record["checks"] = score(scen["agentic"].get("auto") or {}, work, record["arm"], record.get("final_message") or "")
+    trace, order_known = record.get("trace"), True
+    if trace is None and record.get("trace_summary"):  # older records: rebuild what the summary keeps
+        ts, order_known = record["trace_summary"], False
+        blank = {"main": True, "agent": None, "skill": None, "cmd": None, "file": None}
+        trace = ([{**blank, "tool": "Agent", "agent": a} for a in ts.get("agents", [])]
+                 + [{**blank, "tool": "Skill", "skill": s} for s in ts.get("skills", [])]
+                 + [{**blank, "tool": "Bash", "cmd": "oeo.py" + c} for c in ts.get("oeo_commands", [])])
+    record["checks"] = score(scen["agentic"].get("auto") or {}, work, record["arm"], record.get("final_message") or "",
+                             trace, order_known)
     record["checks_passed"] = f"{sum(c['pass'] for c in record['checks'])}/{len(record['checks'])}"
     record["rescored"] = {"date": dt.date.today().isoformat(), "previous": old,
                           "reason": "scenario checks corrected after the run (see NOTES.md)"}

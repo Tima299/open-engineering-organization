@@ -1,0 +1,237 @@
+{
+ "scenario": "20-marketing-launch",
+ "arm": "oeo",
+ "model": "sonnet",
+ "profile": "economy",
+ "date": "2026-10-30",
+ "claude_code": "2.1.314 (Claude Code)",
+ "oeo_commit": "28c8202",
+ "exit_code": 0,
+ "is_error": false,
+ "cost_usd": 0.3517803449999999,
+ "duration_s": 30.1,
+ "num_turns": 4,
+ "wall_s": 455,
+ "usage": {
+  "input_tokens": 8,
+  "cache_creation_input_tokens": 8160,
+  "cache_read_input_tokens": 242963,
+  "output_tokens": 2859,
+  "output_tokens_details": {
+   "thinking_tokens": 578
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 8160,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 1113,
+    "cache_read_input_tokens": 64385,
+    "cache_creation_input_tokens": 1633,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 1633
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "subagents": [
+  {
+   "agent_type": "oeo:researcher",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 30,
+   "output_tokens": 15603,
+   "cache_write_tokens": 37623
+  },
+  {
+   "agent_type": "oeo:qa-verifier",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 12,
+   "output_tokens": 18369,
+   "cache_write_tokens": 25847
+  },
+  {
+   "agent_type": "oeo:qa-verifier",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 14,
+   "output_tokens": 8059,
+   "cache_write_tokens": 16279
+  }
+ ],
+ "activation": [
+  {
+   "ts": "2026-10-30T12:49:45+00:00",
+   "session": "cb3393d3-8847-482e-a522-0d038845e649",
+   "engagement": "20261030-launch-announcement-and-landing-page-cop",
+   "summary": "Launch announcement and landing-page copy for taskboard 1.0",
+   "class": "D",
+   "rule": "organizational-work",
+   "inputs": {
+    "type": "marketing",
+    "touches": [
+     "docs"
+    ],
+    "signals": [
+     "public-release",
+     "user-facing"
+    ],
+    "files": null,
+    "lines": null
+   },
+   "roles": [
+    {
+     "id": "business-owner",
+     "mode": "human",
+     "reason": "class D core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "oss-maintainer",
+     "mode": "orchestrator",
+     "reason": "class D core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "project-manager",
+     "mode": "orchestrator",
+     "reason": "class D core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "qa-verifier",
+     "mode": "subagent",
+     "reason": "class D core",
+     "agent": "oeo:qa-verifier",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "developer-advocate",
+     "mode": "checklist",
+     "reason": "trigger: public-release",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "product-marketer",
+     "mode": "subagent",
+     "reason": "trigger: marketing",
+     "agent": "oeo:researcher",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 100000
+    }
+   ],
+   "gates": [
+    "diff-reviewed",
+    "checks-pass"
+   ],
+   "estimate_tokens": 130000,
+   "budget_tokens": 150000
+  }
+ ],
+ "files_changed": [],
+ "checks": [
+  {
+   "check": "exists .oeo/product-marketing.md",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains 'Trusted by'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains 'trusted by'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains 'lorem ipsum'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "copy_lint (no must-fix in the copy files)",
+   "pass": true,
+   "detail": "['announcement.md', 'landing-page.md', 'launch-plan.md']"
+  },
+  {
+   "check": "no_git_tags",
+   "pass": true,
+   "detail": "[]"
+  },
+  {
+   "check": "skill_used researcher",
+   "pass": true,
+   "detail": "['oeo:qa-verifier', 'oeo:researcher']"
+  },
+  {
+   "check": "oeo_class",
+   "pass": true,
+   "detail": "D"
+  }
+ ],
+ "workdir": "/tmp/oeo-eval-20-marketing-launch-oeo-ebaszzvv/repo",
+ "trace_summary": {
+  "tools": {
+   "Agent": 3,
+   "Bash": 34,
+   "Edit": 2,
+   "Glob": 1,
+   "Read": 16,
+   "TaskStop": 1,
+   "Write": 4
+  },
+  "skills": [],
+  "agents": [
+   "oeo:researcher",
+   "oeo:qa-verifier",
+   "oeo:qa-verifier"
+  ],
+  "oeo_commands": [
+   "\" route --type marketing --touches docs --signals user-facing,public-release --s",
+   " cost --check 2>&1 | tail -3",
+   " cost --check | head -2; git status --short; cat .oeo/20261030-*/announcement.md",
+   " 2>&1; cd /tmp/oeo-eval-20-marketing-launch-oeo-ebaszzvv/repo && ls -la tests ta",
+   " verification-check .oeo/20261030-launch-announcement-and-landing-page-cop/veri"
+  ]
+ },
+ "checks_passed": "8/8",
+ "final_message": "**The launch copy is drafted and passes the copy and fact checks, but I'm not clearing it to publish as \"1.0\". The repo has two open defects that make a 1.0 claim hard to defend, and that needs your decision. Nothing has been published.**\n\n## Class, roles and why\nIt ran as Class D (organizational), because the request is marketing work. The product-marketer (haiku) wrote the copy. The QA verifier (haiku) checked it independently and found one factual problem in round 1. I fixed that and four smaller issues, and QA confirmed the fixes in round 2. The developer-advocate role was a checklist only, so contributor and community messaging is still undone.\n\n## Files\nAll in `.oeo/` and untracked. No repo source changed.\n- `.oeo/20261030-launch-announcement-and-landing-page-cop/announcement.md`\n- `.oeo/20261030-launch-announcement-and-landing-page-cop/landing-page.md`\n- `.oeo/20261030-launch-announcement-and-landing-page-cop/launch-plan.md`\n- `.oeo/20261030-launch-announcement-and-landing-page-cop/verification.md`\n- `.oeo/product-marketing.md`\n\n## Gates\n| gate | result | evidence |\n|---|---|---|\n| diff-reviewed | PASS | No tracked file changed |\n| checks-pass | PASS | 10 unit tests pass; `copy-lint` reports no findings on all copy files |\n| claims-verified (extra) | PASS after fixes | QA ran every claim in the copy against the code |\n| 1.0 label approved | open, needs your decision | The launch plan's readiness gate reads NOT MET |\n\n## What QA checked\n- The copy uses only facts from the repo, with no invented numbers, customers, URLs, dates or placeholders.\n- The quickstart runs from the repo root.\n- Round 1 found that `open_task_counts` can't be imported from `taskboard`. The copy now gives `from taskboard.reporting import open_task_counts`.\n- Both limitations are stated plainly. `complete()` raises `TypeError` for an id that doesn't exist for that owner. `delete()` lets one owner delete another's task.\n- Other fixes: the landing page's \"Read what 1.0 is not\" button now points to a real section, and the copy says there is no separate LICENSE file yet.\n\n## Risks\n- **Known defects:** the copy doesn't claim security, isolation or production readiness. It tells users not to use 1.0 where owners must be kept apart.\n- **Missing release facts:** the repo has no version string, no changelog, no LICENSE file and no release date. Apache-2.0 rests on the SPDX headers in the source files.\n- **README:** it still has the wrong `cd examples/taskboard` path and the \"recieve\" typo. The copy doesn't link to it.\n- **Cost:** 121,836 subagent tokens against a 130,000 plan and a 150,000 class budget. The QA verifier ran over its own estimate.\n\n## Next step\nYou (Business Owner) decide: fix `complete()` and `delete()` before announcing 1.0, or relabel this as a pre-1.0 release. I need that answer before anything can go out.\n\nI also need the repo URL, release date, install method (checkout or package), and where the landing page will be hosted. The copy leaves these out for now.",
+ "rescored": {
+  "date": "2026-10-30",
+  "previous": "7/7",
+  "reason": "scenario checks corrected after the run (see NOTES.md)"
+ }
+}

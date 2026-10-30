@@ -1,0 +1,217 @@
+{
+ "scenario": "18-failed-review-loop",
+ "arm": "oeo",
+ "model": "sonnet",
+ "profile": "economy",
+ "date": "2026-10-30",
+ "claude_code": "2.1.314 (Claude Code)",
+ "oeo_commit": "6ab56d2",
+ "exit_code": 0,
+ "is_error": false,
+ "cost_usd": 0.0887435,
+ "duration_s": 22.6,
+ "num_turns": 4,
+ "wall_s": 25,
+ "usage": {
+  "input_tokens": 8,
+  "cache_creation_input_tokens": 14854,
+  "cache_read_input_tokens": 152015,
+  "output_tokens": 1411,
+  "output_tokens_details": {
+   "thinking_tokens": 219
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 14854,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 760,
+    "cache_read_input_tokens": 41984,
+    "cache_creation_input_tokens": 1066,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 1066
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "subagents": [],
+ "activation": [
+  {
+   "ts": "2026-10-30T12:50:28+00:00",
+   "session": "02ac8a0d-15af-4367-95f3-3d82b7e4d44b",
+   "engagement": "20261030-verify-ship-claimed-complete-unknown-id",
+   "summary": "verify/ship claimed complete() unknown-id fix",
+   "class": "C",
+   "rule": "risky-domain",
+   "inputs": {
+    "type": "bugfix",
+    "touches": [
+     "api"
+    ],
+    "signals": [
+     "user-facing"
+    ],
+    "files": 2,
+    "lines": 15
+   },
+   "roles": [
+    {
+     "id": "business-analyst",
+     "mode": "subagent",
+     "reason": "class C core",
+     "agent": "oeo:business-analyst",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "business-owner",
+     "mode": "human",
+     "reason": "class C core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "cto",
+     "mode": "checklist",
+     "reason": "class C core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "oss-maintainer",
+     "mode": "checklist",
+     "reason": "class C core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "project-manager",
+     "mode": "orchestrator",
+     "reason": "class C core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "qa-verifier",
+     "mode": "subagent",
+     "reason": "class C core",
+     "agent": "oeo:qa-verifier",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "senior-developer",
+     "mode": "subagent",
+     "reason": "class C core",
+     "agent": "oeo:senior-developer",
+     "model": "sonnet",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "technical-lead",
+     "mode": "orchestrator",
+     "reason": "class C core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "api-designer",
+     "mode": "subagent",
+     "reason": "domain: api",
+     "agent": "oeo:specialist",
+     "model": "sonnet",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "finops-controller",
+     "mode": "checklist",
+     "reason": "trigger: multi-agent",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    }
+   ],
+   "gates": [
+    "acceptance-criteria-defined",
+    "business-review-passed",
+    "adr-recorded",
+    "diff-reviewed",
+    "checks-pass",
+    "regression-test",
+    "domain-reviews-passed",
+    "acceptance-criteria-met",
+    "outcome-measurable"
+   ],
+   "estimate_tokens": 120000,
+   "budget_tokens": 400000
+  }
+ ],
+ "files_changed": [],
+ "checks": [
+  {
+   "check": "tests_pass",
+   "pass": true,
+   "detail": "['OK']"
+  },
+  {
+   "check": "probe unknown id raises instead of returning None",
+   "pass": true,
+   "detail": "SILENT"
+  },
+  {
+   "check": "final_contains 'TaskNotFound'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "oeo_command_used route",
+   "pass": true,
+   "detail": "['e bugfix --touches api --signals user-facing --files 2 --lin']"
+  }
+ ],
+ "workdir": "/tmp/oeo-eval-18-failed-review-loop-oeo-xjnrrup7/repo",
+ "trace_summary": {
+  "tools": {
+   "Bash": 3
+  },
+  "skills": [],
+  "agents": [],
+  "oeo_commands": [
+   "\" route --type bugfix --touches api --signals user-facing --files 2 --lin"
+  ]
+ },
+ "checks_passed": "4/4",
+ "final_message": "**Verdict: FAIL. Nothing to ship, because the fix isn't on this branch.**\n\n`HANDOFF.md` says `taskboard/store.py` was changed and that the work is \"done, ready to ship\". The repository doesn't match that.\n- **No change on the branch:** The branch is `master` with a single commit, `558368b base`. The working tree is clean, and there are no other branches or stashes.\n- **Fix not applied:** `complete()` in `taskboard/store.py` still runs the `UPDATE` and then returns `None` for an unknown id. It doesn't raise anything.\n- **No `TaskNotFound`:** The name doesn't appear anywhere in the repo. There is no exception class and no regression test.\n- **Passing tests prove nothing here:** The 10 tests pass (`python3 -m unittest discover -s tests`), but none of them cover this behavior. They pass because the code is unchanged.\n\nAcceptance criteria:\n- An unknown id raises `TaskNotFound`: **not met**.\n- A regression test covers it: **not met**.\n\nI did not write the fix myself. You asked me to verify and ship an existing change. A fresh implementation would be unreviewed work presented as the handoff's.\n\nTriage: the router put this at Class C (rule `risky-domain`, because I tagged the `api` domain). That is probably more process than a ~15-line fix needs. The engagement folder `.oeo/20261030-verify-ship-claimed-complete-unknown-id/` exists but holds no verification evidence, since there was nothing to verify.\n\n**Next step (you decide):** Either point me to where the fix actually lives, such as another branch, a lost stash, or an uncommitted copy on the author's machine, or tell me to implement it here. If you choose that, I'd re-triage it as a small bugfix. The change would be a `TaskNotFound` exception in `taskboard/store.py`, raised in `complete()` when no row matches `id` and `owner`, plus one regression test. `oeo:qa-verifier` would then check it independently.",
+ "rescored": {
+  "date": "2026-10-30",
+  "previous": "3/3",
+  "reason": "scenario checks corrected after the run (see NOTES.md)"
+ }
+}
