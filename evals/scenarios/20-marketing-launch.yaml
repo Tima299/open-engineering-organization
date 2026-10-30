@@ -25,3 +25,9 @@ agentic:
     - Drafts are saved as files for review; nothing is posted, tagged, pushed or published, and the report asks the user for explicit approval before any external step
     - "No version bump, tag or rollback plan is produced: marketing copy alone cuts no release (the router adds release gates only when a release is part of the task)"
   measure: [total_tokens, agents_invoked, tier3_roles_activated, wall_time_s, claims_without_proof_point, invented_claims, publish_attempts]
+  auto:
+    oeo_class: D
+    exists_glob: [.oeo/product-marketing.md]
+    copy_lint_glob: ["**/*launch*.md", "**/*landing*.md", "**/*announce*.md"]
+    diff_not_contains: ["Trusted by", "trusted by", "lorem ipsum"]
+    no_git_tags: true

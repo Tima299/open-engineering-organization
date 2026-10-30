@@ -1,0 +1,55 @@
+id: 21-chief-of-staff-brief
+title: Cross-engagement brief from .oeo state (chief of staff)
+spec_ref: v0.3 capability (oeo:chief-of-staff + oeo status)
+request: Where are we, and what needs me?
+expect: {}
+agentic:
+  fixture: examples/taskboard
+  prompt: /oeo:chief-of-staff brief - where are we and what needs me?
+  baseline_prompt: Where are we on this project and what needs me? The .oeo folder has our plans, verification results and decisions.
+  setup:
+    files:
+      - path: .oeo/activation-log.jsonl
+        content: |
+          {"ts": "2026-10-20T09:00:00+00:00", "session": "s1", "engagement": "20261020-fix-delete-authz", "summary": "Fix delete authorization", "class": "C", "rule": "risky-domain", "budget_tokens": 400000, "estimate_tokens": 120000, "roles": []}
+          {"ts": "2026-10-25T09:00:00+00:00", "session": "s2", "engagement": "20261025-dashboard", "summary": "Owner dashboard", "class": "C", "rule": "risk-signal", "budget_tokens": 400000, "estimate_tokens": 150000, "roles": []}
+      - path: .oeo/20261020-fix-delete-authz/plan.md
+        content: |
+          | id | goal | owner | files | depends | status |
+          |---|---|---|---|---|---|
+          | T1 | AC1 | senior-developer | taskboard/store.py | - | done |
+          | T2 | AC2 | security-engineer | - | T1 | done |
+      - path: .oeo/20261020-fix-delete-authz/verification.md
+        content: |
+          | gate | method | result | evidence |
+          |---|---|---|---|
+          | checks-pass | unittest | PASS | 12 OK |
+          | domain-reviews-passed | security review | PASS | no cross-owner path |
+      - path: .oeo/20261025-dashboard/plan.md
+        content: |
+          | id | goal | owner | files | depends | status |
+          |---|---|---|---|---|---|
+          | T1 | AC1 | design-lead | .oeo/20261025-dashboard/screen-spec.md | - | done |
+          | T2 | AC2 | senior-frontend-engineer | taskboard/dashboard.py | T1 | in_review |
+          | T3 | AC3 | qa-verifier | - | T2 | blocked (waiting for staging data) |
+      - path: .oeo/20261025-dashboard/verification.md
+        content: |
+          | gate | method | result | evidence |
+          |---|---|---|---|
+          | checks-pass | unittest | PASS | 21 OK |
+          | regression-test | worktree | FAIL | escaping test passes on base |
+      - path: .oeo/decisions.md
+        content: |
+          | date | decision | options | rationale | by | review_by |
+          |---|---|---|---|---|---|
+          | 2026-09-01 | Keep SQLite until 1k users | sqlite / postgres | simplest | user | 2026-10-15 |
+          | 2026-10-20 | Deny returns False | exception / False | no id oracle | tech-lead | 2027-06-01 |
+  success_criteria:
+    - The brief is built from `oeo status` facts, not invented
+    - Needs you lists the in_review dashboard task and the overdue SQLite review decision (not the 2027 one)
+    - Blocked lists T3 with its blocker; the failing regression-test gate is the single next action
+    - No files are changed
+  measure: [total_tokens, wall_time_s]
+  auto:
+    max_files_changed: 0
+    final_contains: [regression-test, SQLite, waiting for staging data, in_review]

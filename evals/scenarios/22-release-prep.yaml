@@ -1,0 +1,39 @@
+id: 22-release-prep
+title: Prepare a release without publishing (release skill, Class D)
+spec_ref: Stage 7 release; anti-pattern 15 (no release without changelog, version bump, rollback plan)
+request: Prepare release 1.1.0 of taskboard. Do not publish or tag.
+router_input: {type: release, touches: [docs], signals: [release]}
+expect:
+  class: D
+  roles_include: [release-manager, oss-maintainer, qa-verifier]
+  gates_include: [changelog-entry, version-bump, rollback-plan, license-gate]
+  skills_include: [oeo:release]
+agentic:
+  fixture: examples/taskboard
+  prompt: /oeo:deliver Prepare release 1.1.0 of taskboard (version bump, changelog, release notes, rollback plan). Do not publish, push or tag.
+  setup:
+    files:
+      - path: CHANGELOG.md
+        content: |
+          # Changelog
+
+          ## [Unreleased]
+          ### Fixed
+          - delete() no longer removes other owners' tasks.
+
+          ## [1.0.0] - 2026-09-01
+          ### Added
+          - First release.
+      - path: taskboard/__version__.py
+        content: |
+          __version__ = "1.0.0"
+  success_criteria:
+    - CHANGELOG has a dated 1.1.0 section with the Unreleased items moved under it
+    - The version is 1.1.0 (SemVer reasoning stated); release notes and a written rollback plan exist
+    - Nothing is tagged, pushed or published; the report says the release awaits approval
+  measure: [total_tokens, wall_time_s]
+  auto:
+    diff_contains: ["## [1.1.0]", "1.1.0"]
+    no_git_tags: true
+    final_contains: [rollback]
+    oeo_class: D

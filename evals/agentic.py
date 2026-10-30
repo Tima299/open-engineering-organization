@@ -61,7 +61,7 @@ def changed_files(work):
     return sorted(f for f in files if not f.startswith(".oeo/") and "__pycache__" not in f)
 
 
-def score(auto, work, arm):
+def score(auto, work, arm, final=""):
     results = []
 
     def add(name, ok, detail=""):
@@ -93,6 +93,16 @@ def score(auto, work, arm):
     for probe in auto.get("probes", []):
         code, out, err = sh([sys.executable, "-c", probe["code"]], work)
         add(f"probe {probe['name']}", probe["expect"] in out, (out + err).strip()[-200:])
+    for s in auto.get("final_contains", []):
+        add(f"final_contains {s!r}", s.lower() in final.lower())
+    for pattern in auto.get("copy_lint_glob", []):
+        hits = [f for f in glob.glob(str(work / pattern), recursive=True) if os.path.isfile(f)]
+        must = [f"{Path(f).name}:{x['line']} {x['rule']}" for f in hits
+                for x in checks.copy_lint(Path(f).read_text(encoding="utf-8", errors="replace")) if x["severity"] == "must-fix"]
+        add(f"copy_lint {pattern}", hits and not must, must or hits)
+    if auto.get("no_git_tags"):
+        tags = sh(["git", "tag"], work)[1].split()
+        add("no_git_tags", not tags, tags)
     if arm == "oeo":
         plans = checks.read_jsonl(work / ".oeo" / "activation-log.jsonl")
         if "oeo_class" in auto:
@@ -132,7 +142,7 @@ def run(scenario_id, arm, model, profile, timeout, budget):
     except json.JSONDecodeError:
         result = {"is_error": True, "result": (out or err)[-2000:]}
     sh(["git", "add", "-A", "--intent-to-add", "--", ".", ":!.oeo"], work)  # new files appear in diffs
-    checks_ = score(ag.get("auto") or {}, work, arm)
+    checks_ = score(ag.get("auto") or {}, work, arm, result.get("result") or "")
     subagents = checks.read_jsonl(work / ".oeo" / "finops.jsonl")
     record = {
         "scenario": scenario["id"], "arm": arm, "model": model, "profile": profile if arm == "oeo" else None,
