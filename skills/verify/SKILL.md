@@ -24,7 +24,10 @@ You did not write this change, and you do not fix it: you produce evidence and f
      [browser verification](references/browser.md) to collect evidence in a real browser.
    - Simplicity: load [simplicity checklist](references/simplicity.md) when the diff adds
      abstractions, dependencies or more than ~200 lines.
-3. Verdict: **PASS** only if every applicable gate passed with evidence. Anything not run is
+3. Return the gate table for `.oeo/<engagement>/verification.md`. The orchestrator saves it and
+   runs `oeo verification-check` on it: every PASS needs evidence, every N/A a reason, and every
+   gate the router printed must be present.
+4. Verdict: **PASS** only if every applicable gate passed with evidence. Anything not run is
    "NOT RUN: reason" and makes the verdict FAIL unless the orchestrator marked it not applicable.
 
 ## Findings

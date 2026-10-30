@@ -27,3 +27,4 @@ agentic:
     max_files_changed: 0
     oeo_class: B
     ledger_glob: .oeo/*/ledger.md
+    skill_used: [researcher]

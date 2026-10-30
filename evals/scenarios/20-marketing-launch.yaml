@@ -31,3 +31,4 @@ agentic:
     copy_lint_glob: ["**/*launch*/**/*.md", "**/*launch*.md", "**/*landing*.md", "**/*announce*.md"]
     diff_not_contains: ["Trusted by", "trusted by", "lorem ipsum"]
     no_git_tags: true
+    skill_used: [researcher]

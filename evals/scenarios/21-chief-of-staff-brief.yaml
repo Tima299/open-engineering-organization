@@ -52,4 +52,4 @@ agentic:
   measure: [total_tokens, wall_time_s]
   auto:
     max_files_changed: 0
-    final_contains: [regression-test, SQLite, waiting for staging data, in_review]
+    final_contains: [regression-test, SQLite, waiting for staging data, review]

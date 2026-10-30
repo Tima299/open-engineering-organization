@@ -26,6 +26,10 @@ profiles:
 # Per-role overrides applied on top of the role contract, per profile or for all.
 overrides:
   all: {}
+  economy:
+    # eval 19: on the light model the researcher presented inferences as facts, and QA rejected it
+    # 3 times (8 subagents, $0.71). One step up costs less than the retries.
+    market-researcher: {preferred_model: advanced}
   # default:
   #   security-engineer: {preferred_model: advanced, effort: high}
 

@@ -209,6 +209,9 @@ COPY_RULES = [
     ("must-fix", "testimonial or customer claim without a source",
      re.compile(r"(trusted by|loved by|used by|chosen by)\s+(over\s+|more than\s+)?[\d,.]+\+?\s*"
                 r"(k|m|thousand|million|billion)?\s*(teams|users|developers|companies|customers|people)", re.I)),
+    ("must-fix", "named customers, ratings or attributed quotes need a cited source",
+     re.compile(r"\b(?i:used|trusted|loved|chosen) by [A-Z][\w&.-]+(,\s*[A-Z][\w&.-]+)+|\b\d(\.\d)?\s*(stars?|/\s*5)\b|"
+                r"[\u2014\u2013-]{1,2}\s*[A-Z][a-z]+ [A-Z][a-z]+,\s*(CEO|CTO|VP|Head|Founder|Director|Engineer)")),
     ("should-fix", "stock opener or hype word",
      re.compile(r"in today'?s (fast-paced|digital)|\bunlock\b|\bsupercharge|\bseamless(ly)?\b|game[- ]chang|"
                 r"\brevolutioni[sz]|\bcutting[- ]edge\b|\bnext[- ]gen\b|\bworld[- ]class\b|\bleverage\b|\bempower", re.I)),
@@ -274,4 +277,75 @@ def ledger_check(text):
                 problems.append(f"{where}: unknown claims must state the search boundary")
     if not rows_seen:
         problems.append("no ledger table found (need columns: claim | observed/inferred/unknown | evidence | boundary)")
+    return problems
+
+
+# --------------------------------------------------------------------------- verification / brief / release
+def verification_check(text, required_gates=()):
+    """Every gate row has a result (PASS, FAIL, N/A: reason) and PASS rows carry evidence; all
+    required gates are present; nothing reads FAIL or NOT RUN."""
+    problems, seen = [], {}
+    for header, rows in md_tables(text):
+        g, r, e = column(header, "gate"), column(header, "result", "verdict"), column(header, "evidence")
+        if g is None or r is None:
+            continue
+        for row in rows:
+            cell = lambda c: row[c].strip() if c is not None and c < len(row) else ""  # noqa: E731
+            gate, result, ev = cell(g).strip("` "), cell(r), cell(e)
+            if not gate:
+                continue
+            seen[gate] = result
+            up = result.upper()
+            if up.startswith("PASS") and e is not None and not ev:
+                problems.append(f"{gate}: PASS without evidence")
+            elif up.startswith("N/A") and not re.search(r"N/A\s*:?\s*\S{3,}", result, re.I):
+                problems.append(f"{gate}: N/A needs a reason")
+            elif "FAIL" in up or "NOT RUN" in up:
+                problems.append(f"{gate}: {result}")
+            elif not (up.startswith("PASS") or up.startswith("N/A")):
+                problems.append(f"{gate}: result must be PASS, FAIL or N/A: <reason>, got '{result}'")
+    if not seen:
+        problems.append("no gate table found (| gate | method | result | evidence |)")
+    problems += [f"{g}: required gate missing" for g in required_gates if g not in seen]
+    return problems
+
+
+BRIEF_SECTIONS = ("users", "outcome", "metric", "non-goal", "acceptance criteria")
+
+
+def brief_check(text):
+    """Brief rules from oeo:business-review: required sections, no TBD, evidence labels, testable criteria."""
+    low, problems = text.lower(), []
+    problems += [f"missing section: {s}" for s in BRIEF_SECTIONS if s not in low]
+    if re.search(r"\bTBD\b", text):
+        problems.append("contains TBD: move unknowns to assumptions / open questions")
+    if not re.search(r"\b(FACT|HYPOTHESIS|UNKNOWN|OPINION)\b", text):
+        problems.append("no evidence labels (FACT / HYPOTHESIS / UNKNOWN / OPINION)")
+    crit = re.split(r"acceptance criteria", text, flags=re.I)[-1] if "acceptance criteria" in low else ""
+    if len(re.findall(r"^\s*(\d+[.)]|[-*])\s+\S", crit, re.M)) < 1:
+        problems.append("no numbered or bulleted acceptance criteria")
+    return problems
+
+
+SEMVER = re.compile(r"^\d+\.\d+\.\d+(?:-[\w.]+)?$")
+
+
+def release_check(changelog, version, version_sources=()):
+    """Keep a Changelog + SemVer: a dated section for `version`, an Unreleased section kept, every
+    version source equal to `version`. `version_sources` is a list of (name, text)."""
+    problems = []
+    if not SEMVER.match(version or ""):
+        problems.append(f"'{version}' is not a SemVer version")
+    m = re.search(r"^## \[" + re.escape(version) + r"\] - (\d{4}-\d{2}-\d{2})\s*$", changelog, re.M)
+    if not m:
+        problems.append(f"CHANGELOG has no '## [{version}] - YYYY-MM-DD' section")
+    else:
+        body = re.split(r"^## \[", changelog[m.end():], maxsplit=1, flags=re.M)[0]
+        if not re.search(r"^### (Added|Changed|Deprecated|Removed|Fixed|Security)", body, re.M):
+            problems.append(f"the {version} section has no Keep a Changelog subsection")
+    if not re.search(r"^## \[Unreleased\]", changelog, re.M):
+        problems.append("CHANGELOG lost its '## [Unreleased]' section")
+    for name, text in version_sources:
+        if version not in text:
+            problems.append(f"{name} does not contain version {version}")
     return problems

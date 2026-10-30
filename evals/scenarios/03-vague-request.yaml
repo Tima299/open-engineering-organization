@@ -22,3 +22,8 @@ agentic:
     - The orchestrator stops after the brief and asks the user to confirm the objective; git diff of taskboard/ and tests/ is empty and no developer subagent is invoked
     - The final report states requirements satisfied (none yet), tests passed (n/a), released (no), business outcome observed (none), still unverified (all)
   measure: [total_tokens, agents_invoked, wall_time_s, files_changed, acceptance_criteria_testable_ratio, assumptions_labelled_ratio]
+  auto:
+    max_files_changed: 0
+    exists_glob: [.oeo/*/brief.md]
+    oeo_checks: [{cmd: brief-check, glob: ".oeo/*/brief.md"}]
+    skill_used: [business-analyst]

@@ -17,7 +17,12 @@ POSITIVE = {
                                "rm -rf ../", "rm -rf ~/*", "RM -RF /"],
     "force push": ["git push --force", "git push -f origin main", "git push origin HEAD --force-with-lease",
                    "git push origin +main"],
-    "pushes tags": ["git push --tags", "git push origin :stale-branch", "git push --mirror"],
+    "pushes tags": ["git push --tags", "git push origin :stale-branch", "git push --mirror",
+                    "git push --follow-tags", "git push origin v1.2.0", "git push origin refs/tags/v2"],
+    # independent rating (release skill promised the guard would ask; it did not)
+    "pushes to the default branch": ["git push origin main", "git push origin HEAD:main", "git push -u origin master"],
+    "creates a release tag": ["git tag -s v1.2.0 -m v1.2.0", "git tag v2.0.0", "git tag -a 1.1.0 -m x"],
+    "merges a pull request": ["gh pr merge 12 --squash"],
     "discards local work": ["git reset --hard", "git reset --hard HEAD~3", "git checkout -- .", "git restore ."],
     "deletes untracked files": ["git clean -fdx", "git clean -xdf", "git clean -d -f", "git clean --force -d"],
     "force-deletes a branch": ["git branch -D old-feature"],
@@ -40,6 +45,7 @@ SAFE = [
     # false positives reported by the code review (fixed)
     "git restore --staged .", 'git commit -m "delete from cache"', "npm publish --dry-run",
     "cat docs/credentials.md", "git branch -d merged-feature", "rm -rf /usr/local/myapp/build",
+    "git push -u origin feature/main-menu", "git tag -l", "git tag --list 'v1.*'", "gh pr view 12",
 ]
 
 # Bypasses reported by the code review (fixed): global git options, combined short flags,

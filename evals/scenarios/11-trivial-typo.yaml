@@ -26,3 +26,5 @@ agentic:
     tests_pass: true
     oeo_class: A
     max_subagents: 1
+    skill_used: [qa-verifier]
+    oeo_command_used: [route]

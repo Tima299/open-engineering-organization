@@ -373,6 +373,9 @@ class StatusTests(OeoProject):
 
 # --------------------------------------------------------------------------- copy lint
 RULE_SAMPLES = {
+    # independent rating: fabricated social proof passed the linter
+    "named customers, ratings or attributed quotes need a cited source": [
+        "Used by Google, Stripe and Netflix.", "Rated 4.9 stars on G2", "\u2014 Jane Doe, CTO at Initech"],
     "unfilled template slot": ["Install from [REPOSITORY URL].", "Star us at {{repo_url}}"],
     "placeholder or filler text": ["Lorem ipsum dolor sit amet", "Pricing: TBD", "TODO write the intro",
                                    "Hello [insert customer name]", "Replace this placeholder image"],

@@ -23,10 +23,16 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/oeo.py" route --type <type> --touches <do
 ```
 Types: trivial bugfix feature refactor architecture new-product incident research release
 governance licensing community marketing. Unknown size: omit `--files/--lines` (no Class A then).
-Check every signal that applies; under-reporting is the most common triage error (eval 06):
-`new-surface` = a page, screen, dashboard, endpoint or command users have not seen before ·
-`user-facing` · `production` · `release` · `new-dependency` · `breaking-change` ·
-`external-research` = studying other products or public sources · `ai-feature` · `multi-locale`.
+Report each signal that is true of **this task**. Too few and the work is under-reviewed
+(eval 06); too many and it inflates cost (eval 20).
+- `new-surface`: a page, screen, dashboard, endpoint or command users have not seen before.
+  Copy for an existing product is not a new surface.
+- `release`: this task itself publishes a version. Announcing a release is not.
+- `external-research`: this task must study other products or public sources. Reading your own
+  repository is not.
+- Others: `user-facing`, `production`, `new-dependency`, `breaking-change`, `ai-feature`,
+  `multi-locale`.
+If the router warns that the estimate exceeds the budget, re-check the signals before starting.
 Domains include `frontend`, `ui`, `auth`, `database`, `api`, `personal-data` (full list in
 `org/routing.yaml`).
 Tell the user the class, rule and roles in 3-5 lines. Engagement files go to the printed
@@ -50,16 +56,19 @@ Stage details, the delegation prompt, checklist roles and gate rules: [workflow]
 Load only the part for the step you are in.
 
 ## 3. Gates
-Every role the router printed as `subagent` runs. A skip needs the user's OK, recorded as
-`skipped: <role>: <reason>`. `domain-reviews-passed` means each activated Tier 2 reviewer gave
-its own verdict; QA cannot stand in for a design or security review (eval 06).
+Every role the router printed as `subagent` runs. There is one exception, defined in the
+workflow reference: the business analyst for a fully specified request. Any other skip needs the
+user's OK, recorded as `skipped: <role>: <reason>`. `domain-reviews-passed` needs each activated
+Tier 2 reviewer's own verdict; QA cannot stand in for a design or security review (eval 06). If
+you change code after QA passed, QA verifies again before you report.
 Every printed gate needs evidence in `.oeo/<engagement>/verification.md`, as
 `| gate | method | result | evidence |` with result PASS, FAIL or N/A: reason. On FAIL, return the
 findings to the implementer. The retry budget is 2 per gate, then escalate (effort, then tier,
-then the user). Never weaken a gate. Budget: at 80% do critical-path work only; at 100% pause and
-ask.
+then the user). Never weaken a gate. Before each subagent call in Class B+, run
+`oeo cost --check`; the budget tiers belong to `oeo:finops`.
 
 ## 4. Report
+Class B+: `oeo verification-check .oeo/<engagement>/verification.md` must pass first.
 Lead with the verdict. At most 5 items per list, except gates and blocker/major findings.
 1. Class, roles and why.
 2. Files changed.

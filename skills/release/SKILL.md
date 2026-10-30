@@ -20,6 +20,11 @@ Nothing is published, pushed, tagged remotely or deployed without explicit user 
 6. **Rollback plan** (written before release): how to revert (previous tag/artifact, feature
    flag, migration down/forward-fix), who decides, and the signal that triggers it.
 
+Check before asking to publish:
+`python3 "${CLAUDE_PLUGIN_ROOT}/scripts/oeo.py" release-check --version X.Y.Z --source <each version file>`.
+Also verify every CHANGELOG claim against the code: a "Fixed" entry whose bug still reproduces
+blocks the release (eval 22).
+
 ## Publish (only after the user says so)
 Signed tag where supported: `git tag -s vX.Y.Z -m "vX.Y.Z"` (fall back to annotated `-a` and
 say so). Push and create the release only with explicit approval; the OEO guard hook will ask.

@@ -196,7 +196,12 @@
   },
   "default_profile": "default",
   "overrides": {
-   "all": {}
+   "all": {},
+   "economy": {
+    "market-researcher": {
+     "preferred_model": "advanced"
+    }
+   }
   },
   "profiles": {
    "default": {

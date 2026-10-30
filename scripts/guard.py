@@ -19,7 +19,11 @@ GIT = r"\bgit\b(?:\s+(?:-[Cc]\s+\S+|--?[\w.=/-]+))*\s+"
 # SQL rules skip git commands so commit messages such as "delete from cache" do not trigger them.
 COMMAND_RULES = [
     (GIT + r"push\b.*(\s--force(-with-lease)?\b|\s-[a-zA-Z]*f[a-zA-Z]*\b|\s\+\S)", "force push rewrites remote history", True),
-    (GIT + r"push\b.*(\s--tags\b|\s--mirror\b|\s--delete\b|\s:\S)", "pushes tags, mirrors or deletes remote refs", True),
+    (GIT + r"push\b.*(\s--tags\b|\s--follow-tags\b|\s--mirror\b|\s--delete\b|\s:\S|\srefs/tags/|\sv?\d+\.\d+\.\d+\b)",
+     "pushes tags, mirrors or deletes remote refs", True),
+    (GIT + r"push\b(.*[\s:])?(main|master)(\s|$)", "pushes to the default branch", True),
+    (GIT + r"tag\s+(?!-[ld]\b|--list\b|--delete\b)(.*\s)?v?\d+\.\d+\.\d+\b", "creates a release tag", True),
+    (r"\bgh\s+pr\s+merge\b", "merges a pull request", True),
     (GIT + r"(reset\s+(.*\s)?--hard\b|checkout\s+(--\s+)?\.(\s|$)|restore\s+(?!.*--staged)(.*\s)?\.(\s|$))",
      "discards local work", True),
     (GIT + r"clean\b(.*\s)?(-\w*f\w*|--force)\b", "deletes untracked files", True),

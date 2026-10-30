@@ -725,6 +725,7 @@ def cmd_route(args):
                  "engagement": eid, "summary": args.summary, "class": plan["class"], "rule": plan["rule"], "inputs": plan["inputs"],
                  "roles": [{k: r.get(k) for k in ("id", "mode", "reason", "agent", "model", "effort", "estimate_tokens")}
                            for r in plan["roles"]],
+                 "gates": [g["id"] for g in plan["gates"]],
                  "estimate_tokens": plan["estimate_tokens"], "budget_tokens": plan["budget_tokens"]}
         try:
             append_jsonl(log_dir / "activation-log.jsonl", entry)
@@ -804,6 +805,15 @@ def cmd_cost(args):
     print(f"\nTotal subagent tokens (input+output+cache writes): {total:,}; planned {planned:,}; class budget {budget:,}")
     if budget and total > budget:
         print("BUDGET EXCEEDED: record a justification in .oeo/decisions.md (FinOps guardrail).")
+    if args.check and budget:
+        share = total / budget
+        if share >= 1:
+            print(f"cost check: {share:.0%} of budget: PAUSE and ask the user before more subagent work")
+            sys.exit(2)
+        if share >= 0.8:
+            print(f"cost check: {share:.0%} of budget: critical-path work only; tell the user")
+            sys.exit(1)
+        print(f"cost check: {share:.0%} of budget: OK")
     main = sum(x.get("total_tokens", 0) for x in sessions)
     if sessions:
         print(f"Main session (orchestrator) tokens: {main:,} over {len(sessions)} session(s); "
@@ -811,6 +821,37 @@ def cmd_cost(args):
     invoked = len(per_agent)
     print(f"Coordination: {invoked} distinct agent types, {sum(a['runs'] for a in per_agent.values())} runs; "
           "cache reads are reported but excluded from the budget total.")
+
+
+def cmd_verification_check(args):
+    path = Path(args.file)
+    required = args.gates.split(",") if args.gates else []
+    if not required:  # gates of the engagement's latest plan, if the file sits in .oeo/<engagement>/
+        plans = [p for p in checks.read_jsonl(path.parent.parent / "activation-log.jsonl")
+                 if p.get("engagement") == path.parent.name]
+        required = plans[-1].get("gates", []) if plans else []
+    problems = checks.verification_check(path.read_text(encoding="utf-8"), required)
+    for p in problems:
+        print(f"{path}: {p}")
+    print("verification: OK" if not problems else f"verification: FAIL ({len(problems)} problem(s))")
+    sys.exit(1 if problems else 0)
+
+
+def cmd_brief_check(args):
+    problems = checks.brief_check(Path(args.file).read_text(encoding="utf-8"))
+    for p in problems:
+        print(f"{args.file}: {p}")
+    print("brief: OK" if not problems else f"brief: FAIL ({len(problems)} problem(s))")
+    sys.exit(1 if problems else 0)
+
+
+def cmd_release_check(args):
+    sources = [(s, Path(s).read_text(encoding="utf-8")) for s in args.source]
+    problems = checks.release_check(Path(args.changelog).read_text(encoding="utf-8"), args.version, sources)
+    for p in problems:
+        print(p)
+    print("release: OK" if not problems else f"release: FAIL ({len(problems)} problem(s))")
+    sys.exit(1 if problems else 0)
 
 
 def cmd_status(args):
@@ -874,7 +915,20 @@ def main(argv=None):
     lc.set_defaults(fn=cmd_license)
     c = sub.add_parser("cost", help="FinOps report for the current project")
     c.add_argument("--session")
+    c.add_argument("--check", action="store_true", help="exit 1 at >=80%% of the class budget, 2 at >=100%%")
     c.set_defaults(fn=cmd_cost)
+    vc = sub.add_parser("verification-check", help="gate table rules (oeo:verify); exit 1 on problems")
+    vc.add_argument("file")
+    vc.add_argument("--gates", help="required gates (default: from the engagement's logged plan)")
+    vc.set_defaults(fn=cmd_verification_check)
+    bc = sub.add_parser("brief-check", help="brief rules (oeo:business-review); exit 1 on problems")
+    bc.add_argument("file")
+    bc.set_defaults(fn=cmd_brief_check)
+    rc = sub.add_parser("release-check", help="changelog + SemVer + version sources (oeo:release)")
+    rc.add_argument("--version", required=True)
+    rc.add_argument("--changelog", default="CHANGELOG.md")
+    rc.add_argument("--source", action="append", default=[], help="file that must contain the version")
+    rc.set_defaults(fn=cmd_release_check)
     st = sub.add_parser("status", help="cross-engagement brief data from .oeo/ (oeo:chief-of-staff)")
     st.add_argument("--json", action="store_true")
     st.set_defaults(fn=cmd_status)

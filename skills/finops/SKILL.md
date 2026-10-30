@@ -15,6 +15,8 @@ description: OEO cost governance - token use per agent vs. estimate and class bu
    - `.oeo/sessions/<id>.json`: the orchestrator's own tokens, written by the Stop hook.
    Both hooks parse Claude Code's internal transcript format, so call the numbers estimates.
    `oeo cost` reports subagents, the main session and the all-in total separately.
+   `oeo cost --check` exits 1 at 80% of the class budget and 2 at 100%. `oeo:deliver` runs it
+   before each subagent call; the tier rules are below.
 2. Flag: any agent OVER ESTIMATE, any unplanned agent, class budget exceeded, any role run at
    a higher tier or effort than its contract without a recorded reason.
 3. Recommend, in order: fewer agents (one specialist instead of several), smaller prompts (paths

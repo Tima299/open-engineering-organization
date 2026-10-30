@@ -41,6 +41,9 @@ finding; list it under "Questions for the Business Owner".
 Reject technically impressive work that does not solve the stated problem. Check for: missing
 acceptance criteria, adoption barriers, operational cost, unowned metrics, hidden scope.
 
+The brief must pass `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/oeo.py" brief-check <file>`
+(sections, labels, no TBD, testable criteria) before the user is asked to approve it.
+
 ## Outcome review (Stage 7)
 Report five separate lines with evidence: requirements satisfied / tests passed / release
 completed / business outcome observed / business outcome still unverified (+ how and when it

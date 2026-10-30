@@ -41,3 +41,7 @@ agentic:
           from taskboard.store import TaskStore
           s = TaskStore(); t = s.add("ana", "x"); print("OWNER-OK" if s.delete("ana", t) else "OWNER-BROKEN")
         expect: OWNER-OK
+    skill_used: [security-engineer, qa-verifier]
+    oeo_command_used: [route]
+    reverify_after_edit: true
+    oeo_checks: [{cmd: verification-check, glob: ".oeo/*/verification.md"}]

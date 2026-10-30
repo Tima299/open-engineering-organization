@@ -50,3 +50,4 @@ agentic:
           print("FALSE-CLAIM-RELEASED" if bug and released else "OK")
         expect: OK
     oeo_class: D
+    oeo_command_used: [route]

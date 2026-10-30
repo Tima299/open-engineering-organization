@@ -61,8 +61,32 @@ def changed_files(work):
     return sorted(f for f in files if not f.startswith(".oeo/") and "__pycache__" not in f)
 
 
-def score(auto, work, arm, final=""):
+def parse_trace(stream_out):
+    """stream-json -> (result event, compact tool trace). Main-session entries have main=True."""
+    events, trace = [], []
+    for line in stream_out.splitlines():
+        if line.strip().startswith("{"):
+            try:
+                events.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+    result = next((e for e in reversed(events) if e.get("type") == "result"), {})
+    for e in events:
+        if e.get("type") != "assistant":
+            continue
+        for c in (e.get("message") or {}).get("content") or []:
+            if isinstance(c, dict) and c.get("type") == "tool_use":
+                inp = c.get("input") or {}
+                trace.append({"tool": c.get("name"), "main": e.get("parent_tool_use_id") is None,
+                              "agent": inp.get("subagent_type"), "skill": inp.get("skill"),
+                              "cmd": (inp.get("command") or "")[:200] if c.get("name") == "Bash" else None,
+                              "file": inp.get("file_path")})
+    return result, trace
+
+
+def score(auto, work, arm, final="", trace=None):
     results = []
+    trace = trace or []
 
     def add(name, ok, detail=""):
         results.append({"check": name, "pass": bool(ok), "detail": str(detail)[:300]})
@@ -101,9 +125,27 @@ def score(auto, work, arm, final=""):
         must = [f"{Path(f).name}:{x['line']} {x['rule']}" for f in hits
                 for x in checks.copy_lint(Path(f).read_text(encoding="utf-8", errors="replace")) if x["severity"] == "must-fix"]
         add("copy_lint (no must-fix in the copy files)", hits and not must, must or [Path(f).name for f in hits] or "no copy files found")
+    for chk in auto.get("oeo_checks", []):  # run an `oeo` checker on a file the run produced
+        files = sorted(glob.glob(str(work / chk["glob"]), include_hidden=True))
+        code = sh([sys.executable, str(ROOT / "scripts" / "oeo.py"), chk["cmd"], files[0]], work)[0] if files else None
+        add(f"oeo {chk['cmd']} {chk['glob']}", code == 0, "no file" if not files else f"exit {code}")
     if auto.get("no_git_tags"):
         tags = sh(["git", "tag"], work)[1].split()
         add("no_git_tags", not tags, tags)
+    for name in auto.get("skill_used", []) if arm == "oeo" else []:
+        used = {x["skill"] for x in trace if x["skill"]} | {x["agent"] for x in trace if x["agent"]}
+        add(f"skill_used {name}", any(name in (u or "") for u in used), sorted(u for u in used if u))
+    for sub_cmd in auto.get("oeo_command_used", []) if arm == "oeo" else []:
+        cmds = [x["cmd"] for x in trace if x["cmd"] and "oeo.py" in x["cmd"]]
+        add(f"oeo_command_used {sub_cmd}", any(f"oeo.py\" {sub_cmd}" in c or f"oeo.py {sub_cmd}" in c for c in cmds),
+            [c[-60:] for c in cmds][:6])
+    if auto.get("reverify_after_edit") and arm == "oeo":
+        idx = lambda pred: max([i for i, x in enumerate(trace) if pred(x)], default=-1)  # noqa: E731
+        last_edit = idx(lambda x: x["main"] and x["tool"] in ("Edit", "Write", "MultiEdit")
+                        and not str(x["file"] or "").count("/.oeo/"))
+        last_qa = idx(lambda x: x["main"] and x["tool"] in ("Agent", "Task") and "qa-verifier" in str(x["agent"]))
+        add("reverified_after_last_main_edit", last_edit < last_qa or last_qa == -1 and last_edit == -1,
+            f"last main-session edit #{last_edit}, last qa-verifier call #{last_qa}")
     if arm == "oeo":
         plans = checks.read_jsonl(work / ".oeo" / "activation-log.jsonl")
         if "oeo_class" in auto:
@@ -132,18 +174,17 @@ def run(scenario_id, arm, model, profile, timeout, budget):
     session = str(uuid.uuid4())
     commit = sh(["git", "rev-parse", "--short", "HEAD"], ROOT)[1].strip() + \
         ("-dirty" if sh(["git", "status", "--porcelain", "--untracked-files=no"], ROOT)[1].strip() else "")
-    cmd = ["claude", "-p", prompt, "--output-format", "json", "--model", model, "--session-id", session,
+    cmd = ["claude", "-p", prompt, "--output-format", "stream-json", "--verbose", "--model", model, "--session-id", session,
            "--permission-mode", "acceptEdits", "--allowedTools", *TOOLS, "--max-budget-usd", str(budget)]
     if arm == "oeo":
         cmd += ["--plugin-dir", str(ROOT)]
     started = dt.datetime.now(dt.timezone.utc)
     code, out, err = sh(cmd, work, timeout=timeout, env=env)
-    try:
-        result = json.loads(out)
-    except json.JSONDecodeError:
+    result, trace = parse_trace(out)
+    if not result:
         result = {"is_error": True, "result": (out or err)[-2000:]}
     sh(["git", "add", "-A", "--intent-to-add", "--", ".", ":!.oeo"], work)  # new files appear in diffs
-    checks_ = score(ag.get("auto") or {}, work, arm, result.get("result") or "")
+    checks_ = score(ag.get("auto") or {}, work, arm, result.get("result") or "", trace)
     subagents = checks.read_jsonl(work / ".oeo" / "finops.jsonl")
     record = {
         "scenario": scenario["id"], "arm": arm, "model": model, "profile": profile if arm == "oeo" else None,
@@ -156,6 +197,11 @@ def run(scenario_id, arm, model, profile, timeout, budget):
                                                      "output_tokens", "cache_write_tokens")} for s in subagents],
         "activation": checks.read_jsonl(work / ".oeo" / "activation-log.jsonl")[-1:] if arm == "oeo" else None,
         "files_changed": changed_files(work), "checks": checks_, "workdir": str(work),
+        "trace_summary": {"tools": {k: sum(1 for x in trace if x["tool"] == k) for k in sorted({x["tool"] for x in trace})},
+                          "skills": sorted({x["skill"] for x in trace if x["skill"]}),
+                          "agents": [x["agent"] for x in trace if x["agent"]],
+                          "oeo_commands": [x["cmd"].split("oeo.py", 1)[1][:80] for x in trace
+                                           if x["cmd"] and "oeo.py" in x["cmd"]][:30]},
         "checks_passed": f"{sum(c['pass'] for c in checks_)}/{len(checks_)}",
         "final_message": (result.get("result") or "")[:4000],
     }

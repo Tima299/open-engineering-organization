@@ -52,6 +52,8 @@ categories:
     informed: [cto, project-manager]
   - id: release-approval
     name: Release approval
+    # Publishing, tagging, pushing a release or deploying always needs the user's explicit OK on
+    # top of this decision (deliver: human authority; release skill: Publish).
     decides: release-manager
     fallback: oss-maintainer
     consulted: [qa-verifier, security-engineer, project-manager]
