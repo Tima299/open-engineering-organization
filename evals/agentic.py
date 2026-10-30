@@ -131,6 +131,7 @@ def run(scenario_id, arm, model, profile, timeout, budget):
         result = json.loads(out)
     except json.JSONDecodeError:
         result = {"is_error": True, "result": (out or err)[-2000:]}
+    sh(["git", "add", "-A", "--intent-to-add", "--", ".", ":!.oeo"], work)  # new files appear in diffs
     checks_ = score(ag.get("auto") or {}, work, arm)
     subagents = checks.read_jsonl(work / ".oeo" / "finops.jsonl")
     record = {

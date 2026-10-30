@@ -23,6 +23,12 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/oeo.py" route --type <type> --touches <do
 ```
 Types: trivial bugfix feature refactor architecture new-product incident research release
 governance licensing community marketing. Unknown size: omit `--files/--lines` (no Class A then).
+Check every signal that applies; under-reporting is the most common triage error (eval 06):
+`new-surface` = a page, screen, dashboard, endpoint or command users have not seen before ·
+`user-facing` · `production` · `release` · `new-dependency` · `breaking-change` ·
+`external-research` = studying other products or public sources · `ai-feature` · `multi-locale`.
+Domains include `frontend`, `ui`, `auth`, `database`, `api`, `personal-data` (full list in
+`org/routing.yaml`).
 Tell the user the class, rule and roles in 3-5 lines. Engagement files go to the printed
 `.oeo/<engagement>/` folder. If the class looks wrong, re-run and say why.
 

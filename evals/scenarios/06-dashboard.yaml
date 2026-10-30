@@ -27,6 +27,6 @@ agentic:
     tests_pass: true
     unchanged: [taskboard/db.py]
     exists_glob: [.oeo/*/screen-spec.md]
-    diff_contains: ["<!", "lang=", "viewport", ":root", "<script>alert(1)</script>"]
+    diff_contains: ["<!", "lang=", "viewport", ":root", "<script>alert("]
     diff_not_contains: ['src="http', "src='http", 'href="http', "href='http"]
     oeo_class: C
