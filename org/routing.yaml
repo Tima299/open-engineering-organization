@@ -121,6 +121,10 @@ classes:
 # except A. Example: a failed-release incident is Class C but still needs a rollback plan.
 fact_rules:
   release: {gates: [changelog-entry, version-bump, rollback-plan, license-gate], stages: [release]}   # license conflicts are release-blocking
+  research:   # deliverable is a finding ledger + teardown, not a code change
+    remove_roles: [junior-developer, middle-developer, senior-developer]
+    remove_gates: [diff-reviewed, checks-pass, regression-test]
+    remove_stages: [implement]
   new-dependency: {gates: [license-gate]}
   redistribution: {gates: [license-gate]}
   license-change: {gates: [license-gate]}
@@ -134,8 +138,9 @@ skills:
     A: [oeo:verify]
     B: [oeo:deliver, oeo:verify]
     C: [oeo:deliver, oeo:business-review, oeo:verify]
-    D: [oeo:deliver, oeo:release]
+    D: [oeo:deliver]
   by_type:
+    release: [oeo:release]
     research: [oeo:research]
     marketing: [oeo:launch]
   by_domain:
@@ -178,10 +183,15 @@ generic_agents:
     preferred_model: standard
     effort: medium
   advisor:
-    description: Runs one OEO Tier 3 advisor contract (release, legal, SRE, incident, UX research, responsible AI, a11y, i18n, FinOps, community, support) handed to it by the orchestrator. Use only when the OEO router activated that advisor.
-    tools: [read, search, execute]
+    description: Runs one OEO Tier 3 advisor contract (release, legal, SRE, incident, UX research, responsible AI, a11y, ML, i18n, FinOps, community, support) handed to it by the orchestrator. Use only when the OEO router activated that advisor.
+    tools: [read, search, execute, web]
     preferred_model: standard
     effort: low
+  researcher:
+    description: Runs one OEO research or marketing contract (market-researcher, product-marketer) that must fetch the web and write its own files under .oeo/. Use only when the OEO router activated that role.
+    tools: [read, search, edit, execute, web]
+    preferred_model: standard
+    effort: medium
 
 # License policy used by the legal gate (`oeo license <SPDX>`) and registry validation.
 licenses:

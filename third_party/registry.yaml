@@ -1,4 +1,4 @@
-# Third-party provenance registry (spec Sections 6 and 10.1). Machine-readable source
+# Third-party provenance registry (ADR 0006, ADR 0008). Machine-readable source
 # of THIRD_PARTY.md (generated). OEO vendors NONE of these: every entry is an optional
 # adapter the user installs through the upstream's own installer. `oeo validate` applies
 # the legal gate (org/routing.yaml `licenses`) to anything not reference-only.

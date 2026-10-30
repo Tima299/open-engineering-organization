@@ -482,7 +482,7 @@
      "external-research"
     ]
    },
-   "agent": "advisor",
+   "agent": "researcher",
    "contract": "org/roles/market-researcher.yaml",
    "execution": "subagent",
    "model_routing": {
@@ -609,7 +609,7 @@
      "marketing"
     ]
    },
-   "agent": "advisor",
+   "agent": "researcher",
    "contract": "org/roles/product-marketer.yaml",
    "execution": "subagent",
    "model_routing": {
@@ -1110,17 +1110,45 @@
     "stages": [
      "release"
     ]
+   },
+   "research": {
+    "remove_gates": [
+     "diff-reviewed",
+     "checks-pass",
+     "regression-test"
+    ],
+    "remove_roles": [
+     "junior-developer",
+     "middle-developer",
+     "senior-developer"
+    ],
+    "remove_stages": [
+     "implement"
+    ]
    }
   },
   "generic_agents": {
    "advisor": {
-    "description": "Runs one OEO Tier 3 advisor contract (release, legal, SRE, incident, UX research, responsible AI, a11y, i18n, FinOps, community, support) handed to it by the orchestrator. Use only when the OEO router activated that advisor.",
+    "description": "Runs one OEO Tier 3 advisor contract (release, legal, SRE, incident, UX research, responsible AI, a11y, ML, i18n, FinOps, community, support) handed to it by the orchestrator. Use only when the OEO router activated that advisor.",
     "effort": "low",
     "preferred_model": "standard",
     "tools": [
      "read",
      "search",
-     "execute"
+     "execute",
+     "web"
+    ]
+   },
+   "researcher": {
+    "description": "Runs one OEO research or marketing contract (market-researcher, product-marketer) that must fetch the web and write its own files under .oeo/. Use only when the OEO router activated that role.",
+    "effort": "medium",
+    "preferred_model": "standard",
+    "tools": [
+     "read",
+     "search",
+     "edit",
+     "execute",
+     "web"
     ]
    },
    "specialist": {
@@ -1262,8 +1290,7 @@
      "oeo:verify"
     ],
     "D": [
-     "oeo:deliver",
-     "oeo:release"
+     "oeo:deliver"
     ]
    },
    "by_domain": {
@@ -1301,6 +1328,9 @@
    "by_type": {
     "marketing": [
      "oeo:launch"
+    ],
+    "release": [
+     "oeo:release"
     ],
     "research": [
      "oeo:research"
@@ -1400,7 +1430,7 @@
    {
     "exit": "human authorization for publishing, deploying or any irreversible action",
     "id": "release",
-    "n": 7,
+    "n": "7a",
     "name": "Release",
     "output": "SemVer bump, CHANGELOG entry, release notes, tag, rollback plan",
     "owner": "release-manager"
@@ -1408,7 +1438,7 @@
    {
     "exit": "shipped code is never reported as business success by itself",
     "id": "outcome",
-    "n": 7,
+    "n": "7b",
     "name": "Business Outcome Review",
     "output": "outcome report separating requirements met / tests passed / released / outcomes observed / outcomes unverified",
     "owner": "business-analyst"

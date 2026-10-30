@@ -35,9 +35,9 @@ Model column uses the `default` profile of `config/models.yaml`.
 | 3 | [Internationalization (i18n) Specialist](../org/roles/i18n-specialist.yaml) | checklist | standard → claude-sonnet-5-5 / low | multi-locale |
 | 3 | [Incident Commander](../org/roles/incident-commander.yaml) | checklist | standard → claude-sonnet-5-5 / medium | incident |
 | 3 | [Legal, Licensing & Compliance Advisor](../org/roles/legal-advisor.yaml) | checklist | standard → claude-sonnet-5-5 / low | new-dependency, redistribution, license-change, licensing |
-| 3 | [Market & Competitive Researcher](../org/roles/market-researcher.yaml) | subagent (`oeo:advisor`) | standard → claude-sonnet-5-5 / medium | external-research |
+| 3 | [Market & Competitive Researcher](../org/roles/market-researcher.yaml) | subagent (`oeo:researcher`) | standard → claude-sonnet-5-5 / medium | external-research |
 | 3 | [ML/AI Engineer](../org/roles/ml-engineer.yaml) | subagent (`oeo:advisor`) | standard → claude-sonnet-5-5 / medium | ai-feature |
-| 3 | [Product Marketer](../org/roles/product-marketer.yaml) | subagent (`oeo:advisor`) | standard → claude-sonnet-5-5 / medium | marketing |
+| 3 | [Product Marketer](../org/roles/product-marketer.yaml) | subagent (`oeo:researcher`) | standard → claude-sonnet-5-5 / medium | marketing |
 | 3 | [Release Manager](../org/roles/release-manager.yaml) | checklist | standard → claude-sonnet-5-5 / low | release |
 | 3 | [Responsible AI / Ethics Reviewer](../org/roles/responsible-ai-reviewer.yaml) | subagent (`oeo:advisor`) | standard → claude-sonnet-5-5 / medium | ai-feature, personal-data, content-automation |
 | 3 | [Site Reliability / Observability Engineer](../org/roles/sre.yaml) | checklist | standard → claude-sonnet-5-5 / medium | production |

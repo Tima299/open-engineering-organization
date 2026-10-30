@@ -23,7 +23,8 @@ Refinements:
 2. State the implications of each option (risk, cost, reversibility).
 3. Choose by precedence; if both are level 5, prefer the simpler, reversible option that keeps
    all level-4 requirements (tests, validation, a11y, error handling).
-4. Record it in `.oeo/decisions.md`: `date | conflict | options | decision | rationale`.
+4. Record it in `.oeo/decisions.md`: `date | decision | options | rationale | by | review_by`
+   (`review_by` only for reversible bets).
 
 Simplicity pressure (Ponytail-style "do less") is welcome at level 5 but never removes
 validation, security, accessibility, error handling or tests.

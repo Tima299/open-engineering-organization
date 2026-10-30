@@ -1,6 +1,6 @@
 ---
 name: launch
-description: OEO go-to-market - product positioning, messaging, launch plan and copy that is specific and provable. Use for OEO marketing work or a public release announcement, or when asked to write landing-page copy, position a product, or plan a launch.
+description: OEO go-to-market - positioning, a provable-copy gate, and a launch plan with owned/borrowed/rented channels. Use for marketing work, landing-page copy, or a public launch announcement.
 ---
 
 # Launch (OEO Product Marketer + Developer Advocate)
@@ -10,8 +10,9 @@ owns **why anyone should care**, and it never invents numbers, customers or clai
 
 ## 1. One shared context file first
 Create or refresh `.oeo/product-marketing.md` before writing any copy; every later step reads it.
-Draft it from the repository (README, docs, changelog, issues), then ask the user what is wrong or
-missing. Sections: category · ideal customer · job to be done (push, pull, habit, anxiety) ·
+Draft it from `.oeo/brief.md` (if present) and the repository (README, docs, changelog, issues),
+then list what is wrong or missing; the orchestrator asks the user. Competitor facts come from an
+`oeo:research` ledger, not from guesses. Sections: category · ideal customer · job to be done (push, pull, habit, anxiety) ·
 alternatives (direct, adjacent, do-nothing) · customer phrases (verbatim, with source) ·
 objections + answers · proof points (each with evidence) · voice table · **learnings log**.
 

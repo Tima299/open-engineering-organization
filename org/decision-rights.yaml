@@ -1,4 +1,4 @@
-# Decision Rights & Escalation Matrix (spec Section 4.2).
+# Decision Rights & Escalation Matrix.
 # Exactly one decider per category. `fallback` decides when the decider's role is
 # not activated for the current class (e.g. no Technical Architect in Class B).
 # Group aliases are expanded by `oeo validate`.

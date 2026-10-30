@@ -1,6 +1,6 @@
 ---
 name: verify
-description: OEO independent verification - check a change against its acceptance criteria and quality gates with real command output, and return actionable PASS/FAIL findings. Use for OEO Stage 6, before declaring any change done, or when asked to review/verify work you did not write.
+description: OEO independent verification - check a change you did not write against its acceptance criteria and gates with real command output; return PASS/FAIL findings. Used by oeo:qa-verifier at Stage 6.
 ---
 
 # Independent verification

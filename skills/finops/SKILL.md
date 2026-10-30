@@ -1,6 +1,6 @@
 ---
 name: finops
-description: OEO FinOps / cost governance - report token usage per agent against the class budget, flag overruns, and recommend cheaper routing. Use for multi-agent or long-running OEO engagements, or when asked how much an OEO task cost.
+description: OEO cost governance - token use per agent vs. estimate and class budget, 80%/100% budget tiers, paid-tool credits, cheaper-routing advice. Use for multi-agent or long-running work or "what did it cost?"
 ---
 
 # FinOps (OEO Cost Controller)

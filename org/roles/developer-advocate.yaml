@@ -7,7 +7,7 @@ role:
     writing release communication that matches what actually shipped.
   responsibilities:
     - Draft contributor onboarding steps and check each against a clean setup
-    - Triage new issues and PRs for completeness, duplicates and reproduction steps
+    - Apply the oeo:chief-of-staff triage rubric to new issues and PRs (completeness, duplicates, repro)
     - Label items and suggest priority with the reason
     - Write release announcements from the changelog without adding unshipped claims
     - Summarize open discussions with decisions needed and report contribution bottlenecks

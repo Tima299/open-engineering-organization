@@ -44,6 +44,6 @@ role:
     effort: medium
     escalate_to: advanced
   execution: subagent
-  agent: advisor
+  agent: researcher
   activation:
     triggers: [marketing]

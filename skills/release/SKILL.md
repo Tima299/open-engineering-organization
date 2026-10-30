@@ -1,6 +1,6 @@
 ---
 name: release
-description: OEO release checklist - SemVer bump, Keep a Changelog entry, release notes, license gate, signed tag and a written rollback plan, with human authorization before anything is published. Use when preparing or recovering a release (OEO Class D), or when asked to cut, tag or roll back a version.
+description: OEO release checklist - SemVer bump, changelog entry, release notes, license gate, signed tag and written rollback plan; nothing published without human approval. Use to cut or roll back a release.
 ---
 
 # Release (OEO Release Manager)

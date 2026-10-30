@@ -5,7 +5,8 @@ request: Learn how Todoist implements recurring tasks so we can add them to task
 router_input: {type: research, touches: [backend], signals: [external-research]}
 expect:
   roles_include: [market-researcher]
-  roles_exclude: [legal-advisor]
+  roles_exclude: [legal-advisor, junior-developer, middle-developer, senior-developer]
+  gates_exclude: [regression-test, diff-reviewed]
   max_tier3: 2
   skills_include: ["oeo:research"]
   adapters_include: [last30days, firecrawl]

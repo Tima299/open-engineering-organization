@@ -106,6 +106,16 @@ class ClassificationTests(RouterTestCase):
 
 
 class ActivationTests(RouterTestCase):
+    def test_research_type_drops_developers_and_code_gates(self):
+        # Regression (fixed): found by content review - research requests were sent to a code developer.
+        plan = self.route("research", signals=["external-research"])
+        self.assertFalse({"junior-developer", "middle-developer", "senior-developer"} & self.ids(plan))
+        self.assertIn("market-researcher", self.ids(plan, 3))
+        self.assertEqual(self.entry(plan, "market-researcher")["agent"], "oeo:researcher")
+        gates = {g["id"] for g in plan["gates"]}
+        self.assertFalse({"diff-reviewed", "checks-pass", "regression-test"} & gates)
+        self.assertNotIn("5 Design & Implementation", plan["stages"])
+
     def test_tier2_activation_by_domain_in_class_c(self):
         cases = [
             (["auth"], {}, "security-engineer", "domain: auth"),

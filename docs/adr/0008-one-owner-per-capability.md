@@ -36,15 +36,16 @@ Option 2. Skills go from 6 to 9. Ownership:
 | Output style (action first, at most 5 items) | shared agent preamble | I Have ADHD | none |
 
 Duplicates removed: no second competitor-research method in `launch`, which reads `research`
-output. No second status format in `deliver`, which links to `chief-of-staff`. No separate
+output. Status words are defined only in `deliver`, and `chief-of-staff` reuses them. No separate
 ADHD skill: one output style for every agent. Two Tier 3 roles were added (market-researcher,
-product-marketer), both run by the generic `advisor` agent, so the agent count is unchanged.
+product-marketer). They need web access and write their own files, so they run on a third generic
+agent, `researcher`. That makes 12 agents (9 dedicated, 3 generic).
 
 ## Consequences
 - Attribution: every adapted idea is listed per upstream in THIRD_PARTY.md ("Ideas adapted into
   OEO"); no upstream text, brand assets or DESIGN.md files are copied.
 - Research defaults to public evidence; reverse engineering requires the user's authorization.
-- Context cost grows by 3 skill descriptions (about 150 tokens per session); method detail is in
+- Context cost grows by 3 skill descriptions and 1 agent description (about 300 tokens per session); method detail is in
   references loaded only when used.
 
 ## Revisit when

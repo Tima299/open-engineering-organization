@@ -59,4 +59,5 @@ bypass of a documented mitigation is still welcome as a report.
 Mitigations are tracked in [docs/threat-model.md](docs/threat-model.md): zero runtime dependencies, a
 single dev dependency pinned with hashes, GitHub Actions pinned by SHA, `CODEOWNERS` on policy and script
 paths, and signed release tags where signing is available (see [docs/RELEASING.md](docs/RELEASING.md)).
-OEO adds no network calls and no telemetry.
+OEO's scripts and hooks add no network calls and no telemetry; the `research` skill uses Claude Code's
+web tools only when you ask for research (threat model T12-T14).

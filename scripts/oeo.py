@@ -164,10 +164,14 @@ def bullets(items):
 
 
 def dedicated_agent_body(c, preamble):
+    skills = [s.split(":", 1)[1] for s in c.get("relevant_skills", []) if s.startswith("oeo:")]
+    method = ("\n**Method:** before starting, read " +
+              ", ".join(f"`<OEO plugin root>/skills/{s}/SKILL.md`" for s in skills) +
+              " and the references it names when they apply.\n") if skills else ""
     return f"""You are the **{c['title']}** of the Open Engineering Organization (OEO).
 
-**Purpose:** {c['purpose'].strip()}
-
+**Purpose:** {" ".join(c['purpose'].split())}
+{method}
 ## Responsibilities
 {bullets(c['responsibilities'])}
 
@@ -196,6 +200,8 @@ def generic_agent_body(name, spec, preamble):
 1. The orchestrator's prompt names the role id and the contract path
    (`org/roles/<id>.yaml` inside the OEO plugin). Read that contract first. If it is
    missing or the role is not a {tier}, stop and say so.
+   Then read the method skills it lists (`relevant_skills`) at
+   `<OEO plugin root>/skills/<name>/SKILL.md`; the orchestrator gives you the plugin root.
 2. Act strictly within the contract: its responsibilities, decision rights,
    escalation conditions and acceptance criteria. Produce its listed outputs.
 3. If the task needs another role's decision, escalate; do not absorb that role.
@@ -219,8 +225,8 @@ def build_outputs(src, profile=None):
         lock_roles[rid]["contract"] = f"org/roles/{rid}.yaml"
         if c["execution"] == "subagent" and c.get("agent") == rid:
             m = effective_model(c["model_routing"], rid, models, profile)
-            desc = (f"OEO {c['title']} (Tier {c['tier']}). {c['purpose'].strip()} "
-                    "Use only when the OEO router (oeo:deliver) activates this role.")
+            first = re.split(r"(?<=[.!?])\s", " ".join(c["purpose"].split()), maxsplit=1)[0]
+            desc = f"OEO {c['title']}: {first} Use only when the OEO router (oeo:deliver) activates this role."
             color = ROLE_COLOR.get(rid, TIER_COLOR[c["tier"]])
             out[f"agents/{rid}.md"] = render_agent(rid, desc, c["tools_and_permissions"], m["host_alias"],
                                                    m["effort"], color, dedicated_agent_body(c, preamble),
@@ -352,6 +358,10 @@ def validate_sources(src):
             errs.append(f"{where}: subagent roles must name an agent")
         if agent and agent != rid and agent not in generic:
             errs.append(f"{where}: agent '{agent}' must be the role id (dedicated) or a generic agent {sorted(generic)}")
+        elif agent in generic:
+            missing = sorted(set(c.get("tools_and_permissions", [])) - set(routing["generic_agents"][agent]["tools"]))
+            if missing:
+                errs.append(f"{where}: generic agent '{agent}' lacks tools {missing} that this contract needs")
         tier = c.get("tier")
         if tier == 1 and act:
             errs.append(f"{where}: Tier 1 roles are activated by class, not by 'activation'")
@@ -386,7 +396,10 @@ def validate_sources(src):
         if key not in vocab:
             errs.append(f"org/routing.yaml fact_rules: '{key}' is not a type, domain or signal")
         errs += [f"org/routing.yaml fact_rules.{key}: unknown gate '{g}'" for g in rule.get("gates", []) if g not in workflow["gates"]]
-        errs += [f"org/routing.yaml fact_rules.{key}: unknown stage '{s}'" for s in rule.get("stages", []) if s not in stage_ids]
+        errs += [f"org/routing.yaml fact_rules.{key}: unknown stage '{s}'"
+                 for s in rule.get("stages", []) + rule.get("remove_stages", []) if s not in stage_ids]
+        errs += [f"org/routing.yaml fact_rules.{key}: unknown gate '{g}'" for g in rule.get("remove_gates", []) if g not in workflow["gates"]]
+        errs += [f"org/routing.yaml fact_rules.{key}: unknown role '{r}'" for r in rule.get("remove_roles", []) if r not in role_ids]
     for rule in routing["classification"]:
         if rule["class"] not in routing["classes"]:
             errs.append(f"org/routing.yaml: rule '{rule['rule']}' targets unknown class")
@@ -566,6 +579,11 @@ def route(lock, task_type, touches=(), signals=(), files=None, lines=None, profi
             if trig:
                 active[rid] = {"mode": r["execution"], "reason": f"trigger: {trig}"}
 
+    if cls != "A":
+        for key in sorted(facts):
+            for rid in routing.get("fact_rules", {}).get(key, {}).get("remove_roles", []):
+                active.pop(rid, None)
+
     budgets = models["budgets"]
     estimate = 0
     plan_roles = []
@@ -601,6 +619,8 @@ def route(lock, task_type, touches=(), signals=(), files=None, lines=None, profi
             rule_ = routing.get("fact_rules", {}).get(key, {})
             gates += [g for g in rule_.get("gates", []) if g not in gates]
             stages += [s for s in rule_.get("stages", []) if s not in stages]
+            gates = [g for g in gates if g not in rule_.get("remove_gates", [])]
+            stages = [s for s in stages if s not in rule_.get("remove_stages", [])]
     order = [s["id"] for s in lock["workflow"]["stages"]]
     stages.sort(key=order.index)
     stage_names = {s["id"]: f"{s['n']} {s['name']}" for s in lock["workflow"]["stages"]}

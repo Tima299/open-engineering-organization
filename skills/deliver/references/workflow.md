@@ -4,23 +4,14 @@ Load only the section for the stage you are in. Stage definitions, gates and mem
 ownership are data in `org/workflow.yaml`; this file says how to execute them.
 
 ## 1 Business Discovery (B: lite, C: full)
-Product depth (lean PRD, red-team, pre-mortem): `oeo:business-review`.
 Class B: write acceptance criteria directly (Given/When/Then or checklist), plus one line of
 desired outcome. Class C: delegate to `oeo:business-analyst` with the request and any evidence
-the user gave. Output `.oeo/brief.md`:
-
-```
-# Brief: <title>
-Users & problem:      Current workflow & limits:
-Desired outcome:      Success metric + how measured:
-Scope / non-goals:    Constraints & assumptions (mark ASSUMPTION):
-Evidence (fact/hypothesis/unknown):    Business risks:
-Acceptance criteria:  1. ... (testable)
-```
-The user (Business Owner) approves the brief or changes it. Never invent research or numbers.
+the user gave; it returns the brief (template and PRD depth: `oeo:business-review`) and you save
+it as `.oeo/brief.md`. The user (Business Owner) approves or changes it.
 
 ## 2 Independent Business Review (C)
-`oeo:business-analyst` reviews the brief/plan and returns PASS or a critique:
+A **fresh** `oeo:business-analyst` invocation, given only the brief and the plan (not the
+discovery conversation), returns PASS or a critique:
 `| # | finding | evidence | impact | severity | corrective action |`. Loop until PASS or the
 user accepts a named residual risk (append to `.oeo/decisions.md`).
 
@@ -56,13 +47,23 @@ parallel only if they read and do not write. Record in `.oeo/verification.md`:
 
 ## 7 Release & outcome
 Release: `oeo:release` skill (SemVer, CHANGELOG, notes, tag, rollback plan; human authorizes).
-Outcome review (BA lens): requirements satisfied / tests passed / released / outcome observed /
-outcome unverified, each with evidence. A shipped feature is not a business result.
+Outcome review: as defined in `oeo:business-review` (Outcome review section).
 
 ## 8 Community loop (D)
-Feedback -> reproducible, labeled issue. Defects re-enter Stage 0, product gaps Stage 1.
+Triage inbound feedback with the `oeo:chief-of-staff` rubric. Defects re-enter Stage 0,
+product gaps Stage 1.
+
+## Checklist roles (applied by the orchestrator; record PASS / FAIL / N/A: reason)
+| Role | Class B | Class C |
+|---|---|---|
+| cto | no new dependency, service or abstraction without need; API, auth and data compatibility unchanged | same + ADR exists for structural change; veto grounds written if used |
+| business-analyst | 3-5 testable criteria + one outcome line exist before coding | (runs as a subagent in C) |
+| oss-maintainer | CHANGELOG updated if the repo keeps one; license gate if a dependency was added; else N/A | same + public docs updated for user-visible change |
+| Tier 3 checklist advisors | their contract's `acceptance_criteria`, only for the trigger that activated them | same |
 
 ## Memory hygiene
 `.oeo/` holds one current brief, plan, risk list and verification file per engagement; replace
-stale content instead of appending contradictions. Decisions log is append-only. Suggested
-`.gitignore`: `.oeo/*.jsonl` (logs); commit briefs/plans/ADRs if the team wants them public.
+stale content instead of appending contradictions. Decisions log is append-only. Owners and
+paths: `org/workflow.yaml` `memory`. Suggested `.gitignore` (same list as the README):
+`.oeo/*.jsonl`, `.oeo/evidence/`, `.oeo/research/*/raw/`. Commit briefs, plans and ADRs if the
+team wants them public.

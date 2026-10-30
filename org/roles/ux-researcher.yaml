@@ -8,7 +8,7 @@ role:
   responsibilities:
     - Write a research plan with questions, method, participants and the decision each answer informs
     - Run a heuristic evaluation of comparable flows and name the heuristic each issue violates
-    - Collect secondary evidence from docs, issues and public sources with URL and access date
+    - Request public-source evidence from market-researcher (oeo:research) and synthesize it with user research
     - Synthesize findings into labelled facts, hypotheses and unknowns
     - Recommend the cheapest study that would resolve each unknown
     - Never fabricate participants, quotes or survey figures

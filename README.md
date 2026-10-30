@@ -4,13 +4,15 @@ A Claude Code plugin that gives AI coding agents a **proportional operating mode
 are triaged, only the roles they need are activated, each role runs on a right-sized model, the
 implementer never verifies its own work, and every claim of success needs evidence.
 
-> Status: **v0.2.0, experimental.** The routing, contracts, validation and safety hooks are
-> tested. End-to-end quality is shown by [one recorded run](evals/results/2026-10-30-07-security-flaw-economy/README.md), not a benchmark. See [ROADMAP.md](ROADMAP.md).
+> Status: **v0.2.0, experimental.** The router, contracts, validation and hook patterns have unit
+> tests (CI: Linux, Python 3.10 and 3.13). Skills and agents have [one recorded run](evals/results/2026-10-30-07-security-flaw-economy/README.md)
+> on a 0.1.0 pre-release without the plugin installed. The installed-plugin path, the quickstart
+> prompts and the v0.2 skills have not been run end to end yet. See [ROADMAP.md](ROADMAP.md).
 
 ## Why
 Agents usually fail in one of two ways. A single agent writes code and declares it done with no
 independent check. Or a "virtual company" of 30 personas burns tokens on ceremony for a typo.
-OEO's answer is **proportionality**, enforced by code instead of prose:
+OEO's answer is **proportionality**, decided by a deterministic router instead of prose:
 
 | Request | Class | What activates |
 |---|---|---|
@@ -29,10 +31,11 @@ OEO's answer is **proportionality**, enforced by code instead of prose:
   `/oeo:deliver` (orchestrator), `business-review` (brief, PRD, red-team), `research` (learn how
   company X does feature Y), `design-direction` (DESIGN.md, anti-slop), `verify` (incl. real-browser
   UI evidence), `release`, `launch` (positioning and copy), `finops`, `chief-of-staff` (status and
-  decisions). **11 agents**, generated from the contracts.
+  decisions). **12 agents**, generated from the contracts.
 - **Model routing as config** ([docs](docs/model-routing.md)): contracts name tiers, not models.
 - **Safety hooks**: asks you before destructive or publishing commands and before writing likely
-  secrets; logs subagent token use locally. No telemetry and no network calls.
+  secrets; logs subagent token use locally. OEO's scripts and hooks make no network calls and
+  collect no telemetry.
 - **Open-source plumbing**: provenance registry ([THIRD_PARTY.md](THIRD_PARTY.md)), license gate,
   SBOM, CI, [evals](evals/README.md), [ADRs](docs/adr/README.md), [threat model](docs/threat-model.md).
 
@@ -45,7 +48,7 @@ flowchart LR
 Details: [docs/architecture.md](docs/architecture.md).
 
 ## Install (2 minutes)
-Requires Claude Code with plugin support and `python3` (3.10+) on `PATH` (macOS/Linux tested;
+Requires Claude Code with plugin support and `python3` (3.10+) on `PATH` (CI covers Linux; macOS should work;
 Windows untested).
 ```
 /plugin marketplace add Tima299/open-engineering-organization
@@ -63,8 +66,9 @@ Releases will be tagged `vX.Y.Z`; once one exists, pin it with
 3. Try a significant one:
    `/oeo:deliver Users say they can delete other people's tasks. Fix it.` Expect Class C (auth
    domain): a short brief with acceptance criteria for you to approve, a fix with a regression
-   test, a security review, and a verification table.
-4. See what it cost: ask for `/oeo:finops`, or run `python3 <plugin-dir>/scripts/oeo.py cost`.
+   test, a security review, and a verification table. This is the expensive path: the recorded
+   Class C run used about 320k subagent tokens.
+4. See what it cost: run `/oeo:finops`.
 
 Preview triage without running agents (from a clone of this repo):
 ```bash
@@ -78,9 +82,12 @@ python3 scripts/oeo.py route --type bugfix --touches auth,backend --files 2 --li
 | `OEO_GUARD=off` | Disable the confirmation guard hook |
 | `OEO_FINOPS=off` | Disable subagent token logging |
 
-Project files OEO writes (only in projects where you use `/oeo:deliver`): `.oeo/` with brief,
-plan, decisions, risks, verification and two `.jsonl` logs. Consider adding `.oeo/*.jsonl` to
-`.gitignore`.
+Files OEO writes in your project, and only when you ask for that kind of work:
+- `.oeo/`: brief, plan, decisions, risks, verification, screen-spec, product-marketing,
+  `research/`, `evidence/`, and two `.jsonl` logs.
+- Deliverables: `DESIGN.md`, `docs/adr/*`, `CHANGELOG.md`.
+
+Suggested `.gitignore`: `.oeo/*.jsonl`, `.oeo/evidence/`, `.oeo/research/*/raw/`.
 
 ## Uninstall
 ```
@@ -89,7 +96,9 @@ plan, decisions, risks, verification and two `.jsonl` logs. Consider adding `.oe
 ```
 This removes the plugin, its agents, skills, hooks and plugin data directory. It does **not**
 delete `.oeo/` folders inside your projects (they are your project's records); remove them by
-hand if you want. OEO writes nothing else and sends nothing anywhere.
+hand if you want. OEO's scripts and hooks send nothing anywhere. If you ask for research,
+Claude Code's web tools (and any adapter you installed, such as Firecrawl) send queries to the web
+or to that vendor.
 
 ## Optional companions
 OEO works without any other skill. The best ideas of 20 community projects are already adapted
@@ -113,7 +122,7 @@ OEO never installs or bundles them.
 - One maintainer today (see [GOVERNANCE.md](GOVERNANCE.md)).
 
 ## Contributing
-Read [CONTRIBUTING.md](CONTRIBUTING.md). Run the same checks as CI:
+Read [CONTRIBUTING.md](CONTRIBUTING.md). The main CI checks:
 ```bash
 python3 -m pip install --require-hashes -r requirements-dev.txt
 python3 scripts/oeo.py validate && python3 scripts/oeo.py build --check

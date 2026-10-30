@@ -1,4 +1,4 @@
-# OEO operating workflow (spec Section 5): stages, quality gates, memory artifacts.
+# OEO operating workflow: stages, quality gates, memory artifacts (docs/architecture.md).
 # `oeo route` prints the stages and gates that apply to the triaged class.
 
 version: 1
@@ -47,13 +47,13 @@ stages:
     output: .oeo/verification.md (gate, command, result, evidence) and findings
     exit: all class gates PASS; the implementer is never the sole authority on correctness
   - id: release
-    n: 7
+    n: 7a
     name: Release
     owner: release-manager
     output: SemVer bump, CHANGELOG entry, release notes, tag, rollback plan
     exit: human authorization for publishing, deploying or any irreversible action
   - id: outcome
-    n: 7
+    n: 7b
     name: Business Outcome Review
     owner: business-analyst
     output: outcome report separating requirements met / tests passed / released / outcomes observed / outcomes unverified
@@ -80,17 +80,19 @@ gates:
   rollback-plan: A tested or reasoned rollback path is written down.
   license-gate: Every new third-party license passes `oeo license <SPDX>`.
 
-# Shared memory (spec Section 7). Lives in the target project, under .oeo/.
+# Shared memory. Lives in the target project, under .oeo/. `owner` decides the content;
+# `written_by: orchestrator` means a read-only role returns it and the orchestrator saves it.
 memory:
-  - {path: .oeo/brief.md, owner: business-analyst, freshness: per engagement; superseded briefs are deleted, not kept}
+  - {path: .oeo/brief.md, owner: business-analyst, written_by: orchestrator, freshness: per engagement; superseded briefs are deleted, not kept}
   - {path: .oeo/plan.md, owner: project-manager, freshness: updated at every stage exit}
   - {path: .oeo/decisions.md, owner: project-manager, freshness: "append-only log of decisions, vetoes, deadlock resolutions; reversible bets carry a review_by date"}
   - {path: .oeo/research/, owner: market-researcher, freshness: per research question; ledger kept, raw fetches deleted when the question closes}
   - {path: .oeo/product-marketing.md, owner: product-marketer, freshness: refreshed before each launch; learnings retired, never deleted}
   - {path: .oeo/evidence/, owner: qa-verifier, freshness: per verification run; gitignored}
+  - {path: .oeo/screen-spec.md, owner: design-lead, freshness: per UI task}
   - {path: DESIGN.md, owner: design-lead, freshness: changed only through a design decision; stale tokens removed}
   - {path: .oeo/risks.md, owner: project-manager, freshness: reviewed at each stage exit; closed risks removed}
-  - {path: .oeo/verification.md, owner: qa-verifier, freshness: rewritten per verification run}
+  - {path: .oeo/verification.md, owner: qa-verifier, written_by: orchestrator, freshness: rewritten per verification run}
   - {path: .oeo/activation-log.jsonl, owner: project-manager, freshness: append-only, written by `oeo route --log`}
   - {path: .oeo/finops.jsonl, owner: finops-controller, freshness: append-only, written by the SubagentStop hook}
   - {path: docs/adr/, owner: technical-architect, freshness: ADRs are superseded explicitly, never edited silently}

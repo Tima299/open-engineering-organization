@@ -9,7 +9,7 @@ what really ran. Decision record: [ADR 0003](adr/0003-model-agnostic-tier-routin
    effort `low|medium|high`, and `escalate_to` (tier or `human`) after the retry budget.
 2. **Profile** (`config/models.yaml` → `profiles`): maps each tier to a `model_id` (API name) and a
    `host_alias` (what Claude Code accepts in agent files and the Agent tool).
-   - `default`: the requested initial table (Sonnet for junior/middle/BA/PM/QA/advisors, Opus for
+   - `default`: the initial profile (Sonnet for junior/middle/BA/PM/QA/advisors, Opus for
      senior/lead/architect/principal/CTO/security).
    - `economy`: one step cheaper everywhere.
 3. **Overrides** (`config/models.yaml` → `overrides`): per role, for all profiles or one profile.

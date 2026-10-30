@@ -1,6 +1,6 @@
 ---
 name: design-direction
-description: OEO design workflow for user-facing UI - lock a visual direction, capture it as DESIGN.md, define states, accessibility and visual acceptance criteria before frontend code, then review the build with a scored panel. Use when an OEO task touches frontend/ui, or when asked to design a dashboard, page or component, or to make a UI look like a reference site.
+description: OEO UI design - lock a visual direction, capture it in DESIGN.md, specify states, a11y and visual acceptance criteria before frontend code, then run an independent scored review of the build.
 ---
 
 # Design direction (OEO Design Lead + Frontend)
@@ -17,11 +17,11 @@ light/dark · brand assets. Without a brand, propose 2-3 named directions and le
 ## 2. Capture the direction as `DESIGN.md` (project root)
 Use the [DESIGN.md skeleton](references/design-md.md): theme, color roles, type scale,
 components with states, spacing, elevation, motion, do/don't with reasons, responsive table,
-agent prompt guide. "Make it look like <site>": get the reference through `oeo:research`
+agent prompt guide. "Make it look like <site>": ask the orchestrator for an `oeo:research` capture of the reference
 (screenshots, computed styles), then label each value **extracted**, **estimated** or
 **proposed**. Copy structure, not brand assets or proprietary fonts; name deliberate fallbacks.
 
-## 3. Screen spec (`.oeo/design.md`, under ~60 lines)
+## 3. Screen spec (`.oeo/screen-spec.md`, under ~60 lines)
 - **Users and primary task**: top 3 questions the screen answers; above the fold at 1280px and 375px.
 - **Components**: reuse list; new ones with props and states.
 - **States** for every data view: loading, empty, error, partial, success, permission-denied.
@@ -34,11 +34,13 @@ agent prompt guide. "Make it look like <site>": get the reference through `oeo:r
   means one bold visual choice, sharp microcopy and one memorable detail, not five.
 
 ## 4. Review the built UI (scored panel)
-Collect evidence with `oeo:verify` (browser snapshots, emulation, screenshots). Then score each lens
-0-10 against the spec and the [craft rules](references/craft.md): **design**, **critic** (anti-slop),
-**brand fit**, **accessibility**, **copy**. Ship at 8/10 or more with no must-fix items open. Each
-round returns findings (file:line, evidence, fix). At most 3 rounds, then ship the best round and
-list what remains.
+Evidence comes from `oeo:verify` (browser snapshots, emulation, screenshots). A reviewer that did
+not build the UI (`oeo:design-lead` or `oeo:qa-verifier`) scores each lens 0-10 against the spec
+and the [craft rules](references/craft.md): **design**, **critic** (anti-slop), **brand fit**,
+**accessibility**, **copy**. Ship at 8/10 or more with no must-fix item open. Each round returns
+findings (file:line, evidence, fix). Revisions use the normal retry budget (2). If a must-fix item
+or an AA failure is still open after that, do not ship: escalate to the user with options. Only
+should-fix and polish items may ship as a listed backlog.
 
 ## Optional adapters
 Use these only if installed in the session; never install them yourself:

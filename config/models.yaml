@@ -1,4 +1,4 @@
-# OEO model & effort routing policy (spec Section 8).
+# OEO model & effort routing policy (docs/model-routing.md).
 # Role contracts only name a tier (light | standard | advanced). This file maps tiers
 # to concrete models per profile, so a new model release or another provider is a
 # config change, not a rewrite. Select a profile with OEO_MODEL_PROFILE.
@@ -10,7 +10,7 @@ version: 1
 default_profile: default
 
 profiles:
-  default:                       # the requested initial profile (spec Section 8 table)
+  default:                       # initial profile: Sonnet for bounded roles, Opus for senior/lead/architect/security
     provider: anthropic
     tiers:
       light:    {model_id: claude-haiku-5-5,  host_alias: haiku}
@@ -29,7 +29,7 @@ overrides:
   # default:
   #   security-engineer: {preferred_model: advanced, effort: high}
 
-# FinOps budgets (spec Section 8 guardrails). Per-invocation estimates are keyed by effort;
+# FinOps budgets (oeo:finops guardrails). Per-invocation estimates are keyed by effort;
 # class budgets cover all subagents of one engagement. `oeo cost` flags overruns.
 # INITIAL, UNCALIBRATED values: recalibrate from .oeo/finops.jsonl data (see evals/README.md).
 budgets:

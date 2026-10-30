@@ -94,7 +94,7 @@ helped and for what. Do not submit output you do not understand or cannot defend
 1. Fork, branch from `main`, keep the PR to one concern.
 2. Add an entry under `Unreleased` in [CHANGELOG.md](CHANGELOG.md) (Keep a Changelog format).
 3. Update docs affected by your change.
-4. Fill in the PR template and make all four checks pass.
+4. Fill in the PR template and make all CI checks pass (`.github/workflows/ci.yml`).
 5. Maintainers review on a best-effort basis (single maintainer today). Changes merge by lazy
    consensus after 72 hours, or 7 days for governance, license, role schema, routing or precedence
    policy changes. Reviews return non-conforming PRs with the standard missed and how to fix it.

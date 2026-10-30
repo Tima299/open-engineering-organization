@@ -1,7 +1,7 @@
 # Changelog
 
 All notable changes to this project are documented here. Format:
-[Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning: [SemVer](https://semver.org/).
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning: [SemVer](https://semver.org/). Version links are added once release tags exist.
 While the version is 0.x, minor releases may contain breaking changes (called out under **Changed**).
 
 ## [Unreleased]
@@ -44,6 +44,3 @@ While the version is 0.x, minor releases may contain breaking changes (called ou
   fixture project (`examples/taskboard`).
 - Community health files, governance, threat model, ADRs 0001-0007, CI.
 
-[Unreleased]: https://github.com/Tima299/open-engineering-organization/compare/v0.2.0...HEAD
-[0.2.0]: https://github.com/Tima299/open-engineering-organization/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/Tima299/open-engineering-organization/releases/tag/v0.1.0

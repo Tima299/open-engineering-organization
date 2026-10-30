@@ -254,6 +254,14 @@ class KnownBugTests(IsolatedTestCase):
         src["models"]["overrides"]["ecnomy"] = {"qa-verifier": {"preferred_model": "advanced", "effort": "high"}}
         self.assertTrue(oeo.validate_sources(src), "unknown override scope 'ecnomy' was accepted")
 
+    # Regression (fixed): found by content review - market-researcher needed web/edit but ran on the
+    # read-only `advisor` agent; contracts must fit the tools of the generic agent that runs them.
+    def test_contract_tools_must_fit_its_generic_agent(self):
+        src = copy.deepcopy(oeo.load_sources())
+        src["roles"]["market-researcher"]["role"]["agent"] = "specialist"  # specialist has no web tool
+        errs = oeo.validate_sources(src)
+        self.assertTrue(any("generic agent 'specialist' lacks tools ['web']" in e for e in errs), errs)
+
 
 if __name__ == "__main__":
     unittest.main()

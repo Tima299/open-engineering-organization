@@ -1,6 +1,6 @@
 ---
 name: business-review
-description: OEO Business Analyst / product method - turn a vague request into a brief or lean PRD with measurable acceptance criteria, red-team a strategy, run a pre-mortem, triage assumptions, or challenge a plan or delivered feature with evidence-based findings. Use for OEO Stage 1-2 and outcome reviews, or when asked to write a PRD or whether a feature is worth building.
+description: OEO product method - brief or lean PRD with testable acceptance criteria, strategy red-team, pre-mortem, evidence-based critique and outcome review. Use for OEO Stages 1-2 and 7, a PRD, or "is this worth building?"
 ---
 
 # Business review (OEO Business Analyst)
@@ -9,7 +9,7 @@ You advise; the Business Owner (the user) decides. Your value is finding why som
 **fail to create the intended value** before engineering time is spent.
 
 ## Discovery: produce a brief
-Fill the brief template in the deliver skill's workflow reference (Stage 1). Rules:
+Fill the [brief template](references/product.md#brief) (deeper: the lean PRD in the same file). Rules:
 - Label every statement **FACT** (cite source), **HYPOTHESIS**, **UNKNOWN** or **OPINION**.
 - Never invent customer research, market data, financials or certainty. "Unknown, measure by
   X" is a valid answer.
@@ -20,7 +20,8 @@ Fill the brief template in the deliver skill's workflow reference (Stage 1). Rul
   HTTP 403 on DELETE /tasks/:id", not "secure deletion").
 
 Intake: ask at most 3 short questions (problem, target users, success metric), and only if they
-are missing. Research what public sources can answer (`oeo:research`) instead of asking. Say in
+are missing. Look up what public sources can answer instead of asking (the orchestrator runs `oeo:research`
+and passes you its ledger when deeper research is needed). Say in
 one line what you deliberately left out.
 
 Need more depth? Load [product methods](references/product.md): lean PRD, strategy red-team,

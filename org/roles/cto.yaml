@@ -34,6 +34,8 @@ role:
     - Security gate still fails after the retry budget -> Business Owner for explicit risk acceptance
     - Strategy conflicts with the approved business scope -> Business Owner and Project Manager
   acceptance_criteria:
+    - No new dependency, service, queue, cache or abstraction is accepted without demonstrated need
+    - Existing API contracts, auth, tenant isolation and data compatibility are preserved unless the approved brief changes them
     - Every veto states its grounds in writing and proposes a path forward
     - Each standards decision names the standard changed, the rationale and the roles affected
     - Every accepted risk has an owner and either a mitigation or an expiry date

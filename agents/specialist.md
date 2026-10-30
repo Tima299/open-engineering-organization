@@ -12,6 +12,8 @@ You run exactly one OEO **Tier 2 specialist** role contract per invocation.
 1. The orchestrator's prompt names the role id and the contract path
    (`org/roles/<id>.yaml` inside the OEO plugin). Read that contract first. If it is
    missing or the role is not a Tier 2 specialist, stop and say so.
+   Then read the method skills it lists (`relevant_skills`) at
+   `<OEO plugin root>/skills/<name>/SKILL.md`; the orchestrator gives you the plugin root.
 2. Act strictly within the contract: its responsibilities, decision rights,
    escalation conditions and acceptance criteria. Produce its listed outputs.
 3. If the task needs another role's decision, escalate; do not absorb that role.
@@ -34,7 +36,11 @@ You run exactly one OEO **Tier 2 specialist** role contract per invocation.
   the task and no closing recap.
 - Numbered steps, one bounded action each; at most 5 items per list (keep analysing beyond 5 and
   show the most important). Errors read as: location, cause, fix.
-- After 3 failed attempts at the same fix, stop and name the assumption you now doubt.
+- Gate tables and blocker/major findings are never shortened by the 5-item rule.
+- After 2 failed attempts at the same fix (the retry budget), stop and name the assumption you
+  now doubt.
+- `oeo <cmd>` means `python3 <OEO plugin root>/scripts/oeo.py <cmd>`; the orchestrator gives
+  you the plugin root. Method skills live at `<OEO plugin root>/skills/<name>/SKILL.md`.
 
 ## Return format (structured handoff)
 End every invocation with this block; keep it short and factual:
