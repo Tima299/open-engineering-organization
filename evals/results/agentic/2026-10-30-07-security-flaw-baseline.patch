@@ -1,0 +1,31 @@
+diff --git a/taskboard/store.py b/taskboard/store.py
+index b2713b6..70d1412 100644
+--- a/taskboard/store.py
++++ b/taskboard/store.py
+@@ -30,7 +30,8 @@ class TaskStore:
+         return dict(row)
+ 
+     def delete(self, requester, task_id):
+-        """Delete a task. Returns True if a task was removed."""
+-        cur = self.conn.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
++        """Delete one of `requester`'s tasks. Returns True if a task was removed."""
++        cur = self.conn.execute(
++            "DELETE FROM tasks WHERE id = ? AND owner = ?", (task_id, requester))
+         self.conn.commit()
+         return cur.rowcount > 0
+diff --git a/tests/test_store.py b/tests/test_store.py
+index f667191..ea17723 100644
+--- a/tests/test_store.py
++++ b/tests/test_store.py
+@@ -39,6 +39,11 @@ class TaskStoreTests(unittest.TestCase):
+         self.assertTrue(self.store.delete("ana", task_id))
+         self.assertEqual(self.store.list("ana"), [])
+ 
++    def test_delete_rejects_other_users_task(self):
++        task_id = self.store.add("ana", "private")
++        self.assertFalse(self.store.delete("ben", task_id))
++        self.assertEqual(len(self.store.list("ana")), 1)
++
+ 
+ class MigrationTests(unittest.TestCase):
+     def test_migrate_is_idempotent(self):

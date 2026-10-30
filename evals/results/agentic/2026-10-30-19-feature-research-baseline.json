@@ -1,0 +1,60 @@
+{
+ "scenario": "19-feature-research",
+ "arm": "baseline",
+ "model": "sonnet",
+ "profile": null,
+ "date": "2026-10-30",
+ "claude_code": "2.1.314 (Claude Code)",
+ "oeo_commit": "e78f253-dirty",
+ "exit_code": 0,
+ "is_error": false,
+ "cost_usd": 0.10828379999999999,
+ "duration_s": 28.9,
+ "num_turns": 6,
+ "usage": {
+  "input_tokens": 6,
+  "cache_creation_input_tokens": 13073,
+  "cache_read_input_tokens": 104245,
+  "output_tokens": 2219,
+  "output_tokens_details": {
+   "thinking_tokens": 212
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 13073,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 1583,
+    "cache_read_input_tokens": 38507,
+    "cache_creation_input_tokens": 3295,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 3295
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "subagents": [],
+ "activation": null,
+ "files_changed": [],
+ "checks": [
+  {
+   "check": "max_files_changed",
+   "pass": true,
+   "detail": "[]"
+  }
+ ],
+ "checks_passed": "1/1",
+ "final_message": "Todoist's model is simple, and it fits taskboard's schema well. Everything below comes from search snippets of Todoist's help center and third-party wrappers. I couldn't reach Todoist's official API reference, so I haven't verified the API-level details.\n\n## How Todoist does it\n\n- **A recurring task is one task, not a series.** Completing it doesn't create a new row. Todoist moves the task's due date to the next occurrence and keeps the task open. The one visible exception is \"Complete forever\" (below).\n- **The rule is stored as text.** It is the user's own phrase, such as `every Monday` or `every 3 days`. The API exposes a `due` object with `date`, `datetime`, `string`, `lang` and `is_recurring`. The rule is parsed from `string` each time, and `is_recurring` is a flag derived from it.\n- **There are two anchors.**\n  - `every X` repeats from the scheduled date.\n  - `every! X` repeats from the completion date. For example, `every! 3 days` reschedules exactly 3 days after you mark it done.\n- **Completing an overdue task advances it to the next future occurrence.** It doesn't create a backlog of missed ones.\n- **Rescheduling a recurring task by hand and then completing it calculates the next date from the completion date.** That's what the help center says. I couldn't confirm how the API treats this.\n- **\"Complete forever\" ends the recurrence.** The task is marked done and nothing further is scheduled.\n- **Patterns can't be combined.** Todoist rejects things like `every Monday every 1 hour`.\n- **Sub-tasks can optionally reset.** Todoist re-adds them to each new occurrence if the \"Reset sub-tasks\" setting is on.\n\n## What this means for taskboard\n\nTaskboard's `tasks` table has `due TEXT` and `done INTEGER`. Following Todoist's approach would need:\n\n1. **Migration 2.** Add a `recurrence TEXT` column, null when the task doesn't recur. `db.py` says to append migrations and never edit shipped ones.\n2. **`add(..., recurrence=None)`.** Validate the rule when the task is added, and require `due` if a rule is given. A small parser should handle `every day`, `every N days/weeks/months`, `every <weekday>`, and the `every!` form.\n3. **`complete()`.** If the task has a rule, compute the next due date and update `due`, leaving `done = 0`. Otherwise, set `done = 1` as today. Use \"next occurrence strictly after today\" so overdue tasks don't pile up.\n4. **A `complete(..., forever=True)` option.** This is the equivalent of \"Complete forever\".\n5. **`reporting.py`.** Counts of open tasks per owner still work, since recurring tasks stay open.\n\n## Open questions for you\n\n- Do you want natural-language strings like Todoist, or a structured rule such as `{\"unit\": \"week\", \"interval\": 1}`? Structured is much easier to build and test. Text is closer to Todoist.\n- Is the completion-anchored `every!` form needed in the first version?\n- Should a completed occurrence be kept anywhere as history? Todoist's own task model doesn't keep it.\n\nThe README flags that `complete()` currently fails for a nonexistent id. The new logic would sit in that same method, so we may want to decide how to handle that case at the same time.\n\nI haven't changed any code. If you tell me which rule format you want, I can draft the migration, parser and `complete()` changes with tests.\n\nSources:\n- [Todoist: Introduction to recurring dates](https://todoist.com/help/articles/set-a-recurring-due-date)\n- [Todoist: Complete a task with a recurring date](https://todoist.com/help/articles/complete-a-task-with-a-recurring-date-dmI6SVqdP)\n- [Home Assistant PR showing the Todoist `due` object](https://github.com/home-assistant/core/pull/108269)\n- [Todoist MCP: natural-language dates](https://glama.ai/mcp/servers/@shayonpal/mcp-todoist/blob/41c32f127e3e1ca6d0bd0248e5076323a4db05df/docs/natural-language-dates.md)\n- [Todoist MCP: complete task tool](https://glama.ai/mcp/servers/stevesimpson418/todoist-mcp-server/tools/complete_task)"
+}

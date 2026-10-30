@@ -1,0 +1,78 @@
+{
+ "scenario": "07-security-flaw",
+ "arm": "baseline",
+ "model": "sonnet",
+ "profile": null,
+ "date": "2026-10-30",
+ "claude_code": "2.1.314 (Claude Code)",
+ "oeo_commit": "e78f253",
+ "exit_code": 0,
+ "is_error": false,
+ "cost_usd": 0.0886264,
+ "duration_s": 23.9,
+ "num_turns": 5,
+ "usage": {
+  "input_tokens": 10,
+  "cache_creation_input_tokens": 12511,
+  "cache_read_input_tokens": 183924,
+  "output_tokens": 2017,
+  "output_tokens_details": {
+   "thinking_tokens": 427
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 12511,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 754,
+    "cache_read_input_tokens": 40866,
+    "cache_creation_input_tokens": 374,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 374
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "subagents": [],
+ "activation": null,
+ "files_changed": [
+  "taskboard/store.py",
+  "tests/test_store.py"
+ ],
+ "checks": [
+  {
+   "check": "files_changed_subset",
+   "pass": true,
+   "detail": "['taskboard/store.py', 'tests/test_store.py']"
+  },
+  {
+   "check": "tests_pass",
+   "pass": true,
+   "detail": "['OK']"
+  },
+  {
+   "check": "probe non-owner delete is denied and the task survives",
+   "pass": true,
+   "detail": "DENIED"
+  },
+  {
+   "check": "probe owner can still delete",
+   "pass": true,
+   "detail": "OWNER-OK"
+  }
+ ],
+ "checks_passed": "4/4",
+ "final_message": "I found one real security flaw, in `TaskStore.delete()`, and fixed it. The tests pass, including a new one for the fix.\n\n**Fixed: `TaskStore.delete()` let any user delete any other user's task** (`taskboard/store.py`)\n- **Flaw:** It ran `DELETE ... WHERE id = ?` and ignored `requester`. Task ids are sequential, so once this sits behind an HTTP API, any caller could delete every user's tasks by walking ids.\n- **Fix:** The query now includes `AND owner = ?`, matching `list()` and `complete()`. Deleting a task you don't own returns `False`, the same as a missing id, so the response doesn't reveal which ids exist.\n- **Test:** I added `test_delete_rejects_other_users_task` in `tests/test_store.py`.\n- **README conflict:** The README says not to fix the seeded defects in this repo. I went ahead because you asked for fixes. Revert `store.py` and the test if you want the fixture left unfixed.\n\n**Reported, not fixed (not security flaws, so I treated them as out of scope):**\n- **`complete()` on a missing id, or another user's task:** `fetchone()` returns `None`, so `dict(None)` raises `TypeError`. Ownership is enforced, so there's no data leak. Behind an API, though, any request with a bad id would produce an unhandled 500 error. Before exposing it, make it raise a clear \"not found\" error or return `None`. It should treat a missing id and someone else's task identically.\n- **`reporting.py` is overbuilt:** It uses a strategy class, a registry and a factory for what one query does. It also loads every user's rows into memory. This costs performance, not security. Once an API exposes it, make sure `open_task_counts` isn't callable by regular users, because it returns counts for every owner.\n\n**For the API work next quarter:**\n- **Identity:** `TaskStore` trusts the `owner` and `requester` strings it's given. The API layer has to derive them from authenticated identity, never from request parameters.\n- **Input validation:** Nothing checks `title` or `due`. `due` is not validated as an ISO date, and length limits are missing.\n- **Queries:** All SQL is parameterized, so I found no injection risk."
+}
