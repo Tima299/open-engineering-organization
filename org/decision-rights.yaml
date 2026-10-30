@@ -1,0 +1,84 @@
+# Decision Rights & Escalation Matrix (spec Section 4.2).
+# Exactly one decider per category. `fallback` decides when the decider's role is
+# not activated for the current class (e.g. no Technical Architect in Class B).
+# Group aliases are expanded by `oeo validate`.
+
+version: 1
+
+groups:
+  leads: [cto, technical-lead, project-manager, oss-maintainer, business-analyst]
+  engineers: [technical-lead, senior-developer, middle-developer, junior-developer, technical-architect, principal-engineer, senior-frontend-engineer, middle-frontend-engineer, junior-frontend-engineer]
+  community: []   # humans: contributors and users; see GOVERNANCE.md
+
+categories:
+  - id: business-scope
+    name: Business scope & priorities
+    decides: business-owner
+    consulted: [business-analyst, project-manager]
+    veto: []
+    informed: ["@leads"]
+  - id: architecture
+    name: Architecture & ADRs
+    decides: technical-architect
+    fallback: technical-lead
+    consulted: [cto, principal-engineer]
+    veto: [{role: cto, grounds: strategy or technical risk}]
+    informed: [project-manager, technical-lead]
+  - id: technical-standards
+    name: Technical standards
+    decides: cto
+    consulted: [principal-engineer, technical-lead]
+    veto: []
+    informed: ["@engineers"]
+  - id: implementation-approach
+    name: Implementation approach
+    decides: technical-lead
+    consulted: [senior-developer]
+    veto: [{role: principal-engineer, grounds: quality or complexity}]
+    informed: [project-manager]
+  - id: ux-visual-direction
+    name: UX & visual direction
+    decides: design-lead
+    fallback: business-owner
+    consulted: [business-analyst, senior-frontend-engineer]
+    veto: [{role: business-owner, grounds: brand or business fit}]
+    informed: [project-manager]
+  - id: security-posture
+    name: Security posture
+    decides: security-engineer
+    fallback: cto
+    consulted: [cto]
+    veto: [{role: security-engineer, grounds: unresolved vulnerability blocks release}]
+    informed: [cto, project-manager]
+  - id: release-approval
+    name: Release approval
+    decides: release-manager
+    fallback: oss-maintainer
+    consulted: [qa-verifier, security-engineer, project-manager]
+    veto: [{role: qa-verifier, grounds: failed quality gate}, {role: security-engineer, grounds: failed security gate}]
+    informed: [business-owner]
+  - id: license-adoption
+    name: License / third-party adoption
+    decides: legal-advisor
+    fallback: oss-maintainer
+    consulted: [oss-maintainer, cto]
+    veto: [{role: legal-advisor, grounds: license conflict or unverified license}]
+    informed: ["@leads"]
+  - id: model-cost-budget
+    name: Model / cost budget changes
+    decides: finops-controller
+    fallback: project-manager
+    consulted: [cto, project-manager]
+    veto: [{role: business-owner, grounds: budget}]
+    informed: [project-manager]
+  - id: community-governance
+    name: Community governance changes
+    decides: oss-maintainer
+    consulted: ["@community"]
+    veto: []
+    informed: ["@community"]
+
+rules:
+  - A veto states its grounds in writing and proposes a path forward.
+  - Escalation goes one level up with options, trade-offs and a recommendation, never a raw dump.
+  - Deadlocks escalate within one iteration to business-owner (business) or cto (technical); the resolution is recorded in the decision log.

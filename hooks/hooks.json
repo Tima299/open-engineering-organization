@@ -1,0 +1,16 @@
+{
+  "description": "OEO safety guard (asks before destructive/publishing commands and likely secrets) and FinOps usage logging. Disable with OEO_GUARD=off / OEO_FINOPS=off.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Write|Edit|MultiEdit",
+        "hooks": [{"type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/guard.py\"", "timeout": 10}]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [{"type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/finops_hook.py\"", "timeout": 15}]
+      }
+    ]
+  }
+}

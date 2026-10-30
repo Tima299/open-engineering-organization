@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Tima299/open-engineering-organization/schemas/role.schema.json",
+  "title": "OEO Role Contract",
+  "description": "Canonical contract every OEO role implements (spec Section 4.1). Provider- and host-neutral: models are tiers, tools are capabilities.",
+  "type": "object",
+  "required": ["role"],
+  "additionalProperties": false,
+  "properties": {
+    "role": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "tier", "title", "purpose", "responsibilities", "decision_rights", "consults", "informs", "inputs", "outputs", "tools_and_permissions", "relevant_skills", "escalation_conditions", "acceptance_criteria", "model_routing", "execution"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$"},
+        "tier": {"type": "integer", "enum": [1, 2, 3]},
+        "title": {"type": "string", "minLength": 3},
+        "purpose": {"type": "string", "minLength": 20, "maxLength": 300},
+        "responsibilities": {"type": "array", "minItems": 2, "items": {"type": "string", "minLength": 5}},
+        "decision_rights": {"type": "array", "items": {"type": "string", "minLength": 5}},
+        "consults": {"type": "array", "items": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"}},
+        "informs": {"type": "array", "items": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"}},
+        "inputs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 3}},
+        "outputs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 3}},
+        "tools_and_permissions": {"type": "array", "items": {"type": "string", "enum": ["read", "search", "edit", "execute", "web"]}},
+        "relevant_skills": {"type": "array", "items": {"type": "string", "pattern": "^[a-z0-9-]+(:[a-z0-9-]+)?$"}},
+        "escalation_conditions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 5}},
+        "acceptance_criteria": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 5}},
+        "model_routing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["preferred_model", "effort", "escalate_to"],
+          "properties": {
+            "preferred_model": {"type": "string", "enum": ["light", "standard", "advanced"]},
+            "effort": {"type": "string", "enum": ["low", "medium", "high"]},
+            "escalate_to": {"type": "string", "enum": ["standard", "advanced", "human"]}
+          }
+        },
+        "execution": {
+          "description": "How the role runs. human = a person decides; orchestrator = the main session performs it; checklist = the main session applies the acceptance criteria; subagent = an isolated agent.",
+          "type": "string",
+          "enum": ["human", "orchestrator", "checklist", "subagent"]
+        },
+        "agent": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$", "description": "Agent that runs this role: the role id itself (dedicated agent) or a generic agent (specialist, advisor)."},
+        "seniority": {"type": "string", "enum": ["junior", "middle", "senior"]},
+        "activation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "domains": {"type": "array", "items": {"type": "string"}, "description": "Tier 2: activated in Class C when any listed type, domain or signal (org/routing.yaml) is present."},
+            "triggers": {"type": "array", "items": {"type": "string"}, "description": "Tier 3: signal keys; 'a+b' means both must be present."},
+            "unless": {"type": "array", "items": {"type": "string"}, "description": "Signals that suppress activation."},
+            "delegated_by": {"type": "string", "description": "Never routed directly; assigned by this role."}
+          }
+        }
+      }
+    }
+  }
+}

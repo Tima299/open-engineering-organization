@@ -1,0 +1,20 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "metadata": {
+    "component": {"type": "application", "name": "oeo", "version": "0.1.0", "licenses": [{"license": {"id": "Apache-2.0"}}]},
+    "properties": [{"name": "oeo:runtime-dependencies", "value": "none (Python standard library only)"}]
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "pyyaml",
+      "version": "6.0.3",
+      "purl": "pkg:pypi/pyyaml@6.0.3",
+      "scope": "optional",
+      "licenses": [{"license": {"id": "MIT"}}],
+      "properties": [{"name": "oeo:usage", "value": "development and CI only; hash-pinned in requirements-dev.txt"}]
+    }
+  ]
+}

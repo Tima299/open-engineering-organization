@@ -1,0 +1,38 @@
+# OEO model & effort routing policy (spec Section 8).
+# Role contracts only name a tier (light | standard | advanced). This file maps tiers
+# to concrete models per profile, so a new model release or another provider is a
+# config change, not a rewrite. Select a profile with OEO_MODEL_PROFILE.
+#
+# This is routing POLICY. The host decides what actually runs: see
+# docs/model-routing.md for how Claude Code resolves models and how to verify it.
+
+version: 1
+default_profile: default
+
+profiles:
+  default:                       # the requested initial profile (spec Section 8 table)
+    provider: anthropic
+    tiers:
+      light:    {model_id: claude-haiku-5-5,  host_alias: haiku}
+      standard: {model_id: claude-sonnet-5-5, host_alias: sonnet}
+      advanced: {model_id: claude-opus-5-5,   host_alias: opus}
+  economy:                       # cheaper: no top-tier model unless a role escalates to a human
+    provider: anthropic
+    tiers:
+      light:    {model_id: claude-haiku-5-5,  host_alias: haiku}
+      standard: {model_id: claude-haiku-5-5,  host_alias: haiku}
+      advanced: {model_id: claude-sonnet-5-5, host_alias: sonnet}
+
+# Per-role overrides applied on top of the role contract, per profile or for all.
+overrides:
+  all: {}
+  # default:
+  #   security-engineer: {preferred_model: advanced, effort: high}
+
+# FinOps budgets (spec Section 8 guardrails). Per-invocation estimates are keyed by effort;
+# class budgets cover all subagents of one engagement. `oeo cost` flags overruns.
+# INITIAL, UNCALIBRATED values: recalibrate from .oeo/finops.jsonl data (see evals/README.md).
+budgets:
+  per_invocation_tokens: {low: 25000, medium: 60000, high: 120000}
+  per_class_tokens: {A: 100000, B: 300000, C: 900000, D: 250000}
+  max_effort_without_justification: medium

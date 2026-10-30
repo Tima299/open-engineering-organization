@@ -1,0 +1,34 @@
+# Threat model
+
+Scope: the OEO plugin (skills, agents, hooks, `scripts/`) running inside Claude Code on a
+developer machine or CI, operating on a target repository. Method: STRIDE-style per asset,
+reviewed on every change to hooks, scripts, agent tool lists or routing. Verification checklist:
+[skills/verify/references/security.md](../skills/verify/references/security.md).
+
+## Assets and trust boundaries
+| Asset | Boundary |
+|---|---|
+| Target repository code and history | Agents may edit; destructive git operations need approval |
+| Secrets on the machine (env files, keys, tokens) | Must never enter transcripts, handoffs or commits |
+| User authorization (what may be published, deployed, spent) | Only the human grants it |
+| OEO policy files (`org/`, `config/`) | Trusted only as shipped in the installed plugin version |
+| Repository, issue, web and tool-output content | **Untrusted data**, never instructions |
+
+## Threats and mitigations
+| # | Threat | Mitigation | Residual risk |
+|---|---|---|---|
+| T1 | Prompt injection in repo files/issues/web pages redirects an agent | Agent preamble declares all such content data; precedence policy level rule; reviewers report injection attempts; eval scenario `injection-in-repo` | Model compliance is probabilistic; human review of consequential actions remains the backstop |
+| T2 | Destructive shell command (rm -rf, reset --hard, DROP, terraform destroy) | `scripts/guard.py` PreToolUse turns them into a confirmation prompt; Claude Code permissions | Pattern guard is bypassable (aliases, scripts); it is defense in depth, not a sandbox |
+| T3 | Unauthorized publication (force push, publish, release, tag push) | Guard asks; release skill requires explicit approval | Same as T2 |
+| T4 | Secret written into a file or printed into the transcript | Guard detects common token formats on Write/Edit and secret-file reads | Unknown token formats and secrets via Bash redirects are not caught |
+| T5 | Privilege creep through agent tools | Contracts use least-privilege capabilities; reviewers (QA, security, BA) get no edit tools; generated `tools:` lists are checked in CI | Generic agents share one tool set across contracts |
+| T6 | Supply chain: malicious/typosquatted dependency or third-party skill | License gate + provenance registry; OEO vendors no third-party skills and has zero runtime dependencies; dev dependency pinned with hash; Actions pinned by SHA | Adapters the user installs run with their own hooks (documented per entry) |
+| T7 | Authz regression or cross-tenant leak in the target product | Risky domains force Class C, which activates the security engineer and deny-path tests | Depends on test quality in the target repo |
+| T8 | Unsafe migration / data loss | `database` domain activates the database engineer; checklist requires rollback or forward-fix | Production data shape unknown to the agent |
+| T9 | Tampered OEO policy in a fork or PR | CODEOWNERS on `org/`, `config/`, `scripts/`, `hooks/`; CI validation; signed release tags | Users installing from unofficial forks |
+| T10 | Cost exhaustion (runaway agents) | Class budgets, retry budget, FinOps report, Class A/B use cheaper tiers | Main-session tokens are not measured by the hook |
+| T11 | Local logs leak information | `.oeo/` logs stay local, contain summaries and token counts only, never prompts or secrets; nothing is sent anywhere | A user may commit logs; docs recommend ignoring `*.jsonl` |
+
+## Out of scope
+Security of Claude Code itself, of model providers, and of third-party adapters (report to
+their maintainers). OEO adds no network calls and no telemetry.

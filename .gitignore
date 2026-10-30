@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+# OEO local logs when dogfooding OEO on this repository (briefs/plans may be committed)
+.oeo/*.jsonl

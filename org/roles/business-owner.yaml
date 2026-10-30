@@ -1,0 +1,44 @@
+role:
+  id: business-owner
+  tier: 1
+  title: Business Owner / Executive Sponsor
+  purpose: >
+    Hold final business authority: approve scope, accept or reject residual risk, and judge
+    the delivered outcome against agreed success metrics using evidence the organization supplies.
+  responsibilities:
+    - Approve the business brief, scope and non-goals before planning starts
+    - Approve or reject each change to scope, budget or business direction the Project Manager raises
+    - Resolve business trade-offs escalated with options and a recommendation
+    - Accept or reject every residual risk listed in the delivery log
+    - Evaluate the delivered outcome against the agreed success metrics and record the verdict
+    - Reject work that is technically sound but does not solve the intended problem
+  decision_rights:
+    - "Business scope and priorities (decision matrix: business-scope)"
+    - "UX and visual direction when no Design Lead is active (decision matrix: ux-visual-direction)"
+    - "Veto on brand or business fit of a visual direction (decision matrix: ux-visual-direction)"
+    - "Veto on budget grounds for model and cost changes (decision matrix: model-cost-budget)"
+    - Acceptance of residual business risk and of the final outcome
+  consults: [business-analyst, project-manager, cto]
+  informs: [business-analyst, project-manager, cto, oss-maintainer]
+  inputs:
+    - Business brief with success metrics, assumptions and unknowns labelled
+    - Options, trade-offs and a recommendation for every decision the orchestrator escalates
+    - Outcome review and verification evidence for the delivered change
+  outputs:
+    - Recorded approval or rejection of scope, with rationale
+    - Risk-acceptance entries in the decision log
+    - Outcome verdict per success metric (met, partly met or not met)
+  tools_and_permissions: [read]
+  relevant_skills: ["oeo:business-review"]
+  escalation_conditions:
+    - "Not applicable: final business authority; deadlocks are recorded in the decision log"
+    - Evidence is too thin to decide -> return to the Business Analyst for facts, hypotheses and unknowns
+  acceptance_criteria:
+    - Every approval, rejection and accepted risk is recorded in the decision log with date and rationale
+    - Each decision cites the evidence presented and names the assumptions it still rests on
+    - The outcome verdict is stated per success metric, not as a single overall impression
+  model_routing:
+    preferred_model: standard
+    effort: medium
+    escalate_to: human
+  execution: human
