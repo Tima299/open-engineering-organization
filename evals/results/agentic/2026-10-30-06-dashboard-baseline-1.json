@@ -1,0 +1,113 @@
+{
+ "scenario": "06-dashboard",
+ "arm": "baseline",
+ "model": "sonnet",
+ "profile": null,
+ "date": "2026-10-30",
+ "claude_code": "2.1.314 (Claude Code)",
+ "oeo_commit": "a021104-dirty",
+ "exit_code": 0,
+ "is_error": false,
+ "cost_usd": 0.09661549999999999,
+ "duration_s": 25.3,
+ "num_turns": 4,
+ "usage": {
+  "input_tokens": 8,
+  "cache_creation_input_tokens": 13528,
+  "cache_read_input_tokens": 144975,
+  "output_tokens": 2799,
+  "output_tokens_details": {
+   "thinking_tokens": 89
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 13528,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 407,
+    "cache_read_input_tokens": 40123,
+    "cache_creation_input_tokens": 2134,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 2134
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "subagents": [],
+ "activation": null,
+ "files_changed": [
+  "taskboard/dashboard.py",
+  "tests/test_dashboard.py"
+ ],
+ "checks": [
+  {
+   "check": "unchanged taskboard/db.py",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_contains '<!'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_contains 'lang='",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_contains 'viewport'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_contains ':root'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_contains '<script>alert(1)</script>'",
+   "pass": false,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains 'src=\"http'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains \"src='http\"",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains 'href=\"http'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains \"href='http\"",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "tests_pass",
+   "pass": true,
+   "detail": "['OK']"
+  }
+ ],
+ "checks_passed": "10/11",
+ "final_message": "I added `render_dashboard(store, today=None)` in `taskboard/dashboard.py`. It returns one self-contained HTML string, with inline CSS and no external assets. The new tests and the existing ones pass, but I haven't opened the page in a browser.\n\n- **Counts:** each owner gets a card with an \"N open\" badge. The counts come from the existing `open_task_counts`.\n- **Tasks:** the card lists that owner's open tasks, soonest due date first and undated tasks last. Tasks past their due date are highlighted red and labelled \"(overdue)\". They are marked by text as well as colour.\n- **Layout:** the cards sit in an auto-fit grid that stacks to one column on a phone. There is a dark-mode style via `prefers-color-scheme`.\n- **Safety and testing:** owner names, titles and due dates are HTML-escaped. A due date that isn't a valid ISO date is shown as text and never counts as overdue. `today` can be passed in so tests don't depend on the clock.\n\nI also added `tests/test_dashboard.py`. It covers counts, overdue highlighting, escaping, hiding completed tasks, and the empty case.\n\nI left the seeded defects listed in the README alone, as it says to."
+}
