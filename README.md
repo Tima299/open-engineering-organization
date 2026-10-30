@@ -5,7 +5,7 @@ are triaged, only the roles they need are activated, each role runs on a right-s
 implementer never verifies its own work, and every claim of success needs evidence.
 
 > Status: **v0.1.0, experimental.** The routing, contracts, validation and safety hooks are
-> tested. End-to-end quality is shown by one recorded run, not a benchmark. See [ROADMAP.md](ROADMAP.md).
+> tested. End-to-end quality is shown by [one recorded run](evals/results/2026-10-30-07-security-flaw-economy/README.md), not a benchmark. See [ROADMAP.md](ROADMAP.md).
 
 ## Why
 Agents usually fail in one of two ways. A single agent writes code and declares it done with no

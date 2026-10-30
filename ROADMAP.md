@@ -11,7 +11,7 @@ real-world evidence), **Planned** (not built). Updated with every release.
 | Generated agents and model/effort routing policy | Works (policy) | build check in CI; actual model per run only visible via FinOps log |
 | Guard hook (ask before destructive/publishing actions, secrets) | Experimental | unit-tested patterns; bypassable by design (defense in depth) |
 | FinOps token logging and `oeo cost` | Experimental | depends on Claude Code's internal transcript format |
-| Skills (`deliver`, `verify`, ...) end-to-end quality | Experimental | one recorded demo run; no statistically meaningful benchmark yet |
+| Skills (`deliver`, `verify`, ...) end-to-end quality | Experimental | [one recorded Class C run](evals/results/2026-10-30-07-security-flaw-economy/README.md) (6/6 criteria); no baseline, no benchmark yet |
 | Agentic eval harness with baseline comparison | Planned | scenario specs exist; automated runner with model access does not |
 | Second host adapter (non-Claude-Code) | Planned | contracts are host-neutral; no adapter yet |
 
