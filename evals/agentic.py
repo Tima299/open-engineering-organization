@@ -114,6 +114,8 @@ def run(scenario_id, arm, model, profile, timeout, budget):
     env = {k: v for k, v in os.environ.items() if k not in ("CLAUDE_CODE_SESSION_ID", "CLAUDE_PROJECT_DIR")}
     env.update(extra_env, OEO_MODEL_PROFILE=profile)
     session = str(uuid.uuid4())
+    commit = sh(["git", "rev-parse", "--short", "HEAD"], ROOT)[1].strip() + \
+        ("-dirty" if sh(["git", "status", "--porcelain", "--untracked-files=no"], ROOT)[1].strip() else "")
     cmd = ["claude", "-p", prompt, "--output-format", "json", "--model", model, "--session-id", session,
            "--permission-mode", "acceptEdits", "--allowedTools", *TOOLS, "--max-budget-usd", str(budget)]
     if arm == "oeo":
@@ -129,8 +131,7 @@ def run(scenario_id, arm, model, profile, timeout, budget):
     record = {
         "scenario": scenario["id"], "arm": arm, "model": model, "profile": profile if arm == "oeo" else None,
         "date": started.date().isoformat(), "claude_code": sh(["claude", "--version"], work)[1].strip(),
-        "oeo_commit": sh(["git", "rev-parse", "--short", "HEAD"], ROOT)[1].strip()
-        + ("-dirty" if sh(["git", "status", "--porcelain"], ROOT)[1].strip() else ""),
+        "oeo_commit": commit,
         "exit_code": code, "is_error": result.get("is_error"), "cost_usd": result.get("total_cost_usd"),
         "duration_s": round((result.get("duration_ms") or 0) / 1000, 1), "num_turns": result.get("num_turns"),
         "usage": result.get("usage"), "subagents": [{k: s.get(k) for k in ("agent_type", "models", "input_tokens",
@@ -141,7 +142,8 @@ def run(scenario_id, arm, model, profile, timeout, budget):
         "final_message": (result.get("result") or "")[:4000],
     }
     OUT.mkdir(parents=True, exist_ok=True)
-    stem = f"{record['date']}-{scenario['id']}-{arm}"
+    n = 1 + len(list(OUT.glob(f"{record['date']}-{scenario['id']}-{arm}-*.json")))
+    stem = f"{record['date']}-{scenario['id']}-{arm}-{n}"
     (OUT / f"{stem}.json").write_text(json.dumps(record, indent=1) + "\n", encoding="utf-8")
     _, diff, _ = sh(["git", "diff", "HEAD"], work)
     (OUT / f"{stem}.patch").write_text(diff, encoding="utf-8")

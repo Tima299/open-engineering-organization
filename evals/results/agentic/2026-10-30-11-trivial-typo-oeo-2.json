@@ -1,0 +1,137 @@
+{
+ "scenario": "11-trivial-typo",
+ "arm": "oeo",
+ "model": "sonnet",
+ "profile": "economy",
+ "date": "2026-10-30",
+ "claude_code": "2.1.314 (Claude Code)",
+ "oeo_commit": "f0dcce3",
+ "exit_code": 0,
+ "is_error": false,
+ "cost_usd": 0.13018938,
+ "duration_s": 13.2,
+ "num_turns": 2,
+ "usage": {
+  "input_tokens": 4,
+  "cache_creation_input_tokens": 3075,
+  "cache_read_input_tokens": 86885,
+  "output_tokens": 1077,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 3075,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 719,
+    "cache_read_input_tokens": 44777,
+    "cache_creation_input_tokens": 406,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 406
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "subagents": [
+  {
+   "agent_type": "oeo:qa-verifier",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 14,
+   "output_tokens": 4688,
+   "cache_write_tokens": 15965
+  }
+ ],
+ "activation": [
+  {
+   "ts": "2026-10-30T11:58:49+00:00",
+   "session": "e66f9475-6d0d-4d78-b592-bdce145dc381",
+   "engagement": "20261030-fix-typo-recieve-in-taskboard-readme",
+   "summary": "Fix typo recieve in taskboard README",
+   "class": "A",
+   "rule": "trivial-change",
+   "inputs": {
+    "type": "trivial",
+    "touches": [
+     "docs"
+    ],
+    "signals": [],
+    "files": 1,
+    "lines": 1
+   },
+   "roles": [
+    {
+     "id": "junior-developer",
+     "mode": "orchestrator",
+     "reason": "class A core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "qa-verifier",
+     "mode": "subagent",
+     "reason": "class A core",
+     "agent": "oeo:qa-verifier",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 60000
+    }
+   ],
+   "estimate_tokens": 60000,
+   "budget_tokens": 100000
+  }
+ ],
+ "files_changed": [
+  "README.md"
+ ],
+ "checks": [
+  {
+   "check": "max_files_changed",
+   "pass": true,
+   "detail": "['README.md']"
+  },
+  {
+   "check": "files_changed_subset",
+   "pass": true,
+   "detail": "['README.md']"
+  },
+  {
+   "check": "diff_contains 'receive'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "tests_pass",
+   "pass": true,
+   "detail": "['OK']"
+  },
+  {
+   "check": "oeo_class",
+   "pass": true,
+   "detail": "A"
+  },
+  {
+   "check": "max_subagents",
+   "pass": true,
+   "detail": "['oeo:qa-verifier']"
+  }
+ ],
+ "checks_passed": "6/6",
+ "final_message": "**Verdict: PASS.** I fixed the typo, and the independent QA check passed both gates.\n\n**1. Class and roles:** Class A (trivial-change rule). I made the fix as junior developer, and `oeo:qa-verifier` (haiku) checked it independently.\n\n**2. Files changed:** `README.md` only, line 33: \"Reports recieve their rows\" is now \"Reports receive their rows\".\n\n**3. Gates**\n\n| gate | result | evidence |\n|---|---|---|\n| diff-reviewed | PASS | `git diff` shows one hunk with 1 line added and 1 removed. |\n| checks-pass | PASS | `git grep -i recieve` finds nothing. 10 tests pass. |\n| lint and build | N/A: none defined | The repo has no lint or build configuration. |\n\nThe verifier didn't write `verification.md`, so I saved its gate table to `.oeo/20261030-fix-typo-recieve-in-taskboard-readme/verification.md`.\n\n**4. Acceptance criteria**\n- **Typo fixed:** `sed -n '33p' README.md` shows the corrected line.\n- **Nothing else changed:** the diff covers one file and one line.\n- **No other occurrences:** `git grep` returns no matches.\n\n**5. Outcome lines:** I didn't run `oeo:business-review`, since this is a Class A change.\n\n**6. Cost:** I didn't run `oeo cost`, since the skill asks for it only on Class B and above. The USD budget shows about $0.12 spent of $2.\n\n**7. Open risks:**\n- Risk is low. The change only touches docs, and the tests don't cover README text.\n- `python3 -m pytest` doesn't work in this environment because pytest isn't installed for `python3`. The tests pass with `PYTHONPATH` set to the repo root, or with `python3 -m unittest discover -s tests`.\n- The untracked `.oeo/` folder includes `activation-log.jsonl`, which contains the typo string. Keep `.oeo/` out of any commit.\n\n**Next step:** you decide whether to commit `README.md` (without `.oeo/`). I haven't committed anything."
+}
