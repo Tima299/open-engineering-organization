@@ -36,3 +36,5 @@ overrides:
 budgets:
   per_invocation_tokens: {low: 15000, medium: 30000, high: 60000}
   per_class_tokens: {A: 60000, B: 150000, C: 400000, D: 150000}
+  # Agents whose real usage differs from the effort estimate (eval 19: ~64k per web-research run).
+  per_agent_tokens: {researcher: 100000}

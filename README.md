@@ -83,11 +83,13 @@ python3 scripts/oeo.py route --type bugfix --touches auth,backend --files 2 --li
 | `OEO_FINOPS=off` | Disable subagent token logging |
 
 Files OEO writes in your project, and only when you ask for that kind of work:
-- `.oeo/`: brief, plan, decisions, risks, verification, screen-spec, product-marketing,
-  `research/`, `evidence/`, and two `.jsonl` logs.
+- `.oeo/<engagement>/`, one folder per triaged request: brief, plan, risks, verification,
+  screen-spec, research ledger and teardown, `evidence/`, `raw/`.
+- `.oeo/` (shared): `decisions.md`, `product-marketing.md`, `activation-log.jsonl`,
+  `finops.jsonl`, and `sessions/` with token snapshots. `oeo status` summarizes all of it.
 - Deliverables: `DESIGN.md`, `docs/adr/*`, `CHANGELOG.md`.
 
-Suggested `.gitignore`: `.oeo/*.jsonl`, `.oeo/sessions/`, `.oeo/*/evidence/`, `.oeo/research/*/raw/`.
+Suggested `.gitignore`: `.oeo/*.jsonl`, `.oeo/sessions/`, `.oeo/*/evidence/`, `.oeo/*/raw/`.
 
 ## Uninstall
 ```

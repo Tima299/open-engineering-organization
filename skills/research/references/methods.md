@@ -33,8 +33,8 @@ truncated reads as partial coverage, and keep quoted excerpts separate from summ
 - Paid tools (Firecrawl, scraping APIs) count against `oeo:finops`. Honor the user's credit cap.
   If usage cannot be measured, say "unknown" and stop paid collection.
 - Auth, credit or quota errors are terminal: check status once, report, stop.
-- Quote URLs in shell commands. Store no cookies or credentials in `.oeo/research/`.
-- Suggested `.gitignore`: `.oeo/research/*/raw/`.
+- Quote URLs in shell commands. Store no cookies or credentials in `.oeo/`.
+- Suggested `.gitignore`: `.oeo/*/raw/`.
 
 Ideas adapted from morluto/rea, mvanhorn/last30days-skill and firecrawl/firecrawl-claude-plugin
 (all MIT); see THIRD_PARTY.md.

@@ -86,7 +86,7 @@ memory:
   - {path: .oeo/<engagement>/brief.md, owner: business-analyst, written_by: orchestrator, freshness: per engagement; superseded briefs are deleted, not kept}
   - {path: .oeo/<engagement>/plan.md, owner: project-manager, freshness: updated at every stage exit}
   - {path: .oeo/decisions.md, owner: project-manager, freshness: "append-only log of decisions, vetoes, deadlock resolutions; reversible bets carry a review_by date"}
-  - {path: .oeo/research/, owner: market-researcher, freshness: per research question; ledger kept, raw fetches deleted when the question closes}
+  - {path: .oeo/<engagement>/ledger.md, owner: market-researcher, freshness: per research engagement; raw fetches in raw/ deleted when the question closes}
   - {path: .oeo/product-marketing.md, owner: product-marketer, freshness: refreshed before each launch; learnings retired, never deleted}
   - {path: .oeo/<engagement>/evidence/, owner: qa-verifier, freshness: per verification run; gitignored}
   - {path: .oeo/<engagement>/screen-spec.md, owner: design-lead, freshness: per UI task}

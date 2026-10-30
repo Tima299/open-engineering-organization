@@ -179,6 +179,9 @@
  "generated_by": "scripts/oeo.py build",
  "models": {
   "budgets": {
+   "per_agent_tokens": {
+    "researcher": 100000
+   },
    "per_class_tokens": {
     "A": 60000,
     "B": 150000,

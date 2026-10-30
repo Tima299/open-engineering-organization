@@ -622,7 +622,8 @@ def route(lock, task_type, touches=(), signals=(), files=None, lines=None, profi
             m = effective_model(r["model_routing"], rid, models, profile)
             entry.update(agent=f"oeo:{r['agent']}", model=m["host_alias"], model_id=m["model_id"],
                          effort=m["effort"], escalate_to=m["escalate_to"],
-                         estimate_tokens=budgets["per_invocation_tokens"][m["effort"]])
+                         estimate_tokens=(budgets.get("per_agent_tokens") or {}).get(
+                             r["agent"], budgets["per_invocation_tokens"][m["effort"]]))
             estimate += entry["estimate_tokens"]
         plan_roles.append(entry)
     plan_roles.sort(key=lambda e: (e["tier"], e["id"]))
