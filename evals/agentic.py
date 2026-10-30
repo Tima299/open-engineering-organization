@@ -116,7 +116,8 @@ def score(auto, work, arm, final="", trace=None):
         add("tests_pass", code == 0, (err or out).strip().splitlines()[-1:] or "")
     for probe in auto.get("probes", []):
         code, out, err = sh([sys.executable, "-c", probe["code"]], work)
-        add(f"probe {probe['name']}", probe["expect"] in out, (out + err).strip()[-200:])
+        expected = probe.get("expect_any") or [probe["expect"]]
+        add(f"probe {probe['name']}", any(e in out for e in expected), (out + err).strip()[-200:])
     for s in auto.get("final_contains", []):
         add(f"final_contains {s!r}", s.lower() in final.lower())
     if auto.get("copy_lint_glob"):

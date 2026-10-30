@@ -15,8 +15,10 @@ destructive, public or paid · context is a budget. Conflicts: [precedence](refe
 `oeo <cmd>` = `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/oeo.py" <cmd>` (plugin root:
 `${CLAUDE_PLUGIN_ROOT}`; if empty, `find ~/.claude/plugins -name oeo.py`).
 
-## 1. Triage (always)
-Size the change from the repository, then run, using only `org/routing.yaml` vocabulary:
+## 1. Triage (always; the router is your first OEO action)
+This includes requests to verify, review or ship someone else's work: triage them as the change
+they verify, and `oeo:qa-verifier` does the checking (eval 18). Size the change from the
+repository, then run, using only `org/routing.yaml` vocabulary:
 ```bash
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/oeo.py" route --type <type> --touches <domains> \
   --signals <signals> --files <n> --lines <n> --summary "<one line>" --session "${CLAUDE_SESSION_ID}" --log

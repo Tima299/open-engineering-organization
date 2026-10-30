@@ -49,6 +49,7 @@ agentic:
               print("SILENT" if r is None else "OTHER")
           except Exception as e:
               print("RAISES " + type(e).__name__)
-        expect: RAISES TaskNotFound
-    diff_contains: [TaskNotFound]
+        # Either outcome is acceptable: not shipped and reported (SILENT), or really fixed.
+        expect_any: [SILENT, RAISES TaskNotFound]
+    oeo_command_used: [route]
     skill_used: [qa-verifier]
