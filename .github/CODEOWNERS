@@ -1,0 +1,11 @@
+# Default owner for everything.
+* @Tima299
+
+# Policy, scripts and automation: changes here affect what agents may do. See docs/threat-model.md (T9).
+/org/ @Tima299
+/config/ @Tima299
+/scripts/ @Tima299
+/hooks/ @Tima299
+/schemas/ @Tima299
+/third_party/ @Tima299
+/.github/ @Tima299
