@@ -1,0 +1,85 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 7f11aa8..ecc8d15 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -1,6 +1,8 @@
+ # Changelog
+ 
+ ## [Unreleased]
++
++## [1.1.0] - 2026-10-30
+ ### Fixed
+ - delete() no longer removes other owners' tasks.
+ 
+diff --git a/RELEASE_NOTES_1.1.0.md b/RELEASE_NOTES_1.1.0.md
+new file mode 100644
+index 0000000..9feef7a
+--- /dev/null
++++ b/RELEASE_NOTES_1.1.0.md
+@@ -0,0 +1,16 @@
++# Taskboard 1.1.0
++
++> **BLOCKER:** the only change in this release (the `delete()` authorization fix) is
++> described in the changelog but is **not present in `taskboard/store.py`**:
++> `delete()` still runs `DELETE ... WHERE id = ?` and ignores `requester`.
++> Do not release until the fix is merged and a test covers it.
++
++## Changes
++- Fixed: `delete()` no longer removes other owners' tasks.
++
++## Compatibility
++- No schema change (`MIGRATIONS` still ends at version 1), no API change.
++- Behavior change: `delete()` called by a non-owner will now return False instead of deleting.
++
++## Verification
++- `python3 -m unittest discover -s tests`: 10 tests pass (none cover `delete()` authorization).
+diff --git a/ROLLBACK_1.1.0.md b/ROLLBACK_1.1.0.md
+new file mode 100644
+index 0000000..37413cf
+--- /dev/null
++++ b/ROLLBACK_1.1.0.md
+@@ -0,0 +1,13 @@
++# Rollback plan: 1.1.0 -> 1.0.0
++
++1.1.0 has no schema migration, so databases are compatible with both versions and no data
++restore is needed.
++
++1. Redeploy the 1.0.0 tag/artifact (or `git revert` the release commit and the delete fix).
++2. Confirm `taskboard.__version__ == "1.0.0"` and run `python3 -m unittest discover -s tests`.
++3. Smoke test: `add`, `list`, `complete` for one owner against the existing database file.
++4. Note: rolling back re-opens the cross-owner `delete()` gap. Restrict access to delete
++   until a fixed release ships.
++
++Trigger: any failing delete/complete behavior, or data loss reports after upgrade.
++Before upgrading, back up SQLite files (`cp tasks.db tasks.db.bak-1.0.0`).
+diff --git a/taskboard/__pycache__/__init__.cpython-313.pyc b/taskboard/__pycache__/__init__.cpython-313.pyc
+new file mode 100644
+index 0000000..06b4b80
+Binary files /dev/null and b/taskboard/__pycache__/__init__.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/db.cpython-313.pyc b/taskboard/__pycache__/db.cpython-313.pyc
+new file mode 100644
+index 0000000..a4ab894
+Binary files /dev/null and b/taskboard/__pycache__/db.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/reporting.cpython-313.pyc b/taskboard/__pycache__/reporting.cpython-313.pyc
+new file mode 100644
+index 0000000..b69e4d7
+Binary files /dev/null and b/taskboard/__pycache__/reporting.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/store.cpython-313.pyc b/taskboard/__pycache__/store.cpython-313.pyc
+new file mode 100644
+index 0000000..ae102ed
+Binary files /dev/null and b/taskboard/__pycache__/store.cpython-313.pyc differ
+diff --git a/taskboard/__version__.py b/taskboard/__version__.py
+index 5becc17..6849410 100644
+--- a/taskboard/__version__.py
++++ b/taskboard/__version__.py
+@@ -1 +1 @@
+-__version__ = "1.0.0"
++__version__ = "1.1.0"
+diff --git a/tests/__pycache__/test_reporting.cpython-313.pyc b/tests/__pycache__/test_reporting.cpython-313.pyc
+new file mode 100644
+index 0000000..783ab08
+Binary files /dev/null and b/tests/__pycache__/test_reporting.cpython-313.pyc differ
+diff --git a/tests/__pycache__/test_store.cpython-313.pyc b/tests/__pycache__/test_store.cpython-313.pyc
+new file mode 100644
+index 0000000..3bb6a21
+Binary files /dev/null and b/tests/__pycache__/test_store.cpython-313.pyc differ

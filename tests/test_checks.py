@@ -373,6 +373,7 @@ class StatusTests(OeoProject):
 
 # --------------------------------------------------------------------------- copy lint
 RULE_SAMPLES = {
+    "unfilled template slot": ["Install from [REPOSITORY URL].", "Star us at {{repo_url}}"],
     "placeholder or filler text": ["Lorem ipsum dolor sit amet", "Pricing: TBD", "TODO write the intro",
                                    "Hello [insert customer name]", "Replace this placeholder image"],
     "testimonial or customer claim without a source": ["Trusted by 10,000+ teams", "Loved by 2.5k developers",
@@ -773,3 +774,12 @@ class CostMainSessionTests(OeoProject):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TemplateSlotTests(unittest.TestCase):
+    def test_unfilled_template_slots_are_must_fix(self):
+        # Regression (eval 20, OEO run): "[REPOSITORY URL]" slots reached the copy; QA caught them, the linter did not.
+        for text in ("Install from [REPOSITORY URL].", "Star us at {{repo_url}}", "See <CHANGELOG LINK>."):
+            with self.subTest(text=text):
+                self.assertIn("must-fix", {f["severity"] for f in checks.copy_lint(text)})
+        self.assertEqual(checks.copy_lint("Read the [docs](https://example.org) and [API] notes."), [])

@@ -15,5 +15,11 @@ Raw JSON and diffs for every run are in this folder. Main session: `sonnet`; OEO
 | [2026-10-30-11-trivial-typo-oeo-2](2026-10-30-11-trivial-typo-oeo-2.json) | f0dcce3 | 6/6 | 0.13 | n/a | 1 | A |
 | [2026-10-30-19-feature-research-baseline-1](2026-10-30-19-feature-research-baseline-1.json) | e78f253-dirty | 1/1 | 0.11 | n/a | 0 | - |
 | [2026-10-30-19-feature-research-oeo-1](2026-10-30-19-feature-research-oeo-1.json) | 5ab718b | 2/3 | 0.71 | n/a | 8 | B |
+| [2026-10-30-20-marketing-launch-baseline-1](2026-10-30-20-marketing-launch-baseline-1.json) | 6e1ff2a | 5/5 | 0.11 | 34 | 0 | - |
+| [2026-10-30-20-marketing-launch-oeo-1](2026-10-30-20-marketing-launch-oeo-1.json) | 6e1ff2a | 6/7 | 0.35 | 308 | 5 | D |
+| [2026-10-30-21-chief-of-staff-brief-baseline-1](2026-10-30-21-chief-of-staff-brief-baseline-1.json) | 6e1ff2a | 4/5 | 0.06 | 21 | 0 | - |
+| [2026-10-30-21-chief-of-staff-brief-oeo-1](2026-10-30-21-chief-of-staff-brief-oeo-1.json) | 6e1ff2a | 5/5 | 0.08 | 36 | 0 | C |
+| [2026-10-30-22-release-prep-baseline-1](2026-10-30-22-release-prep-baseline-1.json) | 6e1ff2a | 2/3 | 0.09 | 35 | 0 | - |
+| [2026-10-30-22-release-prep-oeo-1](2026-10-30-22-release-prep-oeo-1.json) | 6e1ff2a | 4/4 | 0.20 | 112 | 1 | D |
 
 One run per arm is an anecdote, not a benchmark. Failed checks are listed per run in the JSON files; scoring corrections and findings are in [NOTES.md](NOTES.md).

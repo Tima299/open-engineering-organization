@@ -1,0 +1,163 @@
+diff --git a/launch/taskboard-1.0.md b/launch/taskboard-1.0.md
+new file mode 100644
+index 0000000..18d6ea8
+--- /dev/null
++++ b/launch/taskboard-1.0.md
+@@ -0,0 +1,157 @@
++# Taskboard 1.0 launch copy
++
++Everything below is limited to what the code does today: a Python library
++(`TaskStore`) with `add`, `list`, `complete` and `delete`, SQLite storage, forward-only
++migrations, and an open-task count per owner. There is no UI, server, CLI, or priority field,
++so the copy does not claim one. Items in [brackets] need a real value before publishing.
++
++---
++
++## Part 1: Launch announcement
++
++**Title:** Taskboard 1.0: a small to-do service you can read in one sitting
++
++Today we're releasing Taskboard 1.0.
++
++Taskboard is a per-user to-do service for Python. Each owner gets their own task list,
++stored in SQLite. It is about 100 lines of library code and uses only the standard library.
++There is nothing to install, no dependencies to audit, and no server to run.
++
++```python
++from taskboard import TaskStore
++
++store = TaskStore("tasks.db")          # or TaskStore() for in-memory
++task_id = store.add("ana", "write the release notes", due="2030-01-31")
++store.complete("ana", task_id)
++print(store.list("ana"))
++```
++
++**What's in 1.0**
++
++- **Per-owner task lists.** Add tasks with a title and an optional ISO due date, list them
++  oldest-first, and mark them done.
++- **SQLite storage.** Use a file for persistence or the in-memory default for tests and scripts.
++- **Forward-only migrations.** The schema is versioned. Opening a database applies any pending
++  migrations, and doing it repeatedly is safe.
++- **Open-task reporting.** `open_task_counts(store)` returns how many open tasks each owner has.
++- **Standard library only.** Python 3, no packages, no install step.
++
++**Who it's for**
++
++Taskboard suits developers who need a to-do backend inside a larger project, such as an internal
++tool, a bot, or a prototype. It also suits anyone who wants a small, readable example of
++SQLite-backed storage with migrations.
++
++**Get started**
++
++```bash
++git clone [repository URL]
++cd taskboard
++python3 -m unittest discover -s tests
++```
++
++Then try the snippet above. The whole library is three short modules (`store.py`, `db.py`,
++`reporting.py`), so reading the source is the quickest way to learn it.
++
++**What's next**
++
++Task priorities are the next planned schema change. [Add any other roadmap items you
++want to commit to.]
++
++Taskboard is released under the Apache-2.0 license. [Link to issues / contributing guide.]
++
++---
++
++## Part 2: Landing page copy
++
++### Hero
++
++**Headline:** Per-user to-dos, with nothing to install.
++
++**Subhead:** Taskboard is a small Python library that gives every owner their own task list in
++SQLite. It has no dependencies and no server, and you can read all of it in an afternoon.
++
++**Primary CTA:** Get Taskboard 1.0 → [repository URL]
++**Secondary CTA:** Read the source
++
++**Hero code block:**
++
++```python
++from taskboard import TaskStore
++
++store = TaskStore("tasks.db")
++task_id = store.add("ana", "write the release notes", due="2030-01-31")
++store.complete("ana", task_id)
++print(store.list("ana"))
++```
++
++### Three value points
++
++**Zero dependencies**
++Taskboard needs Python 3 and nothing else. There's no install step, so there's nothing to pin,
++patch or audit.
++
++**Your data in a plain SQLite file**
++Point it at `tasks.db` and you can open the file with any SQLite tool. Use the in-memory default
++for tests.
++
++**Schema changes that don't break databases**
++Migrations are versioned and forward-only. Open an older database and Taskboard brings it up to
++date.
++
++### How it works
++
++1. **Create a store.** `TaskStore()` for memory, `TaskStore("tasks.db")` for a file.
++2. **Add tasks.** `store.add(owner, title, due=None)` returns the new task's id.
++3. **Work the list.** `store.list(owner)` returns that owner's tasks as plain dicts.
++   `store.complete(owner, task_id)` marks one done.
++4. **See the load.** `open_task_counts(store)` returns open tasks per owner.
++
++### What you get in 1.0
++
++| | |
++|---|---|
++| Add / list / complete / delete | ✓ |
++| Optional ISO due dates | ✓ |
++| File-backed or in-memory SQLite | ✓ |
++| Versioned, repeatable migrations | ✓ |
++| Open-task counts per owner | ✓ |
++| Python standard library only | ✓ |
++
++### Small on purpose
++
++Taskboard does one job. It is a storage layer, not an app. It has no web UI and no HTTP API.
++Put whatever front end you like on top.
++
++### Closing CTA
++
++**Headline:** Read it, run it, build on it.
++
++**Body:** Clone the repo, run the tests, and have a working task store in a few minutes.
++
++**Button:** Get Taskboard 1.0 → [repository URL]
++
++**Footer:** Apache-2.0 licensed. [Issues link] · [Contributing link]
++
++---
++
++## Notes for whoever publishes this
++
++These are open questions I found while writing. I did not change any code.
++
++1. **Don't ship "secure" or "private" claims.** `delete()` ignores the requester, so any user
++   can delete another user's task. The README lists this as a known defect. The copy only says
++   each owner "has their own task list," and it never mentions privacy or access control. I'd fix
++   `delete()` before calling this 1.0.
++2. **`complete()` on an unknown id crashes.** It does `dict(None)` and raises `TypeError`. That is
++   also a listed defect, and it's worth fixing or documenting before launch.
++3. **No version number exists in the code.** There is no `__version__`, packaging metadata, or
++   tag, so "1.0" is only a label. Nothing in the repo shows how it will be distributed (pip,
++   PyPI, git clone). The copy assumes git clone, and the install section needs your real
++   channel.
++4. **The README calls this an evaluation fixture.** If the 1.0 launch is real, that wording
++   should be removed or reframed so the landing page and README agree.
++5. **Placeholders.** I invented no URLs, pricing, testimonials, user counts or benchmarks.
++   Every bracketed item needs your input.
++6. **The roadmap line about priorities** comes from the README's note that the `priority` column
++   doesn't exist yet. Remove it if you don't want to commit to it.

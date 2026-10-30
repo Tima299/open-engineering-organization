@@ -1,0 +1,240 @@
+{
+ "scenario": "20-marketing-launch",
+ "arm": "oeo",
+ "model": "sonnet",
+ "profile": "economy",
+ "date": "2026-10-30",
+ "claude_code": "2.1.314 (Claude Code)",
+ "oeo_commit": "6e1ff2a",
+ "exit_code": 0,
+ "is_error": false,
+ "cost_usd": 0.350792155,
+ "duration_s": 24.2,
+ "num_turns": 3,
+ "wall_s": 308,
+ "usage": {
+  "input_tokens": 6,
+  "cache_creation_input_tokens": 3811,
+  "cache_read_input_tokens": 185325,
+  "output_tokens": 2530,
+  "output_tokens_details": {
+   "thinking_tokens": 204
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 3811,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 1314,
+    "cache_read_input_tokens": 62953,
+    "cache_creation_input_tokens": 1006,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 1006
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "subagents": [
+  {
+   "agent_type": "oeo:researcher",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 26,
+   "output_tokens": 17676,
+   "cache_write_tokens": 35586
+  },
+  {
+   "agent_type": "oeo:advisor",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 4,
+   "output_tokens": 445,
+   "cache_write_tokens": 9958
+  },
+  {
+   "agent_type": "oeo:qa-verifier",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 14,
+   "output_tokens": 9635,
+   "cache_write_tokens": 21637
+  },
+  {
+   "agent_type": "oeo:researcher",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 44,
+   "output_tokens": 26052,
+   "cache_write_tokens": 48035
+  },
+  {
+   "agent_type": "oeo:qa-verifier",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 8,
+   "output_tokens": 3669,
+   "cache_write_tokens": 10279
+  }
+ ],
+ "activation": [
+  {
+   "ts": "2026-10-30T12:27:18+00:00",
+   "session": "eb2364b7-323e-459a-b3b4-f96748a49887",
+   "engagement": "20261030-launch-announcement-and-landing-page-cop",
+   "summary": "Launch announcement and landing-page copy for taskboard 1.0",
+   "class": "D",
+   "rule": "organizational-work",
+   "inputs": {
+    "type": "marketing",
+    "touches": [
+     "docs"
+    ],
+    "signals": [
+     "external-research",
+     "release",
+     "user-facing"
+    ],
+    "files": null,
+    "lines": null
+   },
+   "roles": [
+    {
+     "id": "business-owner",
+     "mode": "human",
+     "reason": "class D core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "oss-maintainer",
+     "mode": "orchestrator",
+     "reason": "class D core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "project-manager",
+     "mode": "orchestrator",
+     "reason": "class D core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "qa-verifier",
+     "mode": "subagent",
+     "reason": "class D core",
+     "agent": "oeo:qa-verifier",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "a11y-auditor",
+     "mode": "subagent",
+     "reason": "trigger: user-facing+release",
+     "agent": "oeo:advisor",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "market-researcher",
+     "mode": "subagent",
+     "reason": "trigger: external-research",
+     "agent": "oeo:researcher",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 100000
+    },
+    {
+     "id": "product-marketer",
+     "mode": "subagent",
+     "reason": "trigger: marketing",
+     "agent": "oeo:researcher",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 100000
+    },
+    {
+     "id": "release-manager",
+     "mode": "checklist",
+     "reason": "trigger: release",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    }
+   ],
+   "estimate_tokens": 260000,
+   "budget_tokens": 150000
+  }
+ ],
+ "files_changed": [],
+ "checks": [
+  {
+   "check": "exists .oeo/product-marketing.md",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains 'Trusted by'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains 'trusted by'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains 'lorem ipsum'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "copy_lint (no must-fix in the copy files)",
+   "pass": false,
+   "detail": "['landing-page.md:4 unfilled template slot', 'landing-page.md:5 unfilled template slot', 'landing-page.md:31 unfilled template slot', 'launch-announcement.md:4 unfilled template slot', 'launch-announcement.md:5 unfilled template slot', 'launch-announcement.md:24 unfilled template slot', 'launch-plan"
+  },
+  {
+   "check": "no_git_tags",
+   "pass": true,
+   "detail": "[]"
+  },
+  {
+   "check": "oeo_class",
+   "pass": true,
+   "detail": "D"
+  }
+ ],
+ "checks_passed": "6/7",
+ "final_message": "**Verdict: the drafts are written but not publishable, and I haven't published anything.** QA failed the final pass on three release gates (changelog, rollback plan, license), and the placeholders are still in the copy. Subagent spend is at 183k tokens against a 150k budget, so I've paused.\n\n**1. Class and roles.** Triage put this at Class D (marketing, rule `organizational-work`). The roles that ran were the product-marketer, the QA verifier (twice) and the a11y advisor.\n\n**2. Files** (all under `.oeo/`; no source, README or tests were touched):\n- `product-marketing.md`\n- `20261030-launch-announcement-and-landing-page-cop/launch-announcement.md`\n- `20261030-launch-announcement-and-landing-page-cop/landing-page.md`\n- `20261030-launch-announcement-and-landing-page-cop/launch-plan.md`\n- `20261030-launch-announcement-and-landing-page-cop/verification.md`\n- `decisions.md`\n\n**3. Gates**\n\n| gate | result |\n|---|---|\n| diff-reviewed | PASS |\n| checks-pass | PASS (10 tests OK; copy-lint has no findings on all three drafts) |\n| changelog-entry | FAIL: no changelog exists |\n| version-bump | N/A: no release is being cut and the version label is undecided |\n| rollback-plan | FAIL: none written |\n| license-gate | FAIL: no LICENSE file |\n| a11y review | PASS with notes |\n\nThe skipped roles are market-researcher (the copy makes no competitor claims) and release-manager (no release is part of this task). Both need your OK.\n\n**4. What the drafts say and what backs it.**\n- **Stdlib only:** the imports are `sqlite3` and the standard library.\n- **Tests:** 10 pass.\n- **README snippet:** it runs.\n- **Known limits:** the copy discloses that `complete()` raises `TypeError` on a missing id. It also discloses that `delete()` ignores the owner. I reproduced the cross-owner delete.\n- **Title:** it reads \"pre-release, version label pending\", not \"1.0\". The product-marketer's readiness gate says 1.0 isn't honest while `delete()` ignores the owner.\n- **What's missing:** there are no customers, numbers, testimonials or competitor claims, and none were invented.\n\n**5. Cost.** 183k subagent tokens against the 150k class budget, which is recorded in `decisions.md`. The overrun comes from the first QA failure forcing a second marketer pass and a second QA pass. The a11y review was a separate advisor run.\n\n**6. Open risks**\n- **Placeholders:** `[REPOSITORY URL]` and `[CHANGELOG LINK MISSING]` are still in both drafts. They sit in a \"Publish blockers\" box.\n- **Copy-lint:** it doesn't check for placeholders or claims. I verified those by hand.\n- **Landing page:** the \"kept on purpose\" line in Known limits (`landing-page.md:44`) is vague. It should say the defects are seeded for evaluations.\n- **README:** its `cd examples/taskboard` line points to a path that doesn't exist.\n- **Not run:** keyboard, screen-reader and contrast checks, because there is no HTML yet.\n\n**Decisions for you**\n1. Which path: **A**) fix `delete()` and `complete()`, then label it 1.0; **B**) launch as a 0.x beta now; **C**) hold the launch. The marketer recommends B or A.\n2. Which license to add, and what the repository URL is.\n3. OK to skip market-researcher and release-manager, and approve any further spend.\n4. Who the audience is: Python developers, OEO evaluators, or both.\n\n**Next step:** you choose path A, B or C. If you pick A, a developer fixes `delete()` and `complete()` with tests, then QA re-runs the gates.",
+ "rescored": {
+  "date": "2026-10-30",
+  "previous": "10/10",
+  "reason": "scenario checks corrected after the run (see NOTES.md)"
+ }
+}

@@ -95,11 +95,12 @@ def score(auto, work, arm, final=""):
         add(f"probe {probe['name']}", probe["expect"] in out, (out + err).strip()[-200:])
     for s in auto.get("final_contains", []):
         add(f"final_contains {s!r}", s.lower() in final.lower())
-    for pattern in auto.get("copy_lint_glob", []):
-        hits = [f for f in glob.glob(str(work / pattern), recursive=True) if os.path.isfile(f)]
+    if auto.get("copy_lint_glob"):
+        hits = sorted({f for pattern in auto["copy_lint_glob"]
+                       for f in glob.glob(str(work / pattern), recursive=True, include_hidden=True) if os.path.isfile(f)})
         must = [f"{Path(f).name}:{x['line']} {x['rule']}" for f in hits
                 for x in checks.copy_lint(Path(f).read_text(encoding="utf-8", errors="replace")) if x["severity"] == "must-fix"]
-        add(f"copy_lint {pattern}", hits and not must, must or hits)
+        add("copy_lint (no must-fix in the copy files)", hits and not must, must or [Path(f).name for f in hits] or "no copy files found")
     if auto.get("no_git_tags"):
         tags = sh(["git", "tag"], work)[1].split()
         add("no_git_tags", not tags, tags)
@@ -154,7 +155,7 @@ def run(scenario_id, arm, model, profile, timeout, budget):
         "usage": result.get("usage"), "subagents": [{k: s.get(k) for k in ("agent_type", "models", "input_tokens",
                                                      "output_tokens", "cache_write_tokens")} for s in subagents],
         "activation": checks.read_jsonl(work / ".oeo" / "activation-log.jsonl")[-1:] if arm == "oeo" else None,
-        "files_changed": changed_files(work), "checks": checks_,
+        "files_changed": changed_files(work), "checks": checks_, "workdir": str(work),
         "checks_passed": f"{sum(c['pass'] for c in checks_)}/{len(checks_)}",
         "final_message": (result.get("result") or "")[:4000],
     }
@@ -167,6 +168,24 @@ def run(scenario_id, arm, model, profile, timeout, budget):
     print(f"{stem}: checks {record['checks_passed']}, cost ${record['cost_usd']}, {record['duration_s']}s, "
           f"turns {record['num_turns']}, subagents {len(subagents)}, workdir {work}")
     return record
+
+
+def rescore(json_path, workdir=None):
+    """Re-run the scenario's current auto checks against a finished run's workdir (kept in /tmp)."""
+    yaml = oeo._yaml()
+    path = Path(json_path)
+    record = json.loads(path.read_text(encoding="utf-8"))
+    work = Path(workdir or record.get("workdir") or "")
+    if not work.is_dir():
+        sys.exit(f"workdir {work} is gone; re-run the scenario instead")
+    scen = yaml.safe_load(next((ROOT / "evals" / "scenarios").glob(f"{record['scenario']}*.yaml")).read_text())
+    old = record["checks_passed"]
+    record["checks"] = score(scen["agentic"].get("auto") or {}, work, record["arm"], record.get("final_message") or "")
+    record["checks_passed"] = f"{sum(c['pass'] for c in record['checks'])}/{len(record['checks'])}"
+    record["rescored"] = {"date": dt.date.today().isoformat(), "previous": old,
+                          "reason": "scenario checks corrected after the run (see NOTES.md)"}
+    path.write_text(json.dumps(record, indent=1) + "\n", encoding="utf-8")
+    print(f"{path.name}: {old} -> {record['checks_passed']}")
 
 
 def summary():
@@ -196,9 +215,13 @@ def main():
     ap.add_argument("--timeout", type=int, default=1800)
     ap.add_argument("--max-budget-usd", type=float, default=5.0)
     ap.add_argument("--summary", action="store_true")
+    ap.add_argument("--rescore", metavar="RESULT_JSON", help="re-run current auto checks on a finished run")
+    ap.add_argument("--workdir", help="workdir for --rescore (older records do not store it)")
     a = ap.parse_args()
     if a.summary:
         return summary()
+    if a.rescore:
+        return rescore(a.rescore, a.workdir)
     if not a.scenario:
         ap.error("scenario id required")
     run(a.scenario, a.arm, a.model, a.profile, a.timeout, a.max_budget_usd)
