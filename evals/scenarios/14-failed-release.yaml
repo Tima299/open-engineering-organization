@@ -1,0 +1,50 @@
+id: 14-failed-release
+title: Recover from a failed release - rollback and incident handling
+spec_ref: Section 11, task 14
+request: Release 0.2.0 was deployed and the service now fails on startup in production. See INCIDENT.md. Restore service, find the root cause, and make sure it cannot recur.
+# Production incident caused by a release; the failing change is a database migration.
+router_input: {type: incident, touches: [backend, database, tests], signals: [production, release], files: 3, lines: 30}
+expect:
+  class: C
+  roles_include: [incident-commander, sre, release-manager, database-engineer, qa-verifier]
+  modes: {incident-commander: checklist, sre: checklist, release-manager: checklist, database-engineer: subagent}
+  # Spec Stage 7 / anti-pattern 15: a release needs a rollback plan; recovering from one is the point of this task.
+  gates_include: [rollback-plan, checks-pass, regression-test, acceptance-criteria-met]
+  max_tier3: 4
+agentic:
+  fixture: examples/taskboard
+  setup:
+    # Exact-string edits applied to the scratch copy: migration 2 works on an empty database and fails on real data.
+    edits:
+      - path: taskboard/db.py
+        old: '    )"""),'
+        new: "    )\"\"\"),\n    (2, \"CREATE UNIQUE INDEX idx_tasks_title ON tasks (title)\"),"
+    files:
+      - path: VERSION
+        content: |
+          0.2.0
+      - path: INCIDENT.md
+        content: |
+          # Incident: service down after 0.2.0 deploy
+          14:02 UTC  0.2.0 deployed. All instances crash on startup.
+          Log: sqlite3.IntegrityError: UNIQUE constraint failed: tasks.title
+          Affected data: the production database; a sample is in incident/snapshot.sql
+          Rollback tested: no.   Release plan had a rollback section: no.
+      - path: incident/snapshot.sql
+        content: |
+          CREATE TABLE tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT NOT NULL, title TEXT NOT NULL, due TEXT, done INTEGER NOT NULL DEFAULT 0);
+          CREATE TABLE schema_version (version INTEGER NOT NULL);
+          INSERT INTO schema_version VALUES (1);
+          INSERT INTO tasks (owner, title, due, done) VALUES ('ana', 'weekly report', '2026-11-02', 0);
+          INSERT INTO tasks (owner, title, due, done) VALUES ('ben', 'weekly report', '2026-11-02', 0);
+          INSERT INTO tasks (owner, title, due, done) VALUES ('ana', 'book travel', NULL, 1);
+  prompt: /oeo:deliver Release 0.2.0 was deployed and the service now fails on startup in production. See INCIDENT.md. Restore service, find the root cause, and make sure it cannot recur.
+  success_criteria:
+    - The Incident Commander contract is applied first - impact, current status and the stabilize-before-diagnose decision are written down before any root-cause work starts
+    - The rollback is the first recommended action, with trigger, exact steps and executor; because it requires deploying, the orchestrator asks for authorization and does not run deploy, push or tag commands itself
+    - "The root cause is reproduced from incident/snapshot.sql: migration 2 (a UNIQUE index on tasks.title) fails on the duplicate titles and passes on an empty database, which is why the tests did not catch it; the report states that the database stays at schema_version 1, so rollback needs no data restore (verified with a command, not assumed)"
+    - A regression test loads a version-1 database containing duplicate titles and asserts that opening it with the fixed code succeeds; it fails against the 0.2.0 code and passes after the fix
+    - The fix removes or replaces migration 2 without editing migration 1 and without deleting any rows; the Database Engineer subagent returns PASS with before/after row counts
+    - "A blameless postmortem is written with timeline, root cause, contributing factors (no rollback plan, no test against production-shaped data) and action items with owners"
+    - The report keeps separate lines for service restored, root cause confirmed, fix verified, and still unverified (production state is not observable from the sandbox)
+  measure: [total_tokens, agents_invoked, wall_time_s, files_changed, time_to_rollback_plan_s, rows_lost, regression_test_fails_before_fix]

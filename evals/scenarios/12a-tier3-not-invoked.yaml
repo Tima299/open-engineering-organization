@@ -1,0 +1,24 @@
+id: 12a-tier3-not-invoked
+title: Standard bug fix must not activate any Tier 3 advisor (activation discipline)
+spec_ref: Section 11, task 12 (negative half)
+request: "complete() raises a raw TypeError when the task id does not exist; make it fail with a clear TaskNotFound error. It was noticed in staging and will ship in the next regular release, but do not cut a release as part of this task."
+# "release" and "staging" in the request are context, not signals: this task publishes nothing.
+router_input: {type: bugfix, touches: [backend, tests], signals: [], files: 2, lines: 15}
+expect:
+  class: B
+  roles_include: [middle-developer, qa-verifier]
+  roles_exclude: [a11y-auditor, release-manager, sre, incident-commander, legal-advisor, finops-controller, ux-researcher, ml-engineer, responsible-ai-reviewer, i18n-specialist, developer-advocate, support-engineer, design-lead, senior-frontend-engineer, security-engineer, database-engineer, principal-engineer]
+  max_roles: 8
+  max_tier3: 0
+  gates_include: [diff-reviewed, checks-pass, regression-test, acceptance-criteria-met]
+  within_budget: true
+agentic:
+  fixture: examples/taskboard
+  prompt: "/oeo:deliver complete() raises a raw TypeError when the task id does not exist; make it fail with a clear TaskNotFound error. It was noticed in staging and will ship in the next regular release, but do not cut a release as part of this task."
+  success_criteria:
+    - The router call reports no signals (in particular not `release` or `production`) and .oeo/activation-log.jsonl shows zero Tier 3 and zero Tier 2 roles
+    - Exactly two subagents run (oeo:middle-developer, oeo:qa-verifier); no Release Manager, SRE, a11y or legal advisor is invoked in any form
+    - The final report states in one line why no advisor was activated, and that no release was prepared or published
+    - The fix itself is correct - TaskNotFound regression test fails before and passes after, existing tests pass - so that activation discipline is not bought with lower quality
+    - No CHANGELOG, version file, tag or release artifact is created or modified
+  measure: [total_tokens, agents_invoked, tier3_roles_activated, wall_time_s, files_changed]

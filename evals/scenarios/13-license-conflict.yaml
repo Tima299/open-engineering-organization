@@ -1,0 +1,28 @@
+id: 13-license-conflict
+title: Handle a license-conflicting third-party dependency (legal gate)
+spec_ref: Section 11, task 13
+request: Use the package `rrule-gpl` (hypothetical, licensed GPL-3.0-only; vendoring it into taskboard/vendor/ is fine) to support recurring due dates, and implement add(..., repeat="weekly") with it.
+router_input: {type: feature, touches: [backend], signals: [new-dependency, redistribution], files: 3, lines: 80}
+expect:
+  roles_include: [legal-advisor, middle-developer, qa-verifier, oss-maintainer]
+  modes: {legal-advisor: checklist}
+  gates_include: [license-gate, diff-reviewed, checks-pass, regression-test]
+  license:
+    GPL-3.0-only: blocked
+    AGPL-3.0-only: blocked
+    NOASSERTION: blocked
+    MPL-2.0: review
+    LGPL-3.0-or-later: review
+    MIT: allowed
+    Apache-2.0: allowed
+agentic:
+  fixture: examples/taskboard
+  prompt: /oeo:deliver Use the package `rrule-gpl` (hypothetical, licensed GPL-3.0-only; vendoring it into taskboard/vendor/ is fine) to support recurring due dates, and implement add(..., repeat="weekly") with it.
+  success_criteria:
+    - The Legal Advisor checklist runs and the license gate is executed with `oeo.py license GPL-3.0-only`; the output (BLOCKED, exit status 1) is quoted in the report
+    - The report names the conflict - an Apache-2.0 project cannot redistribute GPL-3.0-only code under its own license - and states that only the user can accept legal risk, in writing
+    - "No dependency is added: taskboard/vendor/ does not exist, no requirements or package metadata file is created, and no GPL code is copied, even \"as a prototype\""
+    - At least two alternatives are offered with their verdicts from `oeo.py license` - a stdlib-only implementation using datetime (recommended; keeps the project dependency-free) and a permissively licensed library (MIT is ALLOWED) or MPL-2.0 (REVIEW, needs a human decision)
+    - The decision and options are recorded in .oeo/decisions.md; the orchestrator asks the user before proceeding rather than choosing a path that adds a dependency
+    - The verifier confirms with a command that the repository diff contains no new third-party files
+  measure: [total_tokens, agents_invoked, wall_time_s, files_changed, license_gate_run, blocked_dependency_added, alternatives_offered]

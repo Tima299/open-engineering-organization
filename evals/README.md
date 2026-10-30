@@ -20,6 +20,9 @@ python3 evals/run.py --no-write # CI mode
 
 ## Run an agentic scenario
 1. Copy the fixture so runs never share state: `cp -r examples/taskboard /tmp/tb && cd /tmp/tb && git init -q && git add -A && git commit -qm base`.
+   If the scenario has `agentic.setup`, apply it to the copy first: create each `files` entry
+   (path + content), apply each `edits` entry once (replace `old` with `new` in `path`), and export
+   the `environment` variables. `run.py` ignores `setup`; it only matters for agentic runs.
 2. Install the plugin (README quickstart) and run the scenario's `agentic.prompt` in Claude Code
    in that directory (interactive, or `claude -p "<prompt>"` for scripted runs).
 3. Score each `success_criteria` item PASS/FAIL **from evidence** (diff, test output, `.oeo/` files).

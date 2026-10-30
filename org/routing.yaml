@@ -116,6 +116,15 @@ classes:
     tier2: false
     tier3: true
 
+# Extra gates and stages whenever a fact (type, domain or signal) is present, in any class
+# except A. Example: a failed-release incident is Class C but still needs a rollback plan.
+fact_rules:
+  release: {gates: [changelog-entry, version-bump, rollback-plan], stages: [release]}
+  new-dependency: {gates: [license-gate]}
+  redistribution: {gates: [license-gate]}
+  license-change: {gates: [license-gate]}
+  licensing: {gates: [license-gate]}
+
 # Skills chosen per class/domain. `oeo:*` ship with this plugin. `adapters` are
 # optional third-party skills (see third_party/registry.yaml): use only if the
 # session lists them as available; never install them automatically.

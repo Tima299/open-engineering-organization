@@ -1,0 +1,339 @@
+{
+ "generated": "2026-10-30",
+ "kind": "deterministic-router",
+ "results": [
+  {
+   "id": "01-small-feature",
+   "status": "PASS",
+   "failures": [],
+   "class": "B",
+   "roles": [
+    "business-analyst",
+    "business-owner",
+    "cto",
+    "middle-developer",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "technical-lead"
+   ],
+   "estimate_tokens": 120000
+  },
+  {
+   "id": "02-bugfix-no-regression",
+   "status": "PASS",
+   "failures": [],
+   "class": "B",
+   "roles": [
+    "business-analyst",
+    "business-owner",
+    "cto",
+    "middle-developer",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "technical-lead"
+   ],
+   "estimate_tokens": 120000
+  },
+  {
+   "id": "03-vague-request",
+   "status": "PASS",
+   "failures": [],
+   "class": "C",
+   "roles": [
+    "business-analyst",
+    "business-owner",
+    "cto",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "senior-developer",
+    "technical-lead",
+    "design-lead",
+    "finops-controller",
+    "ux-researcher"
+   ],
+   "estimate_tokens": 300000
+  },
+  {
+   "id": "04-weak-justification",
+   "status": "PASS",
+   "failures": [],
+   "class": "C",
+   "roles": [
+    "business-analyst",
+    "business-owner",
+    "cto",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "senior-developer",
+    "technical-lead",
+    "design-lead",
+    "senior-frontend-engineer",
+    "finops-controller",
+    "ux-researcher"
+   ],
+   "estimate_tokens": 360000
+  },
+  {
+   "id": "05-plan-review",
+   "status": "PASS",
+   "failures": [],
+   "class": "C",
+   "roles": [
+    "business-analyst",
+    "business-owner",
+    "cto",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "senior-developer",
+    "technical-lead",
+    "platform-engineer",
+    "security-engineer",
+    "technical-architect",
+    "finops-controller",
+    "legal-advisor",
+    "responsible-ai-reviewer"
+   ],
+   "estimate_tokens": 420000
+  },
+  {
+   "id": "06-dashboard",
+   "status": "PASS",
+   "failures": [],
+   "class": "C",
+   "roles": [
+    "business-analyst",
+    "business-owner",
+    "cto",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "senior-developer",
+    "technical-lead",
+    "design-lead",
+    "senior-frontend-engineer",
+    "finops-controller",
+    "ux-researcher"
+   ],
+   "estimate_tokens": 360000
+  },
+  {
+   "id": "07-security-flaw",
+   "status": "PASS",
+   "failures": [],
+   "class": "C",
+   "roles": [
+    "business-analyst",
+    "business-owner",
+    "cto",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "senior-developer",
+    "technical-lead",
+    "security-engineer",
+    "finops-controller"
+   ],
+   "estimate_tokens": 240000
+  },
+  {
+   "id": "08-safe-migration",
+   "status": "PASS",
+   "failures": [],
+   "class": "C",
+   "roles": [
+    "business-analyst",
+    "business-owner",
+    "cto",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "senior-developer",
+    "technical-lead",
+    "database-engineer",
+    "finops-controller"
+   ],
+   "estimate_tokens": 240000
+  },
+  {
+   "id": "09-simplify",
+   "status": "PASS",
+   "failures": [],
+   "class": "B",
+   "roles": [
+    "business-analyst",
+    "business-owner",
+    "cto",
+    "middle-developer",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "technical-lead"
+   ],
+   "estimate_tokens": 120000
+  },
+  {
+   "id": "10-skill-conflict",
+   "status": "PASS",
+   "failures": [],
+   "class": "B",
+   "roles": [
+    "business-analyst",
+    "business-owner",
+    "cto",
+    "middle-developer",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "technical-lead"
+   ],
+   "estimate_tokens": 120000
+  },
+  {
+   "id": "11-trivial-typo",
+   "status": "PASS",
+   "failures": [],
+   "class": "A",
+   "roles": [
+    "junior-developer",
+    "qa-verifier"
+   ],
+   "estimate_tokens": 85000
+  },
+  {
+   "id": "12a-tier3-not-invoked",
+   "status": "PASS",
+   "failures": [],
+   "class": "B",
+   "roles": [
+    "business-analyst",
+    "business-owner",
+    "cto",
+    "middle-developer",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "technical-lead"
+   ],
+   "estimate_tokens": 120000
+  },
+  {
+   "id": "12b-tier3-invoked",
+   "status": "PASS",
+   "failures": [],
+   "class": "D",
+   "roles": [
+    "business-owner",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "a11y-auditor",
+    "release-manager"
+   ],
+   "estimate_tokens": 120000
+  },
+  {
+   "id": "13-license-conflict",
+   "status": "PASS",
+   "failures": [],
+   "class": "B",
+   "roles": [
+    "business-analyst",
+    "business-owner",
+    "cto",
+    "middle-developer",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "technical-lead",
+    "legal-advisor"
+   ],
+   "estimate_tokens": 120000
+  },
+  {
+   "id": "14-failed-release",
+   "status": "PASS",
+   "failures": [],
+   "class": "C",
+   "roles": [
+    "business-analyst",
+    "business-owner",
+    "cto",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "senior-developer",
+    "technical-lead",
+    "database-engineer",
+    "finops-controller",
+    "incident-commander",
+    "release-manager",
+    "sre"
+   ],
+   "estimate_tokens": 240000
+  },
+  {
+   "id": "15-prompt-injection",
+   "status": "PASS",
+   "failures": [],
+   "class": "B",
+   "roles": [
+    "business-analyst",
+    "business-owner",
+    "cto",
+    "middle-developer",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "technical-lead"
+   ],
+   "estimate_tokens": 120000
+  },
+  {
+   "id": "16-unknown-vocabulary",
+   "status": "PASS",
+   "failures": [],
+   "class": null,
+   "roles": null,
+   "estimate_tokens": null
+  },
+  {
+   "id": "17-unavailable-adapter",
+   "status": "PASS",
+   "failures": [],
+   "class": "B",
+   "roles": [
+    "business-analyst",
+    "business-owner",
+    "cto",
+    "middle-developer",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "technical-lead"
+   ],
+   "estimate_tokens": 120000
+  },
+  {
+   "id": "18-failed-review-loop",
+   "status": "PASS",
+   "failures": [],
+   "class": "B",
+   "roles": [
+    "business-analyst",
+    "business-owner",
+    "cto",
+    "middle-developer",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "technical-lead"
+   ],
+   "estimate_tokens": 120000
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+id: 08-safe-migration
+title: Make a safe database migration (Class C, database)
+spec_ref: Section 11, task 8
+request: Add a `priority` field to tasks (integer 1-3, default 2). Existing databases already contain tasks that must survive the change.
+router_input: {type: feature, touches: [database, backend, tests], signals: [], files: 3, lines: 60}
+expect:
+  class: C
+  roles_include: [database-engineer, business-analyst, senior-developer, qa-verifier]
+  roles_exclude: [design-lead, senior-frontend-engineer, release-manager, incident-commander, a11y-auditor]
+  max_tier3: 1
+  modes: {database-engineer: subagent}
+  gates_include: [adr-recorded, domain-reviews-passed, regression-test, acceptance-criteria-met]
+agentic:
+  fixture: examples/taskboard
+  prompt: /oeo:deliver Add a `priority` field to tasks (integer 1-3, default 2). Existing databases already contain tasks that must survive the change.
+  success_criteria:
+    - A migration (2, ...) is appended to MIGRATIONS in taskboard/db.py; the existing version-1 entry is byte-identical (git diff shows no changed line inside it)
+    - The migration is additive (for example ALTER TABLE tasks ADD COLUMN priority INTEGER NOT NULL DEFAULT 2); no DROP TABLE, DELETE or table-copy pattern is used
+    - "A test builds a database using only migration 1, inserts at least 3 rows (done and open, one with NULL due), runs migrate(), and asserts row count, every pre-existing column value and priority == 2 for each old row, with schema_version at 2"
+    - Running migrate() twice is a no-op, proven by a test
+    - The verification report shows a before/after row count and checksum of the old columns on a seeded database file
+    - add(owner, title, due) works unchanged for existing callers; priority is an optional argument and values outside 1-3 are rejected
+    - The Database Engineer returns PASS with evidence; an ADR in docs/adr/ records the approach and a rollback path (backup before migrate; drop-column down path) that was tried or reasoned through in writing
+    - The 10 pre-existing tests pass unmodified
+  measure: [total_tokens, agents_invoked, wall_time_s, files_changed, rows_lost, tests_added, migration_idempotent]

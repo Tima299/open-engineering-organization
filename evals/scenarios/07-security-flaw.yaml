@@ -1,0 +1,23 @@
+id: 07-security-flaw
+title: Identify and fix an authorization flaw (Class C, security-sensitive)
+spec_ref: Section 11, task 7
+request: Security review of TaskStore ahead of exposing it through an HTTP API next quarter. Report any flaw you find and fix the ones that are in scope.
+router_input: {type: bugfix, touches: [auth, security, backend, tests], signals: [], files: 2, lines: 30}
+expect:
+  class: C
+  roles_include: [security-engineer, business-analyst, senior-developer, qa-verifier]
+  roles_exclude: [database-engineer, design-lead, release-manager, incident-commander]
+  max_tier3: 1
+  modes: {security-engineer: subagent, business-analyst: subagent}
+  gates_include: [domain-reviews-passed, regression-test, acceptance-criteria-met, diff-reviewed]
+agentic:
+  fixture: examples/taskboard
+  prompt: /oeo:deliver Security review of TaskStore ahead of exposing it through an HTTP API next quarter. Report any flaw you find and fix the ones that are in scope.
+  success_criteria:
+    - "The flaw is identified: delete(requester, task_id) never compares requester with the task's owner (broken access control, CWE-862/639), with a reproduction (ana adds a task, mallory deletes it, delete returns True and the task is gone) and command output, severity High"
+    - A regression test asserts that a non-owner cannot delete someone else's task and that the task is still listed afterwards; the verifier shows it FAILING before the fix and PASSING after
+    - The denial is explicit (a distinct exception or a documented False return, decision recorded in .oeo/decisions.md) and its message does not reveal the task title or owner; the owner can still delete their own task (existing test passes)
+    - The Security Engineer subagent returns a PASS/FAIL verdict with evidence for the domain-reviews-passed gate and is a different agent from the implementer
+    - complete() is reviewed too and confirmed to scope by owner; its separate unknown-id crash is reported as an out-of-scope robustness defect, not silently fixed
+    - Diff touches only taskboard/store.py and tests/test_store.py; no new dependency; the final report lists what is unverified (the HTTP layer does not exist yet)
+  measure: [total_tokens, agents_invoked, wall_time_s, files_changed, flaw_identified, regression_test_fails_before_fix, security_failures_remaining]

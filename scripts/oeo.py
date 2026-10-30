@@ -376,6 +376,11 @@ def validate_sources(src):
         for r, m in cfg["roles"].items():
             if m == "subagent" and r in src["roles"] and not src["roles"][r]["role"].get("agent"):
                 errs.append(f"{w}: '{r}' runs as subagent but its contract names no agent")
+    for key, rule in routing.get("fact_rules", {}).items():
+        if key not in vocab:
+            errs.append(f"org/routing.yaml fact_rules: '{key}' is not a type, domain or signal")
+        errs += [f"org/routing.yaml fact_rules.{key}: unknown gate '{g}'" for g in rule.get("gates", []) if g not in workflow["gates"]]
+        errs += [f"org/routing.yaml fact_rules.{key}: unknown stage '{s}'" for s in rule.get("stages", []) if s not in stage_ids]
     for rule in routing["classification"]:
         if rule["class"] not in routing["classes"]:
             errs.append(f"org/routing.yaml: rule '{rule['rule']}' targets unknown class")
@@ -579,14 +584,19 @@ def route(lock, task_type, touches=(), signals=(), files=None, lines=None, profi
         for key in sorted(touches):
             adapters += [a for a in sk["adapters"]["by_domain"].get(key, []) if a not in adapters]
         adapters += [a for a in sk["adapters"]["by_type"].get(task_type, []) if a not in adapters]
-    gates = list(cfg["gates"])
-    if "legal-advisor" in active and "license-gate" not in gates:
-        gates.append("license-gate")
+    gates, stages = list(cfg["gates"]), list(cfg["stages"])
+    if cls != "A":
+        for key in sorted(facts):
+            rule_ = routing.get("fact_rules", {}).get(key, {})
+            gates += [g for g in rule_.get("gates", []) if g not in gates]
+            stages += [s for s in rule_.get("stages", []) if s not in stages]
+    order = [s["id"] for s in lock["workflow"]["stages"]]
+    stages.sort(key=order.index)
     stage_names = {s["id"]: f"{s['n']} {s['name']}" for s in lock["workflow"]["stages"]}
     return {
         "class": cls, "class_name": cfg["name"], "rule": rule["rule"], "profile": profile,
         "inputs": {"type": task_type, "touches": sorted(touches), "signals": sorted(signals), "files": files, "lines": lines},
-        "stages": [stage_names[s] for s in cfg["stages"]],
+        "stages": [stage_names[s] for s in stages],
         "roles": plan_roles,
         "not_activated": sorted(set(roles) - set(active)),
         "skills": skills, "optional_adapters": adapters,

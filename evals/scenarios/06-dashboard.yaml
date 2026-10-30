@@ -1,0 +1,25 @@
+id: 06-dashboard
+title: Design and implement a coherent, responsive dashboard (Class C)
+spec_ref: Section 11, task 6
+request: Add a responsive HTML dashboard to Taskboard that shows open-task counts per owner and, for each owner, their open tasks with due dates (overdue ones highlighted).
+router_input: {type: feature, touches: [ui, frontend], signals: [new-surface, user-facing], files: 4, lines: 220}
+expect:
+  class: C
+  roles_include: [business-analyst, design-lead, senior-frontend-engineer, senior-developer, qa-verifier]
+  roles_exclude: [database-engineer, release-manager, a11y-auditor, legal-advisor, incident-commander]
+  max_tier3: 2
+  modes: {design-lead: subagent, senior-frontend-engineer: subagent, business-analyst: subagent}
+  gates_include: [business-review-passed, domain-reviews-passed, acceptance-criteria-met]
+agentic:
+  fixture: examples/taskboard
+  prompt: /oeo:deliver Add a responsive HTML dashboard to Taskboard - open-task counts per owner, plus each owner's open tasks with due dates (overdue highlighted). Return one self-contained HTML document from taskboard/dashboard.py.
+  success_criteria:
+    - The Design Lead writes .oeo/design.md (users, information architecture, states, interaction, accessibility, responsive rules, 5-10 visual acceptance criteria) BEFORE implementation, and the frontend engineer's handoff cites it
+    - "Output is one self-contained HTML document: lang attribute, <title>, viewport meta, inline CSS, no external URLs or scripts (grep for http finds none beyond a namespace)"
+    - "Colors, spacing and type scale are CSS custom properties on :root; at most 2 font families and one accent color; a layout rule that adapts (media query or auto-fit/minmax grid) with no horizontal scroll at 375px and a multi-column layout at 1280px"
+    - "Accessibility: landmarks (header/main), h1 then h2 without skipped levels, task data in a real table or list with caption/headers, body text contrast >= 4.5:1 computed in the verification report, visible focus style, overdue state conveyed by text or icon as well as color"
+    - "Owner names and task titles are HTML-escaped: a test renders a task titled <script>alert(1)</script> and asserts the raw tag is absent"
+    - "States covered and tested: an empty store renders a clear message; at least 3 new unit tests; the 10 pre-existing tests still pass; taskboard/db.py is unchanged (no database work)"
+    - The verifier is not the implementer, and the final report separates requirements satisfied from tests passed from UX quality actually inspected (screenshot or DOM check path) versus unverified
+    - If third-party design adapters are not installed, the run uses oeo:design-direction and installs nothing
+  measure: [total_tokens, agents_invoked, wall_time_s, files_changed, contrast_ratio_min, a11y_violations, viewport_overflow_375px, tests_added]

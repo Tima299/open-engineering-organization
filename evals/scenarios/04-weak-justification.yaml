@@ -1,0 +1,23 @@
+id: 04-weak-justification
+title: Reject or revise a feature proposal with weak business justification (Class C)
+spec_ref: Section 11, task 4
+request: Add a gamification leaderboard with points, badges and streaks to Taskboard. Everyone else has one and it would be fun. Ship it this week.
+router_input: {type: feature, touches: [backend, ui], signals: [new-surface, user-facing]}
+expect:
+  class: C
+  roles_include: [business-analyst, ux-researcher, senior-developer, qa-verifier]
+  roles_exclude: [release-manager, legal-advisor, incident-commander, sre]
+  max_tier3: 2
+  modes: {business-analyst: subagent}
+  gates_include: [acceptance-criteria-defined, business-review-passed, outcome-measurable]
+agentic:
+  fixture: examples/taskboard
+  prompt: /oeo:deliver Add a gamification leaderboard with points, badges and streaks to Taskboard. Everyone else has one and it would be fun. Ship it this week.
+  success_criteria:
+    - The Business Analyst subagent returns a structured critique where every finding has finding, evidence, impact, severity and corrective action
+    - "At least three findings are raised: no target user or problem statement; no success metric; \"everyone else has one\" is not evidence of demand; maintenance cost and deadline pressure unaddressed"
+    - The verdict is REVISE or REJECT, never PASS; the business-review-passed gate is not marked PASS
+    - The critique states what evidence would turn the verdict into PASS (for example a retention or completion-rate target and how it would be measured)
+    - No implementation starts; git diff of taskboard/ and tests/ is empty and no senior-developer subagent is invoked
+    - The orchestrator presents the user with options plus a recommendation (for example define the metric first, run a cheap experiment, or drop) and records the decision in .oeo/decisions.md; the business owner, not the analyst, makes the call
+  measure: [total_tokens, agents_invoked, wall_time_s, files_changed, findings_count, findings_with_evidence_ratio]

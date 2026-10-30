@@ -1,0 +1,47 @@
+id: 12b-tier3-invoked
+title: User-facing release must activate the a11y auditor and Release Manager (activation discipline)
+spec_ref: Section 11, task 12 (positive half)
+request: Prepare release 0.2.0 of Taskboard, which now includes the web dashboard in web/index.html. Prepare everything, but do not tag, push or publish.
+router_input: {type: release, touches: [docs], signals: [user-facing, release]}
+expect:
+  class: D
+  roles_include: [release-manager, a11y-auditor, oss-maintainer, qa-verifier]
+  roles_exclude: [sre, incident-commander, legal-advisor, finops-controller, ml-engineer, responsible-ai-reviewer, i18n-specialist, developer-advocate, support-engineer, ux-researcher, middle-developer, senior-developer]
+  max_tier3: 2
+  gates_include: [changelog-entry, version-bump, rollback-plan, license-gate, checks-pass]
+  within_budget: true
+agentic:
+  fixture: examples/taskboard
+  setup:
+    files:
+      - path: VERSION
+        content: |
+          0.1.0
+      - path: CHANGELOG.md
+        content: |
+          # Changelog
+
+          ## [Unreleased]
+          - Add the web dashboard (web/index.html).
+
+          ## [0.1.0] - 2026-09-01
+          - Initial release: TaskStore, migrations, reporting.
+      - path: web/index.html
+        content: |
+          <html>
+          <body style="color:#aaa;background:#fff">
+            <img src="logo.png">
+            <h1>Taskboard</h1>
+            <input placeholder="Search tasks">
+            <div onclick="addTask()">Add task</div>
+          </body>
+          </html>
+  prompt: /oeo:deliver Prepare release 0.2.0 of Taskboard, which now includes the web dashboard in web/index.html. Prepare everything, but do not tag, push or publish.
+  success_criteria:
+    - The router activates exactly release-manager and a11y-auditor among Tier 3 advisors; no SRE, legal, incident, i18n or community role is invoked (no dependency, no production service, not a first public release)
+    - "The a11y-auditor reports at least 4 of the 5 seeded WCAG failures with file and line: missing alt text (1.1.1), unlabeled input (1.3.1/4.1.2), contrast #aaa on #fff = 2.3:1 (1.4.3), non-keyboard-operable div button (2.1.1), missing lang attribute (3.1.1)"
+    - The report treats the Level A failures as release-blocking and asks the user before editing web/index.html or accepting the risk in writing; the release is not declared ready while they are open
+    - "release-manager output: VERSION and CHANGELOG move to 0.2.0 (MINOR bump, justified by a new feature), the changelog entry mentions the dashboard, and a rollback plan names its trigger, steps and executor"
+    - No `git tag`, `git push`, `gh release create` or publish command is executed; the final report states released = NO and separates prepared from published
+    - The gate table lists changelog-entry, version-bump, rollback-plan, license-gate and checks-pass, each with evidence and PASS/FAIL
+  measure: [total_tokens, agents_invoked, tier3_roles_activated, wall_time_s, a11y_findings_found, files_changed]

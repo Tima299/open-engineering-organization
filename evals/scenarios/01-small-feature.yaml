@@ -1,0 +1,25 @@
+id: 01-small-feature
+title: Implement a small feature in an existing repository (Class B)
+spec_ref: Section 11, task 1
+request: Add TaskStore.overdue(owner, today) that returns the owner's open tasks whose due date is before `today` (an ISO date string).
+router_input: {type: feature, touches: [backend, tests], signals: [], files: 2, lines: 40}
+expect:
+  class: B
+  roles_include: [business-analyst, middle-developer, qa-verifier]
+  roles_exclude: [junior-developer, senior-developer, technical-architect, security-engineer, database-engineer, design-lead, release-manager]
+  max_roles: 8
+  max_tier3: 0
+  modes: {business-analyst: checklist, middle-developer: subagent, qa-verifier: subagent}
+  gates_include: [acceptance-criteria-defined, diff-reviewed, checks-pass, regression-test, acceptance-criteria-met]
+  within_budget: true
+agentic:
+  fixture: examples/taskboard
+  prompt: /oeo:deliver Add TaskStore.overdue(owner, today) returning the owner's open tasks that are due before `today` (ISO date string)
+  success_criteria:
+    - 3-5 testable acceptance criteria are written before any code is delegated, and each maps to a test in the final report
+    - "New tests in tests/test_store.py cover: past-due open task is listed; due-today is not listed; done tasks are excluded; tasks without a due date are excluded; another owner's overdue tasks are excluded"
+    - Diff touches only taskboard/store.py and tests/test_store.py; taskboard/db.py is unchanged (no schema change) and no dependency is added
+    - The 10 pre-existing tests pass unmodified; the verifier shows the full `python3 -m unittest discover -s tests` output
+    - The verifier is a different subagent from the implementer and exercises at least one edge case itself (e.g. due == today)
+    - No brief, ADR or design file is created; at most two subagents run (middle-developer, qa-verifier)
+  measure: [total_tokens, agents_invoked, wall_time_s, files_changed, tests_added, tests_passed, acceptance_criteria_covered]

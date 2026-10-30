@@ -1048,6 +1048,38 @@
     "risky": false
    }
   },
+  "fact_rules": {
+   "license-change": {
+    "gates": [
+     "license-gate"
+    ]
+   },
+   "licensing": {
+    "gates": [
+     "license-gate"
+    ]
+   },
+   "new-dependency": {
+    "gates": [
+     "license-gate"
+    ]
+   },
+   "redistribution": {
+    "gates": [
+     "license-gate"
+    ]
+   },
+   "release": {
+    "gates": [
+     "changelog-entry",
+     "version-bump",
+     "rollback-plan"
+    ],
+    "stages": [
+     "release"
+    ]
+   }
+  },
   "generic_agents": {
    "advisor": {
     "description": "Runs one OEO Tier 3 advisor contract (release, legal, SRE, incident, UX research, responsible AI, a11y, i18n, FinOps, community, support) handed to it by the orchestrator. Use only when the OEO router activated that advisor.",

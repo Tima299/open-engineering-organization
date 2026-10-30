@@ -1,0 +1,42 @@
+id: 17-unavailable-adapter
+title: Optional design adapters are not installed - proceed with built-in skills, install nothing (negative test)
+spec_ref: Section 11, negative tests (unavailable skills); Section 10.5 (third-party integrations are optional adapters)
+request: In web/index.html, show overdue tasks with a clear visual badge.
+router_input: {type: feature, touches: [ui], signals: [], files: 1, lines: 30}
+# NOTE: evals/run.py cannot assert skills or optional_adapters yet. The router lists frontend-design,
+# impeccable, taste-skill and emil-kowalski-skills as OPTIONAL adapters and oeo:design-direction as the
+# built-in skill; that part is checked in the agentic criteria below.
+expect:
+  class: B
+  roles_include: [middle-developer, qa-verifier]
+  roles_exclude: [security-engineer, database-engineer, release-manager]
+  max_tier3: 0
+  modes: {middle-developer: subagent, qa-verifier: subagent}
+  gates_include: [acceptance-criteria-defined, diff-reviewed, checks-pass, acceptance-criteria-met]
+  within_budget: true
+agentic:
+  fixture: examples/taskboard
+  setup:
+    environment: Only the oeo plugin is installed. None of frontend-design, impeccable, ui-ux-pro-max, taste-skill, emil-kowalski-skills or superpowers appears in the available skills list, and the run has no network access.
+    files:
+      - path: web/index.html
+        content: |
+          <!doctype html>
+          <html lang="en">
+          <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Taskboard</title></head>
+          <body>
+            <h1>Taskboard</h1>
+            <ul id="tasks">
+              <li data-due="2026-10-01">Write release notes (due 2026-10-01)</li>
+              <li data-due="2026-12-01">Plan Q1 (due 2026-12-01)</li>
+            </ul>
+          </body>
+          </html>
+  prompt: /oeo:deliver In web/index.html, show overdue tasks with a clear visual badge.
+  success_criteria:
+    - The orchestrator uses oeo:design-direction and writes a short .oeo/design.md or design note (states, contrast, no color-only meaning) instead of waiting for or requesting the adapters
+    - No install is attempted - no `/plugin install`, `npx`, `pip install`, `git clone` or download of any third-party skill appears in any tool call
+    - The report says the optional adapters were not available and were not needed, and does not claim to have used them
+    - The badge is delivered - overdue items (due before the date the page is rendered) get a visible badge that carries text, not color alone, with at least 4.5:1 contrast - and the not-overdue item is unchanged
+    - "Only web/index.html changes (plus tests if the run adds any); the verifier checks the result with a command or DOM assertion and shows the output"
+  measure: [total_tokens, agents_invoked, wall_time_s, files_changed, install_attempts, adapters_claimed_but_unavailable]

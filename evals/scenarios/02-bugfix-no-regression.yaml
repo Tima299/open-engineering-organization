@@ -1,0 +1,25 @@
+id: 02-bugfix-no-regression
+title: Fix a bug without introducing a regression (Class B)
+spec_ref: Section 11, task 2
+request: "Bug report: TaskStore.complete() with an id that does not exist crashes with `TypeError: 'NoneType' object is not iterable`. It should raise a clear TaskNotFound error."
+router_input: {type: bugfix, touches: [backend, tests], signals: [], files: 2, lines: 15}
+expect:
+  class: B
+  roles_include: [middle-developer, qa-verifier]
+  roles_exclude: [senior-developer, technical-architect, security-engineer, database-engineer]
+  max_roles: 8
+  max_tier3: 0
+  modes: {middle-developer: subagent, qa-verifier: subagent}
+  gates_include: [diff-reviewed, checks-pass, regression-test, acceptance-criteria-met]
+  within_budget: true
+agentic:
+  fixture: examples/taskboard
+  prompt: "/oeo:deliver Bug: store.complete('ana', 999) raises TypeError for an unknown task id. It should raise a clear TaskNotFound error."
+  success_criteria:
+    - A regression test calling complete() with a nonexistent id and asserting TaskNotFound is added to tests/test_store.py; the verifier shows it FAILING (TypeError) before the fix and PASSING after
+    - TaskNotFound is importable from taskboard.store and its message contains the missing task id
+    - complete() with an id that belongs to another owner also raises TaskNotFound and leaves that task open (a second regression test)
+    - complete() on an existing task still returns the updated task dict; the 10 original tests pass unmodified
+    - delete() and every other method are untouched (diff shows only the complete() path, the new exception and tests); no new dependency
+    - The verifier exercises the failure path and the happy path directly and reports command plus output for each
+  measure: [total_tokens, agents_invoked, wall_time_s, files_changed, regression_test_fails_before_fix, tests_passed]

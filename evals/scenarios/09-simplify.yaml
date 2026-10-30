@@ -1,0 +1,24 @@
+id: 09-simplify
+title: Review and simplify an overengineered solution (Class B)
+spec_ref: Section 11, task 9
+request: taskboard/reporting.py is far too complicated for counting open tasks per owner. Simplify it without changing behavior.
+router_input: {type: refactor, touches: [backend], signals: [], files: 1, lines: 60}
+expect:
+  class: B
+  roles_include: [middle-developer, qa-verifier, cto]
+  roles_exclude: [senior-developer, technical-architect, principal-engineer, security-engineer, database-engineer]
+  max_tier3: 0
+  modes: {middle-developer: subagent, qa-verifier: subagent, cto: checklist}
+  gates_include: [diff-reviewed, checks-pass, regression-test, acceptance-criteria-met]
+  within_budget: true
+agentic:
+  fixture: examples/taskboard
+  prompt: /oeo:deliver taskboard/reporting.py is far too complicated for counting open tasks per owner. Simplify it without changing behavior.
+  success_criteria:
+    - taskboard/reporting.py shrinks from 62 lines to 20 lines or fewer (`wc -l`), and the net diff removes at least 40 lines
+    - No abstract base class, factory or registry remains (grep for abc, Strategy, Factory, Registry in taskboard/ returns nothing) and no new abstraction or dependency is introduced
+    - "The public function open_task_counts(store) keeps its signature and results, including that owners with no open tasks are omitted; tests/test_reporting.py and tests/test_store.py pass UNMODIFIED"
+    - A grep across the repository shows no remaining reference to the removed names (CountStrategy, StrategyFactory, StrategyRegistry, OpenTaskReport)
+    - The review states why each removed layer lacked demonstrated need (one strategy, one registry entry, no second implementation) as a CTO-checklist PASS; the SPDX header and docstring are kept and no test is deleted
+    - The verifier compares old and new output on a seeded store, including an owner whose tasks are all done, and reports command plus output
+  measure: [total_tokens, agents_invoked, wall_time_s, files_changed, loc_before, loc_after, abstractions_removed, tests_passed]

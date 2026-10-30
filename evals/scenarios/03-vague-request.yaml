@@ -1,0 +1,24 @@
+id: 03-vague-request
+title: Investigate a vague business request and define acceptance criteria (Class C)
+spec_ref: Section 11, task 3
+request: Our team leads keep telling us the task board "is not good enough for teams". Find out what they need and tell us what to build.
+# Size is unknown, so files/lines are omitted on purpose. Team collaboration is a new user-facing surface.
+router_input: {type: feature, touches: [backend], signals: [new-surface]}
+expect:
+  class: C
+  roles_include: [business-analyst, ux-researcher, senior-developer, qa-verifier]
+  roles_exclude: [release-manager, legal-advisor, incident-commander, sre]
+  max_tier3: 2
+  modes: {business-analyst: subagent, ux-researcher: subagent}
+  gates_include: [acceptance-criteria-defined, business-review-passed, outcome-measurable]
+agentic:
+  fixture: examples/taskboard
+  prompt: /oeo:deliver Our team leads say the task board is "not good enough for teams". Find out what they need and tell us what to build.
+  success_criteria:
+    - The Business Analyst runs as a subagent and writes .oeo/brief.md with users, problem, desired outcome, success metric, scope and non-goals, constraints, evidence, risks
+    - Every claim in the brief is labelled as evidence or as an assumption; "teams need X" is never stated as fact without a source
+    - The brief offers at least two candidate outcomes with a measurable success metric each, and proposes acceptance criteria that can each be checked by a command or an observable result
+    - No more than 5 open questions, addressed to the business owner, ordered by how much each would change the plan
+    - The orchestrator stops after the brief and asks the user to confirm the objective; git diff of taskboard/ and tests/ is empty and no developer subagent is invoked
+    - The final report states requirements satisfied (none yet), tests passed (n/a), released (no), business outcome observed (none), still unverified (all)
+  measure: [total_tokens, agents_invoked, wall_time_s, files_changed, acceptance_criteria_testable_ratio, assumptions_labelled_ratio]

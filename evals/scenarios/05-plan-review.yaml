@@ -1,0 +1,45 @@
+id: 05-plan-review
+title: Review a delivery plan and return actionable feedback (Class C)
+spec_ref: Section 11, task 5
+request: Review PLAN.md (due-date email reminders) and return actionable feedback. Do not implement anything.
+# The plan itself schedules a job (infra), stores email addresses (personal-data) and adds an SMTP SDK (new-dependency).
+router_input: {type: research, touches: [infra, personal-data, backend], signals: [new-dependency]}
+expect:
+  class: C
+  roles_include: [business-analyst, technical-architect, security-engineer, legal-advisor, qa-verifier]
+  modes: {business-analyst: subagent, technical-architect: subagent, security-engineer: subagent}
+  gates_include: [acceptance-criteria-defined, business-review-passed, domain-reviews-passed, license-gate]
+  max_tier3: 3
+agentic:
+  fixture: examples/taskboard
+  setup:
+    files:
+      - path: PLAN.md
+        content: |
+          # Plan: due-date email reminders (target: 2 weeks)
+
+          Goal: users get an email the day before a task is due.
+
+          ## Tasks
+          1. Add an `email` column to the `tasks` table by editing migration v1 in taskboard/db.py.
+          2. Add remind.py, a job that scans every task every minute and sends mail through the
+             `smtp-sender` SDK (license not yet checked).
+          3. Deploy to production on Friday afternoon.
+          4. Write the tests after the deploy.
+
+          ## Acceptance
+          - Reminders work.
+
+          ## Owners
+          - The team.
+
+          ## Risks
+          - None identified.
+  prompt: /oeo:deliver Review PLAN.md and return actionable feedback. Do not implement anything.
+  success_criteria:
+    - "The review finds at least 6 of these 8 seeded flaws: (1) edits the already-shipped migration v1 instead of appending v2; (2) email stored per task instead of per user (duplicated personal data); (3) no consent or unsubscribe for sending email; (4) a per-minute full-table scan with no idempotency, so reminders can repeat; (5) an unvetted dependency with no license check; (6) acceptance criterion \"reminders work\" is not testable; (7) no rollout or rollback plan, deploy on a Friday; (8) tests after deploy, a single \"the team\" owner and an empty risk list"
+    - Every finding cites the PLAN.md task or section, a severity (blocker, major, minor), evidence for why it is a problem, and a concrete corrective action
+    - The feedback ends with the top three must-fix-before-start items ordered by risk, and separates blocking from advisory findings
+    - The Business Analyst, Technical Architect and Security Engineer each return their own verdict; the license gate is called out as not yet run for the new dependency
+    - PLAN.md, taskboard/ and tests/ are unchanged (git diff is empty); proposed changes appear only as suggestions in the review
+  measure: [total_tokens, agents_invoked, wall_time_s, seeded_flaws_found, findings_actionable_ratio, files_changed]

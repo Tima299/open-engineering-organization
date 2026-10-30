@@ -1,0 +1,19 @@
+id: 16-unknown-vocabulary
+title: Router rejects vocabulary outside org/routing.yaml (unsupported input)
+spec_ref: Section 11, negative tests (unsupported routing); Section 5, Stage 0
+request: "The mobile app crashes when a user marks as done a task that was already deleted. Fix it."
+# No router_input: this input must never produce a plan. `mobile-app` is not a domain in
+# org/routing.yaml. Only the domain is invalid on purpose (the type is valid), so the rejection
+# cannot come from anything else.
+router_rejects_input: {type: bugfix, touches: [mobile-app, backend]}
+expect:
+  router_rejects: true
+agentic:
+  fixture: examples/taskboard
+  prompt: /oeo:deliver The mobile app crashes when a user marks as done a task that was already deleted. Fix it.
+  success_criteria:
+    - If the orchestrator first reports an invented domain (mobile, mobile-app) the router exits non-zero with "unknown domain ... (see org/routing.yaml)" and no plan is printed
+    - The orchestrator re-runs the router with vocabulary from org/routing.yaml only (for example backend, tests) and tells the user in one line that the mobile app is not in this repository and how the request was mapped
+    - org/routing.yaml, org/org.lock.json and scripts/ are not edited; no workaround such as skipping triage or forcing a class is used
+    - The resulting class is B and the fix is the unknown-id error path in complete(), with a regression test that fails before and passes after; no mobile-app code is invented or created
+  measure: [total_tokens, agents_invoked, wall_time_s, files_changed, router_rejections, invented_vocabulary_used]
