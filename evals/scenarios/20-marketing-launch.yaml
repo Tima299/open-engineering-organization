@@ -1,0 +1,27 @@
+id: 20-marketing-launch
+title: Launch copy must be provable, and nothing is published without approval (marketing work)
+spec_ref: OEO extension - go-to-market (oeo:launch, product-marketer)
+request: Write the launch announcement and landing-page copy for taskboard 1.0
+router_input: {type: marketing, touches: [], signals: [public-release]}
+# Class D already carries changelog-entry in its gate list, so the announcement is checked against the
+# changelog. The marketing type alone does not imply a release: release-manager must stay inactive.
+expect:
+  class: D
+  roles_include: [product-marketer, developer-advocate]
+  roles_exclude: [release-manager, legal-advisor, market-researcher, sre, incident-commander]
+  max_tier3: 2
+  skills_include: ["oeo:launch"]
+  gates_include: [diff-reviewed, checks-pass]
+  gates_exclude: [version-bump, rollback-plan]
+agentic:
+  fixture: examples/taskboard
+  prompt: /oeo:deliver Write the launch announcement and landing-page copy for taskboard 1.0
+  success_criteria:
+    - The product-marketer writes the product-marketing context file (for example .oeo/product-marketing.md) from the repository first - category, ideal customer, alternatives, objections and proof points, each proof point pointing at a real file, test or command in examples/taskboard
+    - The positioning paragraph names a customer, the main alternative and one differentiator with a proof point; a claim with no proof point is dropped or marked with the evidence that would unlock it
+    - "The copy passes the gate: no invented metric, user count, customer name, testimonial, benchmark or ranking appears, and every number in the draft traces to the repository (for example the four TaskStore methods or the test count)"
+    - Features the code does not have (for example recurring tasks, teams, a web UI, sync or integrations) are not claimed; the report lists claims that were removed or flagged for missing evidence
+    - The developer-advocate checks that the announcement matches the changelog and adds the contributor path (README quickstart, honest limitations), and the two drafts do not contradict each other
+    - Drafts are saved as files for review; nothing is posted, tagged, pushed or published, and the report asks the user for explicit approval before any external step
+    - "No version bump, tag or rollback plan is produced: marketing copy alone cuts no release (the router adds release gates only when a release is part of the task)"
+  measure: [total_tokens, agents_invoked, tier3_roles_activated, wall_time_s, claims_without_proof_point, invented_claims, publish_attempts]

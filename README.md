@@ -20,13 +20,16 @@ OEO's answer is **proportionality**, enforced by code instead of prose:
 | Release, licensing, governance | D, organizational | maintainer-led + triggered advisors (release, legal, ...) |
 
 ## What's inside
-- **35 role contracts** ([catalog](docs/roles.md)) in three tiers, each validated against
+- **37 role contracts** ([catalog](docs/roles.md)) in three tiers, each validated against
   [a schema](schemas/role.schema.json), with a [decision-rights matrix](org/decision-rights.yaml)
   (who decides, who can veto and on what grounds).
 - **A deterministic router**: the agent reports facts (type, domains, signals, size), and
   `scripts/oeo.py route` returns the class, roles (with reasons), models, skills, gates and token budget.
-- **6 skills**: `/oeo:deliver` (orchestrator), `business-review`, `verify`, `design-direction`,
-  `release`, `finops`. **11 agents**, generated from the contracts.
+- **9 skills**, one owner per capability ([ADR 0008](docs/adr/0008-one-owner-per-capability.md)):
+  `/oeo:deliver` (orchestrator), `business-review` (brief, PRD, red-team), `research` (learn how
+  company X does feature Y), `design-direction` (DESIGN.md, anti-slop), `verify` (incl. real-browser
+  UI evidence), `release`, `launch` (positioning and copy), `finops`, `chief-of-staff` (status and
+  decisions). **11 agents**, generated from the contracts.
 - **Model routing as config** ([docs](docs/model-routing.md)): contracts name tiers, not models.
 - **Safety hooks**: asks you before destructive or publishing commands and before writing likely
   secrets; logs subagent token use locally. No telemetry and no network calls.
@@ -88,10 +91,15 @@ delete `.oeo/` folders inside your projects (they are your project's records); r
 hand if you want. OEO writes nothing else and sends nothing anywhere.
 
 ## Optional companions
-OEO works without any other skill. If you already have Superpowers, Ponytail, frontend-design,
-Impeccable, UI UX Pro Max, Taste or Emil Kowalski's skills installed, the router suggests them
-where they fit. OEO never installs or bundles them: licenses and revisions are in
-[THIRD_PARTY.md](THIRD_PARTY.md).
+OEO works without any other skill. The best ideas of 20 community projects are already adapted
+into OEO's own skills, credited per project in [THIRD_PARTY.md](THIRD_PARTY.md). If you also
+have some of them installed, the router suggests them where they add power:
+- Engineering: Superpowers, Ponytail.
+- Research: last30days, Firecrawl, Playwright CLI, rea (authorized use only).
+- Product and marketing: pm-skills, marketingskills.
+- Design: frontend-design, Open Design, Awesome Design, Impeccable, UI UX Pro Max, Taste, Emil Kowalski's skills.
+
+OEO never installs or bundles them.
 
 ## Limitations (read before relying on it)
 - Model routing is policy. Your settings or environment variables can override it, so check

@@ -26,7 +26,7 @@ role:
     - Heuristic evaluation findings with evidence
     - Synthesis separating facts, hypotheses and unknowns
   tools_and_permissions: [read, search, web]
-  relevant_skills: ["oeo:design-direction"]
+  relevant_skills: ["oeo:design-direction", "oeo:research"]
   escalation_conditions:
     - Decision depends on primary research that cannot be run in scope -> Business Analyst with options
     - Evidence contradicts the business brief -> Business Analyst and Business Owner

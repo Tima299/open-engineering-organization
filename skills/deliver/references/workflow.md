@@ -4,6 +4,7 @@ Load only the section for the stage you are in. Stage definitions, gates and mem
 ownership are data in `org/workflow.yaml`; this file says how to execute them.
 
 ## 1 Business Discovery (B: lite, C: full)
+Product depth (lean PRD, red-team, pre-mortem): `oeo:business-review`.
 Class B: write acceptance criteria directly (Given/When/Then or checklist), plus one line of
 desired outcome. Class C: delegate to `oeo:business-analyst` with the request and any evidence
 the user gave. Output `.oeo/brief.md`:
@@ -27,7 +28,7 @@ user accepts a named residual risk (append to `.oeo/decisions.md`).
 ```
 # Plan: <title>   class: <X>   owner: project-manager
 Deliverables -> acceptance criteria:
-Tasks: | id | owner role | files in scope | depends on | acceptance |
+Tasks: | id | goal (AC #) | owner role | files in scope | depends on | status |
 File-ownership partition (parallel work only):
 Test strategy (what fails before the change):
 Risks: | risk | likelihood | impact | mitigation | owner |

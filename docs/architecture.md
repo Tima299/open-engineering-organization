@@ -23,14 +23,14 @@ flowchart LR
 ## Components
 | Path | Kind | Purpose |
 |---|---|---|
-| `org/roles/*.yaml` | source | 35 role contracts ([catalog](roles.md)), schema `schemas/role.schema.json` |
+| `org/roles/*.yaml` | source | 37 role contracts ([catalog](roles.md)), schema `schemas/role.schema.json` |
 | `org/routing.yaml` | source | vocabulary, Stage 0 rules, class role sets, skills, generic agents, license policy |
 | `org/workflow.yaml` | source | stages 0-8, gates, memory artifacts, handoff fields |
 | `org/decision-rights.yaml` | source | decision matrix (decides / consulted / veto / informed / fallback) |
 | `config/models.yaml` | source | tier → model profiles, overrides, budgets |
 | `third_party/registry.yaml` | source | provenance registry → `THIRD_PARTY.md` |
 | `org/org.lock.json`, `agents/*.md`, `docs/roles.md`, `THIRD_PARTY.md` | generated | `oeo build`; CI fails on drift |
-| `skills/*/SKILL.md` | host | `deliver`, `business-review`, `verify`, `design-direction`, `release`, `finops` |
+| `skills/*/SKILL.md` | host | `deliver`, `business-review`, `research`, `design-direction`, `verify`, `release`, `launch`, `finops`, `chief-of-staff` ([ADR 0008](adr/0008-one-owner-per-capability.md)) |
 | `scripts/oeo.py` | tool | validate, build, route, license, cost, models |
 | `scripts/guard.py`, `scripts/finops_hook.py` | hooks | confirmation guard; token logging |
 | `evals/` | tests | deterministic routing scenarios + agentic scenario specs |

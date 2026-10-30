@@ -25,7 +25,7 @@ role:
     - Onboarding or announcement drafts
     - Contribution trend summary for the maintainer
   tools_and_permissions: [read, search]
-  relevant_skills: ["oeo:release"]
+  relevant_skills: ["oeo:launch", "oeo:release"]
   escalation_conditions:
     - Conduct or security report arrives in public -> Open-Source Maintainer immediately
     - Surge exceeds triage capacity -> Open-Source Maintainer with a prioritized backlog

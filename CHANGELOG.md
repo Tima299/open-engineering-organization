@@ -6,6 +6,24 @@ While the version is 0.x, minor releases may contain breaking changes (called ou
 
 ## [Unreleased]
 
+### Added
+- Skills `research` (feature/competitor/recency research from public or authorized evidence),
+  `chief-of-staff` (cross-engagement brief, issue triage, decision meetings) and `launch`
+  (positioning, copy gate, launch plan).
+- Roles `market-researcher` and `product-marketer` (Tier 3, run by the generic advisor agent);
+  task type `marketing`, signal `external-research`.
+- Ideas adapted from 12 more projects (rea, Paperclip, chief-of-staff skills, last30days,
+  I Have ADHD, pm-skills, marketingskills, Awesome Design, Open Design, Firecrawl, Playwright CLI,
+  playwright-skill), credited in THIRD_PARTY.md; ADR 0008.
+
+### Changed
+- `design-direction`: question-first direction, DESIGN.md capture, craft rules, anti-slop tiers,
+  scored review panel. `verify`: real-browser UI evidence; regression proof in a git worktree.
+  `business-review`: lean PRD, red-team, pre-mortem, assumption triage. `deliver`: goal chain,
+  single task owner, status words, budget tiers. `finops`: 80%/100% tiers and paid-credit rules.
+- Shared agent output style: verdict first, at most 5 items per list, stop after 3 failed fixes.
+- Plugin author, marketplace owner and copyright holder: Tima299.
+
 ## [0.1.0] - 2026-10-30
 
 ### Added

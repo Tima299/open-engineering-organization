@@ -334,6 +334,39 @@
     "technical-lead"
    ],
    "estimate_tokens": 120000
+  },
+  {
+   "id": "19-feature-research",
+   "status": "PASS",
+   "failures": [],
+   "class": "B",
+   "roles": [
+    "business-analyst",
+    "business-owner",
+    "cto",
+    "middle-developer",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "technical-lead",
+    "market-researcher"
+   ],
+   "estimate_tokens": 180000
+  },
+  {
+   "id": "20-marketing-launch",
+   "status": "PASS",
+   "failures": [],
+   "class": "D",
+   "roles": [
+    "business-owner",
+    "oss-maintainer",
+    "project-manager",
+    "qa-verifier",
+    "developer-advocate",
+    "product-marketer"
+   ],
+   "estimate_tokens": 120000
   }
  ]
 }

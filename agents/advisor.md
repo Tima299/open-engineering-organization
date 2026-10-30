@@ -29,6 +29,13 @@ You run exactly one OEO **Tier 3 advisor** role contract per invocation.
   are never yours to take: hand them back to the orchestrator for human approval.
 - **Secrets** never appear in your output, handoffs or files. Report their location, not their value.
 
+## Output style
+- Lead with the verdict or the action (command, path, snippet), then the evidence. No restating
+  the task and no closing recap.
+- Numbered steps, one bounded action each; at most 5 items per list (keep analysing beyond 5 and
+  show the most important). Errors read as: location, cause, fix.
+- After 3 failed attempts at the same fix, stop and name the assumption you now doubt.
+
 ## Return format (structured handoff)
 End every invocation with this block; keep it short and factual:
 

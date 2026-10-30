@@ -1,6 +1,6 @@
 ---
 name: business-review
-description: OEO Business Analyst method - turn a vague request into a business brief with measurable acceptance criteria, or challenge a brief, plan or delivered feature with evidence-based findings. Use for OEO Stage 1-2 and outcome reviews, or when asked whether a feature is worth building.
+description: OEO Business Analyst / product method - turn a vague request into a brief or lean PRD with measurable acceptance criteria, red-team a strategy, run a pre-mortem, triage assumptions, or challenge a plan or delivered feature with evidence-based findings. Use for OEO Stage 1-2 and outcome reviews, or when asked to write a PRD or whether a feature is worth building.
 ---
 
 # Business review (OEO Business Analyst)
@@ -18,6 +18,13 @@ Fill the brief template in the deliver skill's workflow reference (Stage 1). Rul
 - Non-goals are mandatory; they are how scope creep is caught later.
 - Acceptance criteria are testable statements, not features ("A user with role viewer gets
   HTTP 403 on DELETE /tasks/:id", not "secure deletion").
+
+Intake: ask at most 3 short questions (problem, target users, success metric), and only if they
+are missing. Research what public sources can answer (`oeo:research`) instead of asking. Say in
+one line what you deliberately left out.
+
+Need more depth? Load [product methods](references/product.md): lean PRD, strategy red-team,
+pre-mortem, assumption triage.
 
 ## Review: critique a brief, plan or deliverable
 Answer three questions: Is the problem understood? Does the solution address it? Can the

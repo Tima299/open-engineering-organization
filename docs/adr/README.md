@@ -13,3 +13,4 @@ ADRs are superseded explicitly (new ADR + status update), never silently edited.
 | [0005](0005-apache-2-and-dco.md) | Apache-2.0 license with DCO sign-off | Accepted |
 | [0006](0006-third-party-as-optional-adapters.md) | Third-party skills are referenced adapters, never vendored | Accepted |
 | [0007](0007-naming.md) | Name: Open Engineering Organization, namespace `oeo` | Accepted |
+| [0008](0008-one-owner-per-capability.md) | One owner per capability: adapt ideas, keep skills few | Accepted |

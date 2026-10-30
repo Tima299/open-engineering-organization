@@ -39,6 +39,10 @@ Read [workflow](references/workflow.md) only for the stages you are in. Summary:
 | D | Maintainer-led: use `oeo:release` for releases; advisors per router; license gate for any dependency. |
 
 ## Delegating
+- Delegate only across a real boundary: a different role, an independent review, truly parallel
+  independent output, or context isolation (e.g. `oeo:research`). Otherwise do it yourself.
+- Every task carries its **goal chain** (`brief outcome -> acceptance criterion -> task`) and has
+  exactly **one owner**; nobody picks up a task someone else holds.
 - Use the router's `agent` and pass its `model` alias as the Agent tool `model` parameter.
 - Generic agents (`oeo:specialist`, `oeo:advisor`) need the role id and the contract path
   `${CLAUDE_PLUGIN_ROOT}/org/roles/<id>.yaml` in the prompt.
@@ -46,6 +50,9 @@ Read [workflow](references/workflow.md) only for the stages you are in. Summary:
   (the HANDOFF block). Pass paths and facts, not your whole context.
 - Parallel agents only for independent work with a written file-ownership partition.
 - Checklist roles: open their contract and apply `acceptance_criteria` yourself; record PASS/FAIL.
+- Do the concrete work in the same pass; do not stop at a plan unless a plan was asked for.
+  Task status words: todo, in_progress, in_review (waiting on a human), blocked (name the
+  blocker and its owner), done, cancelled.
 
 ## Gates and the correction loop
 - Every gate the router printed needs evidence (command + output, file refs). The implementer
@@ -55,15 +62,18 @@ Read [workflow](references/workflow.md) only for the stages you are in. Summary:
   tier, then the user with options and a recommendation. Never weaken a gate to pass.
 - Business Analyst critiques (Class C) loop until resolved or the user accepts the residual risk
   in writing (`.oeo/decisions.md`).
+- Budget: at 80% of the class budget, finish only critical-path work and tell the user; at 100%,
+  pause and ask (`oeo:finops`).
+- Hard calls that span roles: score them with `oeo:chief-of-staff`; 4+ gets a decision meeting.
 
 ## Human authority
 Ask the user before: changing scope, accepting residual risk, adding dependencies (after the
 license gate: `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/oeo.py" license <SPDX>`), destructive or
 irreversible operations, publishing, deploying, or spending money.
 
-## Final report (keep it short)
+## Final report (lead with the verdict; at most 5 items per list; no recap or filler)
 1. Class + activated roles (and why). 2. What changed (files). 3. Gate table: gate | evidence |
 PASS/FAIL. 4. Acceptance criteria -> evidence. 5. Separate lines for: requirements satisfied /
 tests passed / released / business outcome observed / still unverified. 6. Cost:
 `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/oeo.py" cost --session "${CLAUDE_SESSION_ID}"` for Class B+.
-7. Open risks and next step with owner.
+7. Open risks, and **one** next step with its owner (for the user: doable in under 2 minutes).

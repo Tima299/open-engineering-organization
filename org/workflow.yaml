@@ -84,7 +84,11 @@ gates:
 memory:
   - {path: .oeo/brief.md, owner: business-analyst, freshness: per engagement; superseded briefs are deleted, not kept}
   - {path: .oeo/plan.md, owner: project-manager, freshness: updated at every stage exit}
-  - {path: .oeo/decisions.md, owner: project-manager, freshness: append-only log of decisions, vetoes and deadlock resolutions}
+  - {path: .oeo/decisions.md, owner: project-manager, freshness: "append-only log of decisions, vetoes, deadlock resolutions; reversible bets carry a review_by date"}
+  - {path: .oeo/research/, owner: market-researcher, freshness: per research question; ledger kept, raw fetches deleted when the question closes}
+  - {path: .oeo/product-marketing.md, owner: product-marketer, freshness: refreshed before each launch; learnings retired, never deleted}
+  - {path: .oeo/evidence/, owner: qa-verifier, freshness: per verification run; gitignored}
+  - {path: DESIGN.md, owner: design-lead, freshness: changed only through a design decision; stale tokens removed}
   - {path: .oeo/risks.md, owner: project-manager, freshness: reviewed at each stage exit; closed risks removed}
   - {path: .oeo/verification.md, owner: qa-verifier, freshness: rewritten per verification run}
   - {path: .oeo/activation-log.jsonl, owner: project-manager, freshness: append-only, written by `oeo route --log`}

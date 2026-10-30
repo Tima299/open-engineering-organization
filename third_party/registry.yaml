@@ -7,6 +7,10 @@
 # Commit SHAs could not be read (GitHub API blocked from the research environment), so
 # `revision` is UNVERIFIED unless a pin was confirmed from a second source. Re-verify
 # before relying on a pin: see CONTRIBUTING.md "Updating the provenance registry".
+#
+# `adopted_ideas` (optional): ideas OEO re-expressed in its own words, as "oeo:<skill>: <idea>"
+# (or "agent output style: <idea>"), at most 15 words each and no semicolons. Rendered into
+# THIRD_PARTY.md. No upstream text, brand assets or files are copied.
 
 version: 1
 resources:
@@ -37,10 +41,13 @@ resources:
     install: [/plugin marketplace add https://github.com/affaan-m/ECC, /plugin install ecc@ecc]
     environments: [Claude Code, other agent harnesses per upstream README]
     limitations: Very large bundle (hundreds of skills, many agents, Node hook runtime); impersonating mirrors exist per upstream README.
-    rationale: Evaluated, NOT routed by default. Its size conflicts with OEO's context budget principle; users who already run it can keep it, and OEO's precedence policy governs conflicts.
+    rationale: Evaluated, NOT routed by default. Its size conflicts with OEO's context budget principle; users who already run it can keep it, and OEO's precedence policy governs conflicts. Its chief-of-staff agent fed oeo:chief-of-staff (ideas adopted, nothing vendored).
     distribution: reference-only
     status: partially-verified
     accessed: 2026-10-30
+    adopted_ideas:
+      - "oeo:chief-of-staff: four-tier triage applied in strict order, skip, info only, meeting info, action required"
+      - "oeo:chief-of-staff: briefing layout puts schedule first, then action items, then stale pending replies"
   - id: ponytail
     name: Ponytail
     domain: simplicity
@@ -132,3 +139,240 @@ resources:
     distribution: reference-only
     status: partially-verified
     accessed: 2026-10-30
+  - id: rea
+    name: REA (Reverse Engineer Anything)
+    domain: research
+    upstream_url: https://github.com/morluto/rea
+    maintainer: morluto (GitHub account)
+    license_spdx: MIT
+    license_evidence_url: https://raw.githubusercontent.com/morluto/rea/main/LICENSE
+    revision: UNVERIFIED
+    install: [npx rea-agents setup, /plugin marketplace add morluto/rea, /plugin install rea@rea]
+    environments: [Claude Code, other agent clients via its setup command]
+    limitations: Reverse-engineers shipped apps, which may breach a vendor's terms or local law. Large tool set; native work needs your own Ghidra, IDA or similar. Lookalike copies exist, so pin the upstream. Popularity figures unverified.
+    rationale: Ideas adopted into oeo:research. Routed as an optional adapter on the external-research signal, but only after the authorization gate, because decompiling a vendor's app is legally sensitive and heavy.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+    adopted_ideas:
+      - "oeo:research: tag every finding observed, inferred or unknown, each with its evidence source"
+      - "oeo:research: pair each question with the evidence that would answer it, then recheck at the end"
+      - "oeo:research: authorization gate first, no DRM or login bypass, no copying protected code or assets"
+      - "oeo:research: when a full source repository exists, read it and skip reverse engineering"
+  - id: paperclip
+    name: Paperclip
+    domain: operations
+    upstream_url: https://github.com/paperclipai/paperclip
+    maintainer: Paperclip AI team (GitHub organization paperclipai)
+    license_spdx: MIT
+    license_evidence_url: https://raw.githubusercontent.com/paperclipai/paperclip/master/LICENSE
+    revision: UNVERIFIED
+    install: [npx paperclipai@latest onboard --yes]
+    environments: [Self-hosted Node server with its own UI, agent CLIs you provide]
+    limitations: Platform, not a skill; its bundled skill needs a running Paperclip server and is very large. Telemetry is on by default upstream. Budget stops rely on reported spend.
+    rationale: Ideas adopted; not routed. It is an orchestration platform that overlaps OEO's own stages, so only its task and budget discipline were re-expressed in OEO skills.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+    adopted_ideas:
+      - "oeo:deliver: every task carries its goal chain and a single owner"
+      - "oeo:deliver: finish concrete work in the same pass and report status with a named blocker"
+      - "oeo:finops: warn near 80% of budget, restrict to critical work, hard stop at 100%"
+      - "oeo:chief-of-staff: promise only follow-ups that were actually scheduled, never an imaginary watcher"
+  - id: chief-of-staff-orchestrator
+    name: chief-of-staff skill (alirezarezvani/claude-skills)
+    domain: operations
+    upstream_url: https://github.com/alirezarezvani/claude-skills/tree/main/c-level-advisor/skills/chief-of-staff
+    maintainer: Alireza Rezvani (@alirezarezvani)
+    license_spdx: MIT
+    license_evidence_url: https://raw.githubusercontent.com/alirezarezvani/claude-skills/main/LICENSE
+    revision: UNVERIFIED
+    install: [/plugin install c-level-skills@claude-code-skills]
+    environments: [Claude Code, other agent harnesses per upstream README]
+    limitations: Built around fixed C-suite personas for a startup founder, and relies on context files elsewhere in a 380-skill repo; its decision log lives outside the project.
+    rationale: Ideas adopted into oeo:chief-of-staff; not routed. Its persona frame overlaps OEO's own roles, so only the routing, board and decision-memory mechanics were re-expressed.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+    adopted_ideas:
+      - "oeo:chief-of-staff: score a decision by counting risk factors, then pick one role or a board"
+      - "oeo:chief-of-staff: board of at most five roles, one turn each, conflicts surfaced for the human"
+      - "oeo:chief-of-staff: prevent loops with no self-invocation, shallow depth and no A to B to A calls"
+      - "oeo:chief-of-staff: synthesize as themes, named conflicts, owned actions, one decision point with a review date"
+  - id: last30days
+    name: last30days
+    domain: research
+    upstream_url: https://github.com/mvanhorn/last30days-skill
+    maintainer: Matt Van Horn (@mvanhorn)
+    license_spdx: MIT
+    license_evidence_url: https://raw.githubusercontent.com/mvanhorn/last30days-skill/main/LICENSE
+    revision: UNVERIFIED
+    install: [/plugin marketplace add mvanhorn/last30days-skill, /plugin install last30days]
+    environments: [Claude Code, other agent hosts via npx skills]
+    limitations: Python 3.12+ engine; several sources need third-party API keys, some paid after a free tier. Queries go to third-party services. Forks and translations exist; pin the upstream.
+    rationale: Ideas adopted into oeo:research. Routed as an optional adapter for research tasks (recent community signal), never required; it sends queries to third parties and may spend credits.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+    adopted_ideas:
+      - "oeo:research: resolve official handles and sites before searching, never a bare keyword"
+      - "oeo:research: rank community signal by engagement, not search position, and prefer live counts"
+      - "oeo:research: report each source's outcome state, so a failed source is never read as nothing found"
+  - id: i-have-adhd
+    name: i-have-adhd
+    domain: simplicity
+    upstream_url: https://github.com/ayghri/i-have-adhd
+    maintainer: Ayoub Ghriss (@ayghri)
+    license_spdx: MIT
+    license_evidence_url: https://raw.githubusercontent.com/ayghri/i-have-adhd/main/LICENSE
+    revision: UNVERIFIED
+    install: [claude plugin marketplace add ayghri/i-have-adhd, claude plugin install i-have-adhd@i-have-adhd]
+    environments: [Claude Code, other agent runtimes via upstream adapters]
+    limitations: Output-style rules only, with no domain method; strict brevity can cost nuance on complex answers. Name collides with an unrelated ideation skill. Always-on mode uses a session hook.
+    rationale: Ideas adopted into the agent output style; not routed. A style overlay would compete with the user's own preferences, so OEO bakes the few useful rules into its reports instead.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+    adopted_ideas:
+      - "agent output style: lead with the doable action before any explanation"
+      - "agent output style: restate progress every turn, such as step 3 of 5 done"
+      - "agent output style: cap visible lists at five items per group, keep the rest retained"
+      - "agent output style: before sending, cut preamble, recaps and hedges so first and last lines carry the point"
+  - id: pm-skills
+    name: PM Skills Marketplace
+    domain: product
+    upstream_url: https://github.com/phuryn/pm-skills
+    maintainer: Pawel Huryn (@phuryn)
+    license_spdx: MIT
+    license_evidence_url: https://raw.githubusercontent.com/phuryn/pm-skills/main/LICENSE
+    revision: UNVERIFIED
+    install: [claude plugin marketplace add phuryn/pm-skills, claude plugin install pm-execution@pm-skills]
+    environments: [Claude Code (commands are Claude-specific), skills follow the generic SKILL.md format]
+    limitations: Large catalog (dozens of skills, one install per plugin) with near-duplicate skills; written for product managers rather than engineering agents; frameworks are paraphrased.
+    rationale: Ideas adopted into oeo:business-review. Routed as an optional adapter for new-product work, where full discovery and PRD skills add depth OEO deliberately keeps lean.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+    adopted_ideas:
+      - "oeo:business-review: keep the PRD lean, move unknowns to assumptions instead of writing TBD"
+      - "oeo:business-review: red-team load-bearing claims, writing each failure as a 'Fails if' statement"
+      - "oeo:business-review: pre-mortem sorts worries into tigers, paper tigers and elephants, each with an action"
+      - "oeo:business-review: triage assumptions by impact times risk, test the top ones with behaviour experiments"
+  - id: marketing-skills
+    name: Marketing Skills for AI Agents
+    domain: marketing
+    upstream_url: https://github.com/coreyhaines31/marketingskills
+    maintainer: Corey Haines (@coreyhaines31)
+    license_spdx: MIT
+    license_evidence_url: https://raw.githubusercontent.com/coreyhaines31/marketingskills/main/LICENSE
+    revision: UNVERIFIED
+    install: [npx skills add coreyhaines31/marketingskills -a claude-code, /plugin marketplace add coreyhaines31/marketingskills]
+    environments: [Claude Code, other agents via npx skills]
+    limitations: About 50 skills with long trigger descriptions that can crowd the skill list. README carries sponsor and partner links; cited statistics inside skills are unverified secondary claims.
+    rationale: Ideas adopted into oeo:launch. Routed as an optional adapter for marketing tasks; adapt a few skills rather than import the whole set, and keep OEO copy vendor-neutral.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+    adopted_ideas:
+      - "oeo:launch: one shared product-marketing context file that every later step reads first"
+      - "oeo:launch: voice table plus a learnings log where lessons are retired, never deleted"
+      - "oeo:launch: copy gate tests that a line is visible, falsifiable and not something competitors could say"
+      - "oeo:launch: readiness gate before tactics, then phases and owned over rented channels"
+  - id: awesome-design-md
+    name: Awesome DESIGN.md
+    domain: design
+    upstream_url: https://github.com/VoltAgent/awesome-design-md
+    maintainer: VoltAgent (company)
+    license_spdx: MIT
+    license_evidence_url: https://raw.githubusercontent.com/VoltAgent/awesome-design-md/main/LICENSE
+    revision: UNVERIFIED
+    install: [Copy a chosen site's DESIGN.md into the project root and tell the agent to use it]
+    environments: [Any coding agent that reads a project-root markdown file]
+    limitations: Files are extractions of third-party brand sites, provided as-is; token accuracy is not guaranteed. Depends on an alpha format. Brand files must not be redistributed, only the structure adapted.
+    rationale: Ideas adopted into oeo:design-direction. Routed as an optional adapter for UI work, as structural examples only; OEO ships no brand-specific DESIGN.md.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+    adopted_ideas:
+      - "oeo:design-direction: keep a DESIGN.md at the project root, the visual counterpart of AGENTS.md"
+      - "oeo:design-direction: fixed section skeleton for colors, type, components, spacing, do/don't and responsive rules"
+      - "oeo:design-direction: every do/don't names a token and gives its reason"
+      - "oeo:design-direction: render a preview page so a human can check the extraction"
+  - id: open-design
+    name: Open Design
+    domain: design
+    upstream_url: https://github.com/nexu-io/open-design
+    maintainer: nexu-io (GitHub organization)
+    license_spdx: Apache-2.0
+    license_evidence_url: https://raw.githubusercontent.com/nexu-io/open-design/main/LICENSE
+    revision: UNVERIFIED
+    install: [od mcp install claude]
+    environments: [Desktop app or CLI plus a coding-agent CLI, Docker, pnpm from source]
+    limitations: Platform with a daemon, desktop app and hundreds of skills and design systems; upstream states always-on scrubbed reliability telemetry and offers paid cloud plans. A near-identical older copy exists.
+    rationale: Ideas adopted into oeo:design-direction. Routed as an optional adapter for UI work, never required; its linter and panel logic live in daemon code OEO does not reproduce.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+    adopted_ideas:
+      - "oeo:design-direction: ask structured questions and lock a visual direction before generating anything"
+      - "oeo:design-direction: tiered anti-slop checklist, must-fix items include invented metrics and filler copy"
+      - "oeo:design-direction: review through designer, critic, accessibility and copy lenses, ship after bounded rounds"
+      - "oeo:design-direction: roughly 80% proven patterns plus one deliberate distinctive move"
+  - id: firecrawl
+    name: Firecrawl for Claude
+    domain: research
+    upstream_url: https://github.com/firecrawl/firecrawl-claude-plugin
+    maintainer: Firecrawl (company)
+    license_spdx: MIT
+    license_evidence_url: https://raw.githubusercontent.com/firecrawl/firecrawl-claude-plugin/main/LICENSE
+    revision: UNVERIFIED
+    install: [/plugin marketplace add firecrawl/firecrawl-claude-plugin, /plugin install firecrawl@firecrawl]
+    environments: [Claude Code via a hosted MCP server, CLI skills for other agents]
+    limitations: Hosted paid service, queries and URLs go to the vendor. License is split - plugin MIT, CLI and some skills ISC, self-host core AGPL-3.0 (never vendored here). Self-hosting is unauthenticated by default.
+    rationale: Ideas adopted into oeo:research and oeo:finops. Routed as an optional adapter for research tasks, never required; use only within a user-approved credit cap.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+    adopted_ideas:
+      - "oeo:research: escalate from search to scrape, map, crawl, and only then interactive browsing"
+      - "oeo:research: save fetched pages to files and grep them instead of loading them into context"
+      - "oeo:research: report truncated reads as partial coverage and separate excerpts from full text"
+      - "oeo:finops: honor user credit caps and stop paid collection when the budget is unknown"
+  - id: playwright-cli
+    name: Playwright CLI with agent skills
+    domain: engineering
+    upstream_url: https://github.com/microsoft/playwright-cli
+    maintainer: Microsoft (Playwright team)
+    license_spdx: Apache-2.0
+    license_evidence_url: https://raw.githubusercontent.com/microsoft/playwright-cli/main/LICENSE
+    revision: UNVERIFIED
+    install: [npm install -g @playwright/cli@latest, playwright-cli install --skills]
+    environments: [Node.js 18+, Playwright-managed browsers, any coding agent that can run shell commands]
+    limitations: Pre-1.0 packages, so commands may change. Its eval and run-code commands execute arbitrary code and need permission scoping. Browser download behavior was not verified.
+    rationale: Ideas adopted into oeo:verify. Routed as an optional adapter for frontend and external-research work; preferred over a persistent MCP server for token cost.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+    adopted_ideas:
+      - "oeo:verify: snapshot the page, act on element references, then snapshot again to confirm"
+      - "oeo:verify: emulate color scheme, reduced motion and print, and inspect console and network"
+      - "oeo:verify: a CLI plus skill costs fewer tokens than a persistent tool server for coding agents"
+  - id: playwright-skill
+    name: playwright-skill (community)
+    domain: engineering
+    upstream_url: https://github.com/lackeyjb/playwright-skill
+    maintainer: lackeyjb (GitHub account)
+    license_spdx: MIT
+    license_evidence_url: https://raw.githubusercontent.com/lackeyjb/playwright-skill/main/LICENSE
+    revision: UNVERIFIED
+    install: [/plugin marketplace add lackeyjb/playwright-skill]
+    environments: [Claude Code, Node.js 20+]
+    limitations: Executes agent-written JavaScript, runs headed by default and needs extra setup; its own README points users to Microsoft's CLI first. Install command not verified.
+    rationale: Ideas adopted into oeo:verify; not routed, since playwright-cli covers the same ground with fewer moving parts. Only its dev-server and locator habits were re-expressed.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+    adopted_ideas:
+      - "oeo:verify: detect running dev servers first and ask which one when several are found"
+      - "oeo:verify: locate elements by role, label, text, then test id, with web-first assertions"
+      - "oeo:verify: never claim success without checking the resulting page state"

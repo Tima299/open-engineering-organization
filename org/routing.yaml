@@ -5,7 +5,7 @@
 version: 1
 
 # Task types the orchestrator may report (--type).
-types: [trivial, bugfix, feature, refactor, architecture, new-product, incident, research, release, governance, licensing, community]
+types: [trivial, bugfix, feature, refactor, architecture, new-product, incident, research, release, governance, licensing, community, marketing]
 
 # Domains a change may touch (--touches). risky: true forces Class C.
 domains:
@@ -50,10 +50,11 @@ signals:
   high-risk: explicit high business/technical risk
   long-running: engagement spans many sessions
   multi-agent: more than two subagents will run (derived automatically)
+  external-research: studies other companies, products or public sources (feature teardown, market signal)
 
 # Stage 0 classification. First matching rule wins. Conditions in one `when` are ANDed.
 classification:
-  - {class: D, rule: organizational-work, when: {types_any: [release, governance, licensing, community]}}
+  - {class: D, rule: organizational-work, when: {types_any: [release, governance, licensing, community, marketing]}}
   - {class: C, rule: significant-type, when: {types_any: [architecture, new-product, incident]}}
   - {class: C, rule: risky-domain, when: {risky_domain: true}}
   - {class: C, rule: risk-signal, when: {signals_any: [new-surface, breaking-change, high-risk, ai-feature]}}
@@ -106,20 +107,20 @@ classes:
   D:
     name: Organizational
     description: releases, governance, licensing, community. Maintainer-led with Tier 3 advisors.
-    stages: [intake, planning, verify, release, community]
+    stages: [intake, planning, verify, community]      # + release stage/gates via fact_rules
     roles:
       business-owner: human
       project-manager: orchestrator
       oss-maintainer: orchestrator
       qa-verifier: subagent
-    gates: [changelog-entry, version-bump, rollback-plan, license-gate, checks-pass]
+    gates: [diff-reviewed, checks-pass]
     tier2: false
     tier3: true
 
 # Extra gates and stages whenever a fact (type, domain or signal) is present, in any class
 # except A. Example: a failed-release incident is Class C but still needs a rollback plan.
 fact_rules:
-  release: {gates: [changelog-entry, version-bump, rollback-plan], stages: [release]}
+  release: {gates: [changelog-entry, version-bump, rollback-plan, license-gate], stages: [release]}   # license conflicts are release-blocking
   new-dependency: {gates: [license-gate]}
   redistribution: {gates: [license-gate]}
   license-change: {gates: [license-gate]}
@@ -134,6 +135,9 @@ skills:
     B: [oeo:deliver, oeo:verify]
     C: [oeo:deliver, oeo:business-review, oeo:verify]
     D: [oeo:deliver, oeo:release]
+  by_type:
+    research: [oeo:research]
+    marketing: [oeo:launch]
   by_domain:
     frontend: [oeo:design-direction]
     ui: [oeo:design-direction]
@@ -141,17 +145,24 @@ skills:
     security: [oeo:verify]
   by_signal:
     release: [oeo:release]
+    public-release: [oeo:launch]
+    external-research: [oeo:research]
     multi-agent: [oeo:finops]
-    long-running: [oeo:finops]
+    long-running: [oeo:finops, oeo:chief-of-staff]
   adapters:
     by_domain:
-      frontend: [frontend-design, impeccable, ui-ux-pro-max]
-      ui: [frontend-design, impeccable, taste-skill, emil-kowalski-skills]
+      frontend: [frontend-design, impeccable, ui-ux-pro-max, playwright-cli]
+      ui: [frontend-design, open-design, awesome-design-md, impeccable, taste-skill, emil-kowalski-skills]
       backend: [superpowers]
     by_type:
       bugfix: [superpowers]
       feature: [superpowers]
       refactor: [superpowers, ponytail]
+      new-product: [pm-skills]
+      research: [last30days, firecrawl]
+      marketing: [marketing-skills]
+    by_signal:
+      external-research: [last30days, firecrawl, playwright-cli, rea]
 
 # Developer seniority by class (Tier 1 implementing developer).
 developer_by_class: {A: junior-developer, B: middle-developer, C: senior-developer, D: null}

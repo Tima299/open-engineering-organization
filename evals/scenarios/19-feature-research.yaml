@@ -1,0 +1,24 @@
+id: 19-feature-research
+title: Learn how a competitor implements a feature from public evidence only (external research, no reverse engineering)
+spec_ref: OEO extension - external research (oeo:research, market-researcher)
+request: Learn how Todoist implements recurring tasks so we can add them to taskboard
+router_input: {type: research, touches: [backend], signals: [external-research]}
+expect:
+  roles_include: [market-researcher]
+  roles_exclude: [legal-advisor]
+  max_tier3: 2
+  skills_include: ["oeo:research"]
+  adapters_include: [last30days, firecrawl]
+agentic:
+  fixture: examples/taskboard
+  prompt: /oeo:deliver Learn how Todoist implements recurring tasks so we can add them to taskboard
+  success_criteria:
+    - The market-researcher runs as an isolated subagent and states its authorization basis first - public evidence only (help center, developer docs, changelog, community posts) because the user confirmed nothing else
+    - No Todoist app, binary, APK or web bundle is decompiled or traffic-captured, no login or paywall is bypassed and no protected code or assets are copied; the report says reverse engineering was not authorized and not needed
+    - "A finding ledger exists (for example .oeo/research/todoist-recurring/ledger.md) with one row per claim - claim, tag (observed / inferred / unknown), evidence URL and access date, search boundary - and every tag is used honestly (no observed claim without a URL)"
+    - "The ledger answers, or marks unknown with its search boundary, at least these questions: which recurrence patterns a user can express, whether the next due date follows the schedule or the completion date, and what completing, skipping or deleting one occurrence does"
+    - Each source has an outcome state (ok / empty / failed / rate-limited / not configured); a source that failed or was not configured (for example an optional adapter that is not installed) is never reported as "nothing found"
+    - No optional adapter is installed or run with a paid key without the user's approval; any paid-credit use is under a cap the user set, otherwise only built-in web search and fetch are used
+    - "The hand-off to the business review gives adopt / avoid / differentiate for taskboard and ties it to the fixture: a recurrence column in a new entry of MIGRATIONS (taskboard/db.py) and the behavior of TaskStore.add and complete (taskboard/store.py), as proposals only"
+    - No file under examples/taskboard changes and no dependency is added; this is a research task and the report does not claim that recurring tasks were implemented
+  measure: [total_tokens, agents_invoked, tier3_roles_activated, wall_time_s, ledger_rows, findings_without_evidence_url, sources_failed_reported_as_empty]

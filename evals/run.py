@@ -38,6 +38,9 @@ def check(scenario, lock):
             if len(t3) > exp["max_tier3"]:
                 failures.append(f"tier 3 over-activated: {t3}")
         failures += [f"missing gate {g}" for g in exp.get("gates_include", []) if g not in gates]
+        failures += [f"unexpected gate {g}" for g in exp.get("gates_exclude", []) if g in gates]
+        failures += [f"missing skill {s}" for s in exp.get("skills_include", []) if s not in plan["skills"]]
+        failures += [f"missing adapter {a}" for a in exp.get("adapters_include", []) if a not in plan["optional_adapters"]]
         for rid, mode in (exp.get("modes") or {}).items():
             got = next((r["mode"] for r in plan["roles"] if r["id"] == rid), None)
             if got != mode:

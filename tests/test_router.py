@@ -89,12 +89,17 @@ class ClassificationTests(RouterTestCase):
         self.assertTrue({"adr-recorded", "domain-reviews-passed", "business-review-passed"} <= gates)
 
     def test_class_d_for_organizational_types(self):
-        for task_type in ["release", "governance", "licensing", "community"]:
+        # Release and licensing work always pass the legal gate; governance, community and
+        # marketing edits do not (proportionality: no release gates without a release).
+        for task_type, license_gates in [("release", 1), ("licensing", 1), ("governance", 0),
+                                         ("community", 0), ("marketing", 0)]:
             with self.subTest(type=task_type):
                 plan = self.route(task_type)
                 self.assertEqual((plan["class"], plan["rule"]), ("D", "organizational-work"))
                 self.assertTrue({"business-owner", "project-manager", "oss-maintainer", "qa-verifier"} <= self.ids(plan))
-                self.assertEqual([g["id"] for g in plan["gates"]].count("license-gate"), 1)
+                gates = [g["id"] for g in plan["gates"]]
+                self.assertEqual(gates.count("license-gate"), license_gates)
+                self.assertEqual("rollback-plan" in gates, task_type == "release")
         plan = self.route("release", touches=["auth", "database"], files=40)  # D outranks risky domain / size
         self.assertEqual(plan["class"], "D")
         self.assertEqual(self.ids(plan, 2), set())

@@ -30,7 +30,7 @@ role:
     - Revision requests naming the failed criterion and evidence
     - Completion report mapping each acceptance criterion to its evidence
   tools_and_permissions: [read, search, edit, execute]
-  relevant_skills: ["oeo:deliver"]
+  relevant_skills: ["oeo:deliver", "oeo:chief-of-staff"]
   escalation_conditions:
     - Scope, budget or direction must change -> Business Owner with options and a recommendation
     - A gate still fails after the retry budget and model escalation -> Business Owner or CTO

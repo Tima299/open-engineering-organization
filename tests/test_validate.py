@@ -195,9 +195,13 @@ class RegistryTests(unittest.TestCase):
         errs = oeo.validate_registry({"resources": [entry]}, self.POLICY)
         self.assertEqual(errs, ["third_party/registry.yaml thing: missing 'rationale'"])
         self.assertIn("distribution must be reference-only, vendored or dependency", self.errors(distribution="copied")[0])
-        self.assertEqual(self.errors(status="verified"),
-                         ["third_party/registry.yaml thing: verified entries need license_evidence_url"])
-        self.assertEqual(self.errors(status="verified", license_evidence_url="https://example.org/LICENSE"), [])
+        msg = ("third_party/registry.yaml thing: 'verified' needs license_evidence_url and a confirmed revision "
+               "(else partially-verified)")
+        self.assertEqual(self.errors(status="verified"), [msg])
+        self.assertEqual(self.errors(status="verified", license_evidence_url="https://example.org/LICENSE",
+                                     revision="UNVERIFIED"), [msg])
+        self.assertEqual(self.errors(status="verified", license_evidence_url="https://example.org/LICENSE",
+                                     revision="0123456789abcdef0123456789abcdef01234567"), [])
 
 
 class BuildOutputsTests(IsolatedTestCase):

@@ -257,6 +257,12 @@ def render_third_party(registry, policy):
         rows.append(f"| [{r['name']}]({r['upstream_url']}) ({r['maintainer']}) | "
                     f"[{r['license_spdx']}]({r['license_evidence_url']}) ({license_verdict(r['license_spdx'], policy)}) | "
                     f"{rev} | {r['status']}, {r['accessed']} | {r['rationale']} *Limits:* {r['limitations']} |")
+    adopted = [r for r in registry["resources"] if r.get("adopted_ideas")]
+    if adopted:
+        rows += ["", "## Ideas adapted into OEO", "",
+                 "Re-expressed in OEO's own words (no upstream text is copied). Credit to the upstream authors:", ""]
+        for r in adopted:
+            rows.append(f"- **{r['name']}** ({r['license_spdx']}): " + "; ".join(r["adopted_ideas"]))
     rows += ["", "Install commands, environments and verification notes: `third_party/registry.yaml`."]
     return "\n".join(rows) + "\n"
 
@@ -468,8 +474,8 @@ def validate_registry(registry, policy):
         verdict = license_verdict(r.get("license_spdx"), policy)
         if r.get("distribution") != "reference-only" and verdict != "allowed":
             errs.append(f"{w}: {verdict} license '{r.get('license_spdx')}' cannot be {r.get('distribution')} (legal gate)")
-        if r.get("status") == "verified" and not r.get("license_evidence_url"):
-            errs.append(f"{w}: verified entries need license_evidence_url")
+        if r.get("status") == "verified" and (not r.get("license_evidence_url") or r.get("revision") == "UNVERIFIED"):
+            errs.append(f"{w}: 'verified' needs license_evidence_url and a confirmed revision (else partially-verified)")
     return errs
 
 
