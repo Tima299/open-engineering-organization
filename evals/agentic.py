@@ -140,6 +140,7 @@ def run(scenario_id, arm, model, profile, timeout, budget):
         "oeo_commit": commit,
         "exit_code": code, "is_error": result.get("is_error"), "cost_usd": result.get("total_cost_usd"),
         "duration_s": round((result.get("duration_ms") or 0) / 1000, 1), "num_turns": result.get("num_turns"),
+        "wall_s": round((dt.datetime.now(dt.timezone.utc) - started).total_seconds()),
         "usage": result.get("usage"), "subagents": [{k: s.get(k) for k in ("agent_type", "models", "input_tokens",
                                                      "output_tokens", "cache_write_tokens")} for s in subagents],
         "activation": checks.read_jsonl(work / ".oeo" / "activation-log.jsonl")[-1:] if arm == "oeo" else None,
@@ -159,16 +160,19 @@ def run(scenario_id, arm, model, profile, timeout, budget):
 
 
 def summary():
-    rows = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(OUT.glob("*.json"))]
-    lines = ["# Agentic eval results (raw data in this folder)", "",
-             "| Scenario | Arm | Model / profile | Checks | Cost USD | Time s | Turns | Subagents | Class |",
-             "|---|---|---|---|---|---|---|---|---|"]
-    for r in rows:
-        cls = (r.get("activation") or [{}])[0].get("class", "") if r.get("activation") else ""
-        lines.append(f"| {r['scenario']} | {r['arm']} | {r['model']}{' / ' + r['profile'] if r.get('profile') else ''} | "
-                     f"{r['checks_passed']} | {r['cost_usd']} | {r['duration_s']} | {r['num_turns']} | "
-                     f"{len(r.get('subagents') or [])} | {cls} |")
-    lines += ["", "One run per arm is an anecdote, not a benchmark. Failed checks are listed per run in the JSON files."]
+    files = sorted(OUT.glob("*.json"))
+    lines = ["# Agentic eval results", "", "Raw JSON and diffs for every run are in this folder. Main session: "
+             "`sonnet`; OEO subagents: `economy` profile.", "",
+             "| Run | OEO commit | Checks | Cost USD | Wall s | Subagents | Class |", "|---|---|---|---|---|---|---|"]
+    for f in files:
+        r = json.loads(f.read_text(encoding="utf-8"))
+        cls = (r.get("activation") or [{}])[0].get("class", "") if r.get("activation") else "-"
+        cost = f"{r['cost_usd']:.2f}" if isinstance(r.get("cost_usd"), (int, float)) else "?"
+        lines.append(f"| [{f.stem}]({f.name}) | {r.get('oeo_commit') or '-'} | {r['checks_passed']} | {cost} | "
+                     f"{r.get('wall_s', 'n/a')} | {len(r.get('subagents') or [])} | {cls} |")
+    notes = OUT / "NOTES.md"
+    lines += ["", "One run per arm is an anecdote, not a benchmark. Failed checks are listed per run in the JSON "
+              "files" + (f"; scoring corrections and findings are in [NOTES.md](NOTES.md)." if notes.exists() else ".")]
     (OUT / "SUMMARY.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
 

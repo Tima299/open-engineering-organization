@@ -1,15 +1,17 @@
-# Agentic eval results (raw data in this folder)
+# Agentic eval results
 
-| Scenario | Arm | Model / profile | Checks | Cost USD | Time s | Turns | Subagents | Class |
-|---|---|---|---|---|---|---|---|---|
-| 06-dashboard | baseline | sonnet | 10/11 | 0.09661549999999999 | 25.3 | 4 | 0 |  |
-| 06-dashboard | oeo | sonnet / economy | 9/13 | 0.21465697499999997 | 21.9 | 3 | 2 | B |
-| 07-security-flaw | baseline | sonnet | 4/4 | 0.0886264 | 23.9 | 5 | 0 |  |
-| 07-security-flaw | oeo | sonnet / economy | 5/5 | 0.40410193499999997 | 19.6 | 2 | 3 | C |
-| 11-trivial-typo | baseline | sonnet | 4/4 | 0.052071299999999994 | 12.0 | 3 | 0 |  |
-| 11-trivial-typo | oeo | sonnet / economy | 6/6 | 0.2864516 | 56.0 | 6 | 2 | A |
-| 11-trivial-typo | oeo | sonnet / economy | 6/6 | 0.13018938 | 13.2 | 2 | 1 | A |
-| 19-feature-research | baseline | sonnet | 1/1 | 0.10828379999999999 | 28.9 | 6 | 0 |  |
-| 19-feature-research | oeo | sonnet / economy | 2/3 | 0.7094863199999998 | 19.7 | 3 | 8 | B |
+Raw JSON and diffs for every run are in this folder. Main session: `sonnet`; OEO subagents: `economy` profile.
 
-One run per arm is an anecdote, not a benchmark. Failed checks are listed per run in the JSON files.
+| Run | OEO commit | Checks | Cost USD | Wall s | Subagents | Class |
+|---|---|---|---|---|---|---|
+| [2026-10-30-06-dashboard-baseline-1](2026-10-30-06-dashboard-baseline-1.json) | a021104-dirty | 10/11 | 0.10 | n/a | 0 | - |
+| [2026-10-30-06-dashboard-oeo-1](2026-10-30-06-dashboard-oeo-1.json) | a021104-dirty | 9/13 | 0.21 | n/a | 2 | B |
+| [2026-10-30-07-security-flaw-baseline-1](2026-10-30-07-security-flaw-baseline-1.json) | e78f253 | 4/4 | 0.09 | n/a | 0 | - |
+| [2026-10-30-07-security-flaw-oeo-1](2026-10-30-07-security-flaw-oeo-1.json) | 7e4f9f8-dirty | 5/5 | 0.40 | n/a | 3 | C |
+| [2026-10-30-11-trivial-typo-baseline-1](2026-10-30-11-trivial-typo-baseline-1.json) | - | 4/4 | 0.05 | n/a | 0 | - |
+| [2026-10-30-11-trivial-typo-oeo-1](2026-10-30-11-trivial-typo-oeo-1.json) | - | 6/6 | 0.29 | n/a | 2 | A |
+| [2026-10-30-11-trivial-typo-oeo-2](2026-10-30-11-trivial-typo-oeo-2.json) | f0dcce3 | 6/6 | 0.13 | n/a | 1 | A |
+| [2026-10-30-19-feature-research-baseline-1](2026-10-30-19-feature-research-baseline-1.json) | e78f253-dirty | 1/1 | 0.11 | n/a | 0 | - |
+| [2026-10-30-19-feature-research-oeo-1](2026-10-30-19-feature-research-oeo-1.json) | 5ab718b | 2/3 | 0.71 | n/a | 8 | B |
+
+One run per arm is an anecdote, not a benchmark. Failed checks are listed per run in the JSON files; scoring corrections and findings are in [NOTES.md](NOTES.md).
