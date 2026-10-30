@@ -23,3 +23,10 @@ agentic:
     - The verifier is not the implementer, and the final report separates requirements satisfied from tests passed from UX quality actually inspected (screenshot or DOM check path) versus unverified
     - If third-party design adapters are not installed, the run uses oeo:design-direction and installs nothing
   measure: [total_tokens, agents_invoked, wall_time_s, files_changed, contrast_ratio_min, a11y_violations, viewport_overflow_375px, tests_added]
+  auto:
+    tests_pass: true
+    unchanged: [taskboard/db.py]
+    exists_glob: [.oeo/*/screen-spec.md]
+    diff_contains: ["<!", "lang=", "viewport", ":root", "<script>alert(1)</script>"]
+    diff_not_contains: ['src="http', "src='http", 'href="http', "href='http"]
+    oeo_class: C

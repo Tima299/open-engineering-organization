@@ -78,6 +78,11 @@ def score(auto, work, arm):
     if "files_changed_subset" in auto:
         extra = [f for f in files if f not in auto["files_changed_subset"]]
         add("files_changed_subset", not extra, extra or files)
+    for path in auto.get("unchanged", []):
+        add(f"unchanged {path}", path not in files)
+    for pattern in auto.get("exists_glob", []):
+        if arm == "oeo" or not pattern.startswith(".oeo"):  # .oeo/ artifacts are OEO-only
+            add(f"exists {pattern}", bool(glob.glob(str(work / pattern))))
     for s in auto.get("diff_contains", []):
         add(f"diff_contains {s!r}", s in added)
     for s in auto.get("diff_not_contains", []):
