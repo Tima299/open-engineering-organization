@@ -1,0 +1,89 @@
+{
+ "scenario": "18-failed-review-loop",
+ "arm": "baseline",
+ "model": "sonnet",
+ "profile": null,
+ "date": "2026-10-30",
+ "claude_code": "2.1.314 (Claude Code)",
+ "oeo_commit": "0262bab",
+ "exit_code": 0,
+ "is_error": false,
+ "cost_usd": 0.08342459999999999,
+ "duration_s": 24.6,
+ "num_turns": 5,
+ "wall_s": 26,
+ "usage": {
+  "input_tokens": 10,
+  "cache_creation_input_tokens": 11541,
+  "cache_read_input_tokens": 180306,
+  "output_tokens": 1921,
+  "output_tokens_details": {
+   "thinking_tokens": 184
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 11541,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 385,
+    "cache_read_input_tokens": 39160,
+    "cache_creation_input_tokens": 1110,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 1110
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "subagents": [],
+ "activation": null,
+ "files_changed": [
+  "taskboard/__init__.py",
+  "taskboard/store.py",
+  "tests/test_store.py"
+ ],
+ "checks": [
+  {
+   "check": "diff_contains 'TaskNotFound'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "tests_pass",
+   "pass": true,
+   "detail": "['OK']"
+  },
+  {
+   "check": "probe unknown id raises instead of returning None",
+   "pass": true,
+   "detail": "RAISES TaskNotFound"
+  },
+  {
+   "check": "final_contains 'TaskNotFound'",
+   "pass": true,
+   "detail": ""
+  }
+ ],
+ "workdir": "/tmp/oeo-eval-18-failed-review-loop-baseline-v_tcxyuw/repo",
+ "trace_summary": {
+  "tools": {
+   "Bash": 4
+  },
+  "skills": [],
+  "agents": [],
+  "oeo_commands": []
+ },
+ "checks_passed": "4/4",
+ "final_message": "The fix wasn't on this branch, so I wrote it myself. It is uncommitted and not shipped. `HANDOFF.md` said it was done, but the tree was clean, with a single `base` commit and no `TaskNotFound` anywhere. `complete()` still returned `None` for an unknown id.\n\n- **Fix:** `taskboard/store.py` now defines `TaskNotFound` (a `LookupError` subclass). `complete()` raises it when the update touches no row. `taskboard/__init__.py` exports it.\n- **Tests:** `tests/test_store.py` has two new regression tests. One covers an unknown id. The other covers completing another owner's task, which also raises and leaves that task not done.\n- **Result:** all 12 tests pass (`python3 -m unittest discover -s tests`), up from the 10 the handoff reported.\n\nCompleting another owner's task now raises `TaskNotFound` instead of returning `None`. I treated that as the same \"not found\" case, but it is a behavior change to the owner-scoped lookup.\n\nI didn't commit or push because the work I was told to verify wasn't there. Say if you want me to commit it (and to which branch)."
+}

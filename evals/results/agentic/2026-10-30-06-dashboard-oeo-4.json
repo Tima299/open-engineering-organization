@@ -1,0 +1,398 @@
+{
+ "scenario": "06-dashboard",
+ "arm": "oeo",
+ "model": "sonnet",
+ "profile": "economy",
+ "date": "2026-10-30",
+ "claude_code": "2.1.314 (Claude Code)",
+ "oeo_commit": "d8a9dee",
+ "exit_code": 0,
+ "is_error": false,
+ "cost_usd": 1.0090535399999998,
+ "duration_s": 25.0,
+ "num_turns": 2,
+ "wall_s": 388,
+ "usage": {
+  "input_tokens": 4,
+  "cache_creation_input_tokens": 2979,
+  "cache_read_input_tokens": 162395,
+  "output_tokens": 2077,
+  "output_tokens_details": {
+   "thinking_tokens": 0
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 2979,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 1205,
+    "cache_read_input_tokens": 82060,
+    "cache_creation_input_tokens": 1254,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 1254
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "subagents": [
+  {
+   "agent_type": "oeo:design-lead",
+   "models": [
+    "claude-sonnet-5-5"
+   ],
+   "input_tokens": 4,
+   "output_tokens": 2810,
+   "cache_write_tokens": 9800
+  },
+  {
+   "agent_type": "oeo:senior-frontend-engineer",
+   "models": [
+    "claude-sonnet-5-5"
+   ],
+   "input_tokens": 8,
+   "output_tokens": 6446,
+   "cache_write_tokens": 18398
+  },
+  {
+   "agent_type": "oeo:advisor",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 6,
+   "output_tokens": 978,
+   "cache_write_tokens": 14012
+  },
+  {
+   "agent_type": "oeo:senior-developer",
+   "models": [
+    "claude-sonnet-5-5"
+   ],
+   "input_tokens": 4,
+   "output_tokens": 1033,
+   "cache_write_tokens": 9607
+  },
+  {
+   "agent_type": "oeo:design-lead",
+   "models": [
+    "claude-sonnet-5-5"
+   ],
+   "input_tokens": 10,
+   "output_tokens": 3719,
+   "cache_write_tokens": 10708
+  },
+  {
+   "agent_type": "oeo:qa-verifier",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 22,
+   "output_tokens": 17780,
+   "cache_write_tokens": 41141
+  },
+  {
+   "agent_type": "oeo:senior-frontend-engineer",
+   "models": [
+    "claude-sonnet-5-5"
+   ],
+   "input_tokens": 14,
+   "output_tokens": 8670,
+   "cache_write_tokens": 21333
+  },
+  {
+   "agent_type": "oeo:qa-verifier",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 32,
+   "output_tokens": 28866,
+   "cache_write_tokens": 56343
+  },
+  {
+   "agent_type": "oeo:design-lead",
+   "models": [
+    "claude-sonnet-5-5"
+   ],
+   "input_tokens": 16,
+   "output_tokens": 5993,
+   "cache_write_tokens": 15236
+  }
+ ],
+ "activation": [
+  {
+   "ts": "2026-10-30T12:40:50+00:00",
+   "session": "fc222d1e-09f7-4db4-b35a-e7ed437efcc8",
+   "engagement": "20261030-html-dashboard-of-open-tasks-per-owner-w",
+   "summary": "HTML dashboard of open tasks per owner with overdue highlight",
+   "class": "C",
+   "rule": "risk-signal",
+   "inputs": {
+    "type": "feature",
+    "touches": [
+     "frontend",
+     "ui"
+    ],
+    "signals": [
+     "new-surface",
+     "user-facing"
+    ],
+    "files": 2,
+    "lines": 150
+   },
+   "roles": [
+    {
+     "id": "business-analyst",
+     "mode": "subagent",
+     "reason": "class C core",
+     "agent": "oeo:business-analyst",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "business-owner",
+     "mode": "human",
+     "reason": "class C core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "cto",
+     "mode": "checklist",
+     "reason": "class C core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "oss-maintainer",
+     "mode": "checklist",
+     "reason": "class C core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "project-manager",
+     "mode": "orchestrator",
+     "reason": "class C core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "qa-verifier",
+     "mode": "subagent",
+     "reason": "class C core",
+     "agent": "oeo:qa-verifier",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "senior-developer",
+     "mode": "subagent",
+     "reason": "class C core",
+     "agent": "oeo:senior-developer",
+     "model": "sonnet",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "technical-lead",
+     "mode": "orchestrator",
+     "reason": "class C core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "design-lead",
+     "mode": "subagent",
+     "reason": "domain: new-surface, ui",
+     "agent": "oeo:design-lead",
+     "model": "sonnet",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "senior-frontend-engineer",
+     "mode": "subagent",
+     "reason": "domain: frontend, ui",
+     "agent": "oeo:senior-frontend-engineer",
+     "model": "sonnet",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "finops-controller",
+     "mode": "checklist",
+     "reason": "trigger: multi-agent",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "ux-researcher",
+     "mode": "subagent",
+     "reason": "trigger: new-surface",
+     "agent": "oeo:advisor",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    }
+   ],
+   "gates": [
+    "acceptance-criteria-defined",
+    "business-review-passed",
+    "adr-recorded",
+    "diff-reviewed",
+    "checks-pass",
+    "regression-test",
+    "domain-reviews-passed",
+    "acceptance-criteria-met",
+    "outcome-measurable"
+   ],
+   "estimate_tokens": 180000,
+   "budget_tokens": 400000
+  }
+ ],
+ "files_changed": [
+  "taskboard/dashboard.py",
+  "tests/test_dashboard.py"
+ ],
+ "checks": [
+  {
+   "check": "unchanged taskboard/db.py",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "exists .oeo/*/screen-spec.md",
+   "pass": false,
+   "detail": ""
+  },
+  {
+   "check": "diff_contains '<!'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_contains 'lang='",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_contains 'viewport'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_contains ':root'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains 'src=\"http'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains \"src='http\"",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains 'href=\"http'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "diff_not_contains \"href='http\"",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "tests_pass",
+   "pass": true,
+   "detail": "['OK']"
+  },
+  {
+   "check": "probe a <script> task title is rendered escaped",
+   "pass": true,
+   "detail": "ESCAPED"
+  },
+  {
+   "check": "oeo verification-check .oeo/*/verification.md",
+   "pass": true,
+   "detail": "exit 0"
+  },
+  {
+   "check": "skill_used design-lead",
+   "pass": true,
+   "detail": "['oeo:advisor', 'oeo:design-lead', 'oeo:qa-verifier', 'oeo:senior-developer', 'oeo:senior-frontend-engineer']"
+  },
+  {
+   "check": "skill_used qa-verifier",
+   "pass": true,
+   "detail": "['oeo:advisor', 'oeo:design-lead', 'oeo:qa-verifier', 'oeo:senior-developer', 'oeo:senior-frontend-engineer']"
+  },
+  {
+   "check": "reverified_after_last_main_edit",
+   "pass": true,
+   "detail": "last main-session edit #-1, last qa-verifier call #28"
+  },
+  {
+   "check": "oeo_class",
+   "pass": true,
+   "detail": "C"
+  }
+ ],
+ "workdir": "/tmp/oeo-eval-06-dashboard-oeo-5wvddx1t/repo",
+ "trace_summary": {
+  "tools": {
+   "Agent": 6,
+   "Bash": 39,
+   "Glob": 2,
+   "Grep": 1,
+   "Monitor": 3,
+   "Read": 15,
+   "ReadNotifications": 4,
+   "SendMessage": 3,
+   "Write": 2
+  },
+  "skills": [],
+  "agents": [
+   "oeo:design-lead",
+   "oeo:senior-frontend-engineer",
+   "oeo:senior-developer",
+   "oeo:qa-verifier",
+   "oeo:design-lead",
+   "oeo:advisor"
+  ],
+  "oeo_commands": [
+   "\" route --type feature --touches frontend,ui --signals new-surface,user-facing -",
+   " cost --check 2>&1 | tail -2; which chromium chromium-browser google-chrome play"
+  ]
+ },
+ "checks_passed": "16/17",
+ "final_message": "**Verdict: delivered. The dashboard is built and independently verified, with two checks not run (greyscale rendering and lint).** `render_dashboard(store, today=None)` in `taskboard/dashboard.py` returns one self-contained HTML5 string. The full suite passes (28 tests), and the verification table passes `oeo verification-check`.\n\n**1. Class and roles**\n- This was Class C, from the `new-surface` and `user-facing` signals.\n- Roles: design-lead, senior-frontend-engineer (implemented), senior-developer (diff review), qa-verifier, UX advisor.\n- I skipped the business analyst because you fixed the scope. I recorded that as N/A in the table.\n\n**2. Files changed**\n- New: `taskboard/dashboard.py` and `tests/test_dashboard.py`.\n- Engagement notes are in the untracked `.oeo/` folder. Nothing else was modified and no dependencies were added.\n\n**3. Gates**\n- Every gate passed or is N/A with a reason: `adr-recorded` (no structural change), `business-review-passed` (scope fixed by you) and `outcome-measurable` (no telemetry in a fixture project).\n- `checks-pass` rests on the test suite. The repo has no linter, so I did not run lint.\n- `domain-reviews-passed` has a PASS from the design lead and from the UX advisor. The design lead has no shell, so it based its verdict on QA's measurements and a screenshot.\n- Full table: `.oeo/20261030-html-dashboard-of-open-tasks-per-owner-w/verification.md`.\n\n**4. Acceptance criteria**\n- **Self-contained page:** passed. A grep of the source and rendered output found no external references, and the browser made only the local file request.\n- **Counts per owner:** pass. Done tasks are excluded and owners with no open tasks are omitted.\n- **Due dates and overdue:** pass. A task due today is not overdue, and overdue rows carry a \"! Overdue\" label as well as colour.\n- **Responsive:** passed in Chromium at 360, 960 and 1280px, light and dark, with no horizontal scroll. Text contrast is at least 6.8:1.\n- **Escaping, empty state and ordering:** pass. Titles are HTML-escaped, an empty store shows \"No open tasks.\" and owners sort case-insensitively.\n- **Tests:** 28 pass. They include 14 new dashboard tests plus fixes added after QA's first FAIL.\n- **QA's first FAIL:** QA first failed the page because the card borders were below 3:1 contrast. I also fixed ISO week dates being treated as real dates, and owner ordering. QA re-verified all of it.\n\n**5. Outcome**\n- A reader can see who has how many open tasks, and which are overdue, at the top of the page.\n- No users have tried it. The UX review was heuristic only.\n\n**6. Cost**\n- Subagents used about 273k tokens against a 180k estimate and a 400k class budget.\n- The QA, design and frontend runs went over their estimates.\n\n**7. Open risks and next step**\n- Greyscale rendering was not tested, and a malformed due date shows with no warning badge. The UX advisor suggests two optional additions: a per-owner overdue count and a \"Date not recognised\" badge.\n- One test (equal due dates keep insertion order) does not prove the `ORDER BY id` fix, because it also passes on the old code. This is minor.\n- **Next step, owner you:** decide whether to add those two UX additions now. I haven't done this because the brief doesn't ask for them. Nothing is committed."
+}

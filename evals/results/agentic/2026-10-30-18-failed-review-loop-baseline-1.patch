@@ -1,0 +1,104 @@
+diff --git a/taskboard/__init__.py b/taskboard/__init__.py
+index c20f702..0d09e02 100644
+--- a/taskboard/__init__.py
++++ b/taskboard/__init__.py
+@@ -1,5 +1,5 @@
+ # SPDX-License-Identifier: Apache-2.0
+ """Taskboard: a tiny per-user to-do service used as the OEO evaluation fixture."""
+-from .store import TaskStore
++from .store import TaskNotFound, TaskStore
+ 
+-__all__ = ["TaskStore"]
++__all__ = ["TaskNotFound", "TaskStore"]
+diff --git a/taskboard/__pycache__/__init__.cpython-313.pyc b/taskboard/__pycache__/__init__.cpython-313.pyc
+new file mode 100644
+index 0000000..e07fd7e
+Binary files /dev/null and b/taskboard/__pycache__/__init__.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/db.cpython-313.pyc b/taskboard/__pycache__/db.cpython-313.pyc
+new file mode 100644
+index 0000000..5f3b969
+Binary files /dev/null and b/taskboard/__pycache__/db.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/reporting.cpython-313.pyc b/taskboard/__pycache__/reporting.cpython-313.pyc
+new file mode 100644
+index 0000000..9f5a29d
+Binary files /dev/null and b/taskboard/__pycache__/reporting.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/store.cpython-313.pyc b/taskboard/__pycache__/store.cpython-313.pyc
+new file mode 100644
+index 0000000..0298307
+Binary files /dev/null and b/taskboard/__pycache__/store.cpython-313.pyc differ
+diff --git a/taskboard/store.py b/taskboard/store.py
+index aacec90..86f6c67 100644
+--- a/taskboard/store.py
++++ b/taskboard/store.py
+@@ -3,6 +3,10 @@
+ from .db import connect
+ 
+ 
++class TaskNotFound(LookupError):
++    """Raised when a task id does not exist for the given owner."""
++
++
+ class TaskStore:
+     def __init__(self, path=":memory:"):
+         self.conn = connect(path)
+@@ -21,13 +25,19 @@ class TaskStore:
+         return [dict(r) for r in rows]
+ 
+     def complete(self, owner, task_id):
+-        """Mark one of `owner`'s tasks done and return the updated task."""
+-        self.conn.execute("UPDATE tasks SET done = 1 WHERE id = ? AND owner = ?", (task_id, owner))
++        """Mark one of `owner`'s tasks done and return the updated task.
++
++        Raises TaskNotFound if `owner` has no task with `task_id`.
++        """
++        cur = self.conn.execute(
++            "UPDATE tasks SET done = 1 WHERE id = ? AND owner = ?", (task_id, owner))
+         self.conn.commit()
++        if cur.rowcount == 0:
++            raise TaskNotFound(task_id)
+         row = self.conn.execute(
+             "SELECT id, owner, title, due, done FROM tasks WHERE id = ? AND owner = ?",
+             (task_id, owner)).fetchone()
+-        return dict(row) if row else None
++        return dict(row)
+ 
+     def delete(self, requester, task_id):
+         """Delete a task. Returns True if a task was removed."""
+diff --git a/tests/__pycache__/test_reporting.cpython-313.pyc b/tests/__pycache__/test_reporting.cpython-313.pyc
+new file mode 100644
+index 0000000..de9ed3e
+Binary files /dev/null and b/tests/__pycache__/test_reporting.cpython-313.pyc differ
+diff --git a/tests/__pycache__/test_store.cpython-313.pyc b/tests/__pycache__/test_store.cpython-313.pyc
+new file mode 100644
+index 0000000..279039e
+Binary files /dev/null and b/tests/__pycache__/test_store.cpython-313.pyc differ
+diff --git a/tests/test_store.py b/tests/test_store.py
+index f667191..d2113b1 100644
+--- a/tests/test_store.py
++++ b/tests/test_store.py
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: Apache-2.0
+ import unittest
+ 
+-from taskboard import TaskStore
++from taskboard import TaskNotFound, TaskStore
+ from taskboard.db import MIGRATIONS, current_version, migrate
+ 
+ 
+@@ -17,6 +17,16 @@ class TaskStoreTests(unittest.TestCase):
+         self.assertEqual(tasks[0]["due"], "2030-01-31")
+         self.assertEqual(tasks[0]["done"], 0)
+ 
++    def test_complete_unknown_id_raises_task_not_found(self):
++        with self.assertRaises(TaskNotFound):
++            self.store.complete("ana", 999)
++
++    def test_complete_other_owners_task_raises_task_not_found(self):
++        task_id = self.store.add("ben", "not yours")
++        with self.assertRaises(TaskNotFound):
++            self.store.complete("ana", task_id)
++        self.assertEqual(self.store.list("ben")[0]["done"], 0)
++
+     def test_due_is_optional(self):
+         self.store.add("ana", "no deadline")
+         self.assertIsNone(self.store.list("ana")[0]["due"])

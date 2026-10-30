@@ -1,0 +1,241 @@
+{
+ "scenario": "19-feature-research",
+ "arm": "oeo",
+ "model": "sonnet",
+ "profile": "economy",
+ "date": "2026-10-30",
+ "claude_code": "2.1.314 (Claude Code)",
+ "oeo_commit": "d8a9dee",
+ "exit_code": 0,
+ "is_error": false,
+ "cost_usd": 0.55521727,
+ "duration_s": 28.6,
+ "num_turns": 3,
+ "wall_s": 266,
+ "usage": {
+  "input_tokens": 6,
+  "cache_creation_input_tokens": 4286,
+  "cache_read_input_tokens": 178402,
+  "output_tokens": 2321,
+  "output_tokens_details": {
+   "thinking_tokens": 92
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 4286,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 1264,
+    "cache_read_input_tokens": 60644,
+    "cache_creation_input_tokens": 1284,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 1284
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "subagents": [
+  {
+   "agent_type": "oeo:researcher",
+   "models": [
+    "claude-sonnet-5-5"
+   ],
+   "input_tokens": 26,
+   "output_tokens": 7137,
+   "cache_write_tokens": 29814
+  },
+  {
+   "agent_type": "oeo:qa-verifier",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 6,
+   "output_tokens": 3938,
+   "cache_write_tokens": 8957
+  },
+  {
+   "agent_type": "oeo:researcher",
+   "models": [
+    "claude-sonnet-5-5"
+   ],
+   "input_tokens": 32,
+   "output_tokens": 11019,
+   "cache_write_tokens": 32589
+  },
+  {
+   "agent_type": "oeo:qa-verifier",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 14,
+   "output_tokens": 10512,
+   "cache_write_tokens": 20766
+  }
+ ],
+ "activation": [
+  {
+   "ts": "2026-10-30T12:40:52+00:00",
+   "session": "f349b2f1-fb70-4fb1-b17f-3958968e2748",
+   "engagement": "20261030-learn-how-todoist-implements-recurring-t",
+   "summary": "Learn how Todoist implements recurring tasks",
+   "class": "B",
+   "rule": "standard-default",
+   "inputs": {
+    "type": "research",
+    "touches": [
+     "backend"
+    ],
+    "signals": [
+     "external-research"
+    ],
+    "files": null,
+    "lines": null
+   },
+   "roles": [
+    {
+     "id": "business-analyst",
+     "mode": "checklist",
+     "reason": "class B core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "business-owner",
+     "mode": "human",
+     "reason": "class B core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "cto",
+     "mode": "checklist",
+     "reason": "class B core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "oss-maintainer",
+     "mode": "checklist",
+     "reason": "class B core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "project-manager",
+     "mode": "orchestrator",
+     "reason": "class B core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "qa-verifier",
+     "mode": "subagent",
+     "reason": "class B core",
+     "agent": "oeo:qa-verifier",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "technical-lead",
+     "mode": "orchestrator",
+     "reason": "class B core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "market-researcher",
+     "mode": "subagent",
+     "reason": "trigger: external-research",
+     "agent": "oeo:researcher",
+     "model": "sonnet",
+     "effort": "medium",
+     "estimate_tokens": 100000
+    }
+   ],
+   "gates": [
+    "acceptance-criteria-defined",
+    "acceptance-criteria-met"
+   ],
+   "estimate_tokens": 130000,
+   "budget_tokens": 150000
+  }
+ ],
+ "files_changed": [],
+ "checks": [
+  {
+   "check": "max_files_changed",
+   "pass": true,
+   "detail": "[]"
+  },
+  {
+   "check": "skill_used researcher",
+   "pass": true,
+   "detail": "['oeo:qa-verifier', 'oeo:researcher']"
+  },
+  {
+   "check": "oeo_class",
+   "pass": true,
+   "detail": "B"
+  },
+  {
+   "check": "ledger_check",
+   "pass": true,
+   "detail": "[]"
+  }
+ ],
+ "workdir": "/tmp/oeo-eval-19-feature-research-oeo-8_nr79ss/repo",
+ "trace_summary": {
+  "tools": {
+   "Agent": 2,
+   "Bash": 31,
+   "Read": 3,
+   "ReadNotifications": 1,
+   "SendMessage": 2,
+   "WebFetch": 2,
+   "WebSearch": 2
+  },
+  "skills": [],
+  "agents": [
+   "oeo:researcher",
+   "oeo:qa-verifier"
+  ],
+  "oeo_commands": [
+   "\" route --type research --touches backend --signals external-research --summary ",
+   " cost --check",
+   " cost --check 2>&1 | tail -3; sed -n 1,200p taskboard/db.py | head -40",
+   " --help | head -20",
+   " | grep -n -i \"def \\|re\\.\\|observed\\|date\\|url\\|boundary\\|quote\\|error\\|print\" |",
+   "",
+   " cost --check 2>&1 | tail -2; E=.oeo/20261030-learn-how-todoist-implements-recur",
+   " ledger-check .oeo/20261030-learn-how-todoist-implements-recurring-t/ledger.md; ",
+   " ledger-check $E/ledger.md; echo \"ledger-check exit=$?\"; echo \"--- row check\""
+  ]
+ },
+ "checks_passed": "4/4",
+ "final_message": "**Verdict: partly done.** The Todoist research ran and passed independent QA, but it only partly answers your question. Todoist's help center and developer docs were blocked by the proxy, so the main behaviours are inferred, not confirmed.\n\n**1. Class and roles.** Class B (Standard, rule `standard-default`), type `research`, signal `external-research`. I ran the market-researcher (sonnet), then the QA verifier (haiku), which ran twice. QA failed the first pass and passed the second after fixes. I defined the acceptance criteria myself.\n\n**2. Files changed.** No taskboard code changed. Everything is under `.oeo/20261030-learn-how-todoist-implements-recurring-t/`:\n- `criteria.md`\n- `ledger.md` (13 rows)\n- `teardown.md` (38 lines)\n- `verification.md`\n- `raw/` (three saved SDK source files)\n\n**3. Gates.** `oeo verification-check` and `oeo ledger-check` both pass.\n\n| Gate | Result |\n|---|---|\n| acceptance-criteria-defined | PASS |\n| acceptance-criteria-met | PASS, on QA's second pass |\n\n**4. Acceptance criteria**\n- **Ledger:** every row has a URL or file and a date, and `ledger-check` prints OK.\n- **Questions:**\n  - (a) Recurrence patterns: partial.\n  - (b) What completing a recurring task does: partial.\n  - (c) Data model: answered for field names only.\n  - (d) Edge cases (month-end, DST, uncomplete): unresolved.\n- **Teardown:** 38 lines, with adopt/avoid/differentiate mapped to taskboard.\n- **No code change:** git shows only the untracked `.oeo/` folder.\n\n**What was learned**\n- **Confirmed (Python SDK source):**\n  - The due object has `date`, `string`, `lang`, `is_recurring` and `timezone`.\n  - Completing a recurring task keeps the same task and schedules the next occurrence.\n  - Reopening a task is `POST /tasks/{id}/reopen`.\n- **Inferred (search summaries and a 2016 blog):**\n  - `every` follows the original schedule, and `every!` counts from the completion date.\n  - Start and end limits exist.\n  - Typing a fixed date breaks the recurrence.\n- **Suggested direction for taskboard:**\n  - Keep one row per recurring task.\n  - Make `TaskStore.complete` advance `due` instead of setting `done`.\n  - Add a forward-only migration 2 with a `recur` column.\n  - Use a small closed rule grammar instead of free natural language.\n  - Define month-end and uncomplete rules explicitly.\n\n**5. Outcome lines.** I haven't run `oeo:business-review`. This is research, so there is no outcome to measure yet.\n\n**6. Cost.** Subagents used 124,810 tokens against a plan of 130,000 and a class budget of 150,000. The orchestrator used 33,086, for 157,896 all-in. That total counts the orchestrator too, so it is over the 150,000 class figure; the subagent total is within it.\n\n**7. Open risks**\n- The `every`/`every!` rows (7, 8, 10) rest on paraphrase. Don't copy them into a spec as fact.\n- After QA passed, I edited two teardown lines to add \"inferred\" and \"proposed\" labels. QA suggested both. They are wording only, and QA did not re-check them.\n\n**Next step, owned by you:** either allow-list `todoist.com` and `developer.todoist.com` so the researcher can retry, or run the `every`/`every!` and month-end cases in your own Todoist account. After that, a PRD for taskboard recurrence can start on firm evidence."
+}

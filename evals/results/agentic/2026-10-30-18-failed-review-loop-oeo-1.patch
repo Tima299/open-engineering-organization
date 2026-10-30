@@ -1,0 +1,24 @@
+diff --git a/taskboard/__pycache__/__init__.cpython-313.pyc b/taskboard/__pycache__/__init__.cpython-313.pyc
+new file mode 100644
+index 0000000..2379d79
+Binary files /dev/null and b/taskboard/__pycache__/__init__.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/db.cpython-313.pyc b/taskboard/__pycache__/db.cpython-313.pyc
+new file mode 100644
+index 0000000..1fa96a8
+Binary files /dev/null and b/taskboard/__pycache__/db.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/reporting.cpython-313.pyc b/taskboard/__pycache__/reporting.cpython-313.pyc
+new file mode 100644
+index 0000000..f7e0241
+Binary files /dev/null and b/taskboard/__pycache__/reporting.cpython-313.pyc differ
+diff --git a/taskboard/__pycache__/store.cpython-313.pyc b/taskboard/__pycache__/store.cpython-313.pyc
+new file mode 100644
+index 0000000..f27352b
+Binary files /dev/null and b/taskboard/__pycache__/store.cpython-313.pyc differ
+diff --git a/tests/__pycache__/test_reporting.cpython-313.pyc b/tests/__pycache__/test_reporting.cpython-313.pyc
+new file mode 100644
+index 0000000..faf72e5
+Binary files /dev/null and b/tests/__pycache__/test_reporting.cpython-313.pyc differ
+diff --git a/tests/__pycache__/test_store.cpython-313.pyc b/tests/__pycache__/test_store.cpython-313.pyc
+new file mode 100644
+index 0000000..f45a3c4
+Binary files /dev/null and b/tests/__pycache__/test_store.cpython-313.pyc differ

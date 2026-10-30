@@ -825,7 +825,7 @@ def cmd_cost(args):
 
 def cmd_verification_check(args):
     path = Path(args.file)
-    required = args.gates.split(",") if args.gates else []
+    required = [g.strip() for g in args.gates.split(",") if g.strip()] if args.gates else []
     if not required:  # gates of the engagement's latest plan, if the file sits in .oeo/<engagement>/
         plans = [p for p in checks.read_jsonl(path.parent.parent / "activation-log.jsonl")
                  if p.get("engagement") == path.parent.name]

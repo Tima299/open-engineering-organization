@@ -1,0 +1,194 @@
+{
+ "scenario": "03-vague-request",
+ "arm": "oeo",
+ "model": "sonnet",
+ "profile": "economy",
+ "date": "2026-10-30",
+ "claude_code": "2.1.314 (Claude Code)",
+ "oeo_commit": "d8a9dee",
+ "exit_code": 0,
+ "is_error": false,
+ "cost_usd": 0.208470755,
+ "duration_s": 13.6,
+ "num_turns": 2,
+ "wall_s": 71,
+ "usage": {
+  "input_tokens": 4,
+  "cache_creation_input_tokens": 3274,
+  "cache_read_input_tokens": 103800,
+  "output_tokens": 1953,
+  "output_tokens_details": {
+   "thinking_tokens": 177
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 3274,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 1001,
+    "cache_read_input_tokens": 52986,
+    "cache_creation_input_tokens": 1102,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 1102
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "subagents": [
+  {
+   "agent_type": "oeo:qa-verifier",
+   "models": [
+    "claude-haiku-5-5"
+   ],
+   "input_tokens": 10,
+   "output_tokens": 2658,
+   "cache_write_tokens": 9686
+  }
+ ],
+ "activation": [
+  {
+   "ts": "2026-10-30T12:40:50+00:00",
+   "session": "028c6d1b-8473-40f8-b308-8d34937fd99f",
+   "engagement": "20261030-discover-what-team-leads-need-from-the-t",
+   "summary": "Discover what team leads need from the task board; recommend what to build",
+   "class": "B",
+   "rule": "standard-default",
+   "inputs": {
+    "type": "research",
+    "touches": [
+     "backend"
+    ],
+    "signals": [
+     "user-facing"
+    ],
+    "files": null,
+    "lines": null
+   },
+   "roles": [
+    {
+     "id": "business-analyst",
+     "mode": "checklist",
+     "reason": "class B core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "business-owner",
+     "mode": "human",
+     "reason": "class B core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "cto",
+     "mode": "checklist",
+     "reason": "class B core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "oss-maintainer",
+     "mode": "checklist",
+     "reason": "class B core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "project-manager",
+     "mode": "orchestrator",
+     "reason": "class B core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    },
+    {
+     "id": "qa-verifier",
+     "mode": "subagent",
+     "reason": "class B core",
+     "agent": "oeo:qa-verifier",
+     "model": "haiku",
+     "effort": "medium",
+     "estimate_tokens": 30000
+    },
+    {
+     "id": "technical-lead",
+     "mode": "orchestrator",
+     "reason": "class B core",
+     "agent": null,
+     "model": null,
+     "effort": null,
+     "estimate_tokens": null
+    }
+   ],
+   "gates": [
+    "acceptance-criteria-defined",
+    "acceptance-criteria-met"
+   ],
+   "estimate_tokens": 30000,
+   "budget_tokens": 150000
+  }
+ ],
+ "files_changed": [],
+ "checks": [
+  {
+   "check": "max_files_changed",
+   "pass": true,
+   "detail": "[]"
+  },
+  {
+   "check": "exists .oeo/*/brief.md",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "oeo brief-check .oeo/*/brief.md",
+   "pass": false,
+   "detail": "exit 1"
+  },
+  {
+   "check": "skill_used business-analyst",
+   "pass": false,
+   "detail": "['oeo:qa-verifier']"
+  }
+ ],
+ "workdir": "/tmp/oeo-eval-03-vague-request-oeo-vz2_0buz/repo",
+ "trace_summary": {
+  "tools": {
+   "Agent": 1,
+   "Bash": 12,
+   "Glob": 1,
+   "Read": 2
+  },
+  "skills": [],
+  "agents": [
+   "oeo:qa-verifier"
+  ],
+  "oeo_commands": [
+   " route --type research --touches backend --signals user-facing --summary \"Discov",
+   " cost --check 2>&1 | tail -5"
+  ]
+ },
+ "checks_passed": "2/4",
+ "final_message": "**Verdict: I can't tell you what the team leads need, because none of their input exists in the repo or this session.** I can tell you what the board lacks and what to ask them. QA passed the brief, but its four wording fixes were applied afterwards and not re-checked.\n\n**Triage:** Class B (rule `standard-default`). The roles that ran were the business analyst (me, as a checklist) and `oeo:qa-verifier`. I treated it as discovery with no code change. No external research was needed, so I didn't set that signal.\n\n**What the board can't do for a team today (verified in code):**\n- Tasks have one owner, and only `add`, `list` and `complete` are scoped to that owner. There is no team, assignee or shared view (`taskboard/store.py`, `taskboard/db.py`).\n- The only report is open-task counts per owner. `due` is stored but never reported (`taskboard/reporting.py`).\n- `delete()` ignores who is asking, so any user can delete anyone's task (QA reproduced this).\n- `complete()` on a missing id crashes with a `TypeError` (QA reproduced this).\n- It's a library only, with no UI, API or notifications.\n\n**Likely needs (my hypotheses, not reported by anyone):**\n1. Shared team visibility.\n2. Assigning tasks to others.\n3. Team permissions.\n4. Status and priority.\n5. Overdue and workload views.\n\n**What to build, once the answers confirm it:**\n- Fix the delete permission gap and the `complete()` crash first. Neither is safe to leave in a multi-user tool.\n- Add a team and an assignee to tasks, backfilled from the current owner so existing data survives.\n- Add `list_team` and an overdue/open report per assignee.\n- Defer comments, notifications, history and any UI. This would be Class C when built.\n\n**Gates:**\n\n| gate | result |\n|---|---|\n| acceptance-criteria-defined | PASS |\n| acceptance-criteria-met | PASS |\n\n**Acceptance criteria:**\n- **AC1, claims cite code:** PASS (QA ran the 10 existing tests and probed both defects).\n- **AC2, no invented quotes:** PASS. Every team-need is labelled fact or hypothesis.\n- **AC3, first slice and deferrals named:** PASS.\n- **AC4, at most 7 questions:** PASS (exactly 7).\n- **AC5, blocking defects named as prerequisites:** PASS.\n\n**Cost:** 12,354 subagent tokens against a 150,000 class budget.\n\n**Open risks:**\n- The first slice is a guess until leads confirm it. The biggest unknown is whether they need a UI or API, which would be the largest cost.\n\n**Next step, owned by you (the Business Owner):** hold a 30-minute call with 3\u20135 team leads using the 7 questions in `.oeo/20261030-discover-what-team-leads-need-from-the-t/brief.md`, then send the answers back. I'll then confirm the scope and run it as a Class C build."
+}

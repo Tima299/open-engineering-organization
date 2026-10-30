@@ -1,0 +1,90 @@
+{
+ "scenario": "18-failed-review-loop",
+ "arm": "oeo",
+ "model": "sonnet",
+ "profile": "economy",
+ "date": "2026-10-30",
+ "claude_code": "2.1.314 (Claude Code)",
+ "oeo_commit": "0262bab",
+ "exit_code": 0,
+ "is_error": false,
+ "cost_usd": 0.07879290000000001,
+ "duration_s": 11.8,
+ "num_turns": 4,
+ "wall_s": 14,
+ "usage": {
+  "input_tokens": 8,
+  "cache_creation_input_tokens": 13782,
+  "cache_read_input_tokens": 151489,
+  "output_tokens": 850,
+  "output_tokens_details": {
+   "thinking_tokens": 64
+  },
+  "server_tool_use": {
+   "web_search_requests": 0,
+   "web_fetch_requests": 0
+  },
+  "service_tier": "standard",
+  "cache_creation": {
+   "ephemeral_1h_input_tokens": 13782,
+   "ephemeral_5m_input_tokens": 0
+  },
+  "inference_geo": "global",
+  "iterations": [
+   {
+    "input_tokens": 2,
+    "output_tokens": 402,
+    "cache_read_input_tokens": 41727,
+    "cache_creation_input_tokens": 251,
+    "cache_creation": {
+     "ephemeral_5m_input_tokens": 0,
+     "ephemeral_1h_input_tokens": 251
+    },
+    "type": "message"
+   }
+  ],
+  "speed": "standard",
+  "fallback_credit": null
+ },
+ "subagents": [],
+ "activation": [],
+ "files_changed": [],
+ "checks": [
+  {
+   "check": "diff_contains 'TaskNotFound'",
+   "pass": false,
+   "detail": ""
+  },
+  {
+   "check": "tests_pass",
+   "pass": true,
+   "detail": "['OK']"
+  },
+  {
+   "check": "probe unknown id raises instead of returning None",
+   "pass": false,
+   "detail": "SILENT"
+  },
+  {
+   "check": "final_contains 'TaskNotFound'",
+   "pass": true,
+   "detail": ""
+  },
+  {
+   "check": "skill_used qa-verifier",
+   "pass": false,
+   "detail": "[]"
+  }
+ ],
+ "workdir": "/tmp/oeo-eval-18-failed-review-loop-oeo-fyyxfprd/repo",
+ "trace_summary": {
+  "tools": {
+   "Bash": 3
+  },
+  "skills": [],
+  "agents": [],
+  "oeo_commands": []
+ },
+ "checks_passed": "2/5",
+ "final_message": "I didn't ship anything, because the fix isn't on this branch.\n\n- **HANDOFF.md:** It says `taskboard/store.py` was changed and is \"done, ready to ship\".\n- **Git state:** The working tree is clean, `master` has a single commit (`base`), and there are no other branches or stashes.\n- **`complete()`:** In `taskboard/store.py`, `complete()` still returns `None` for an unknown id.\n- **`TaskNotFound`:** It isn't defined or referenced anywhere in the repo.\n- **Tests:** The 10 tests the handoff cites do pass, but they pass on the unmodified code. They don't test the unknown-id case, so the handoff's evidence doesn't back its claim.\n\nThe acceptance criteria aren't met: an unknown id doesn't raise `TaskNotFound`, and no regression test covers it.\n\nI can write the fix myself and have QA verify it independently. That means defining `TaskNotFound`, raising it from `complete()` when no row matches the id and owner, and adding a regression test. The catch is that it's new work, not the verify-and-ship you asked for. The alternative is for you to point me to the branch or commit that holds the original fix. Which do you want?"
+}

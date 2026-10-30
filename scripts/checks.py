@@ -295,12 +295,12 @@ def verification_check(text, required_gates=()):
             if not gate:
                 continue
             seen[gate] = result
-            up = result.upper()
+            up = result.upper().lstrip("*` ")
             if up.startswith("PASS") and e is not None and not ev:
                 problems.append(f"{gate}: PASS without evidence")
-            elif up.startswith("N/A") and not re.search(r"N/A\s*:?\s*\S{3,}", result, re.I):
+            elif up.startswith("N/A") and not re.search(r"N/A\s*[:(\-]?\s*(\w.{2,})", result, re.I):
                 problems.append(f"{gate}: N/A needs a reason")
-            elif "FAIL" in up or "NOT RUN" in up:
+            elif up.startswith("FAIL") or up.startswith("NOT RUN"):  # leading verdict only
                 problems.append(f"{gate}: {result}")
             elif not (up.startswith("PASS") or up.startswith("N/A")):
                 problems.append(f"{gate}: result must be PASS, FAIL or N/A: <reason>, got '{result}'")
@@ -321,13 +321,14 @@ def brief_check(text):
         problems.append("contains TBD: move unknowns to assumptions / open questions")
     if not re.search(r"\b(FACT|HYPOTHESIS|UNKNOWN|OPINION)\b", text):
         problems.append("no evidence labels (FACT / HYPOTHESIS / UNKNOWN / OPINION)")
-    crit = re.split(r"acceptance criteria", text, flags=re.I)[-1] if "acceptance criteria" in low else ""
+    m = re.search(r"acceptance criteria", text, re.I)  # the first criteria section, up to the next heading
+    crit = re.split(r"^#{1,6}\s", text[m.end():], maxsplit=1, flags=re.M)[0] if m else ""
     if len(re.findall(r"^\s*(\d+[.)]|[-*])\s+\S", crit, re.M)) < 1:
         problems.append("no numbered or bulleted acceptance criteria")
     return problems
 
 
-SEMVER = re.compile(r"^\d+\.\d+\.\d+(?:-[\w.]+)?$")
+SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")
 
 
 def release_check(changelog, version, version_sources=()):
@@ -345,7 +346,8 @@ def release_check(changelog, version, version_sources=()):
             problems.append(f"the {version} section has no Keep a Changelog subsection")
     if not re.search(r"^## \[Unreleased\]", changelog, re.M):
         problems.append("CHANGELOG lost its '## [Unreleased]' section")
+    exact = re.compile(r"(?<![\d.])" + re.escape(version or "") + r"(?!\.?\d)")
     for name, text in version_sources:
-        if version not in text:
+        if not exact.search(text):
             problems.append(f"{name} does not contain version {version}")
     return problems
