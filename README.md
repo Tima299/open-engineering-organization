@@ -4,10 +4,21 @@ A Claude Code plugin that gives AI coding agents a **proportional operating mode
 are triaged, only the roles they need are activated, each role runs on a right-sized model, the
 implementer never verifies its own work, and every claim of success needs evidence.
 
-> Status: **v0.2.0, experimental.** The router, contracts, validation and hook patterns have unit
-> tests (CI: Linux, Python 3.10 and 3.13). Skills and agents have [one recorded run](evals/results/2026-10-30-07-security-flaw-economy/README.md)
-> on a 0.1.0 pre-release without the plugin installed. The installed-plugin path, the quickstart
-> prompts and the v0.2 skills have not been run end to end yet. See [ROADMAP.md](ROADMAP.md).
+> Status: **v0.2.0, early.** The router, contracts, validation and hooks have 127 unit tests
+> (CI: Linux and macOS). The installed plugin has been run end to end against a plain-Claude
+> baseline on 4 scenarios (typo, auth fix, dashboard, competitor research). See the
+> [results and costs](evals/results/agentic/SUMMARY.md) and [what each run changed](evals/results/agentic/NOTES.md).
+> That is one or two runs per arm, so it is evidence, not a benchmark. See [ROADMAP.md](ROADMAP.md).
+
+**What the runs show.** OEO costs more than plain Claude:
+- 2.5x for a typo, $0.13 vs $0.05;
+- about 4-6x for significant work.
+
+In return you get independent verification with evidence. On the auth fix, that meant a
+security review, a proof that the regression test fails without the fix, and 3 extra findings. On
+research, it meant a cited ledger whose overclaims QA rejected until they were fixed. On the
+dashboard, the baseline wrote no XSS-escaping test and OEO did. Use OEO when being wrong costs
+more than the extra tokens.
 
 ## Why
 Agents usually fail in one of two ways. A single agent writes code and declares it done with no
