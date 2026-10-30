@@ -76,3 +76,21 @@ class HookConfigTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RatingTwoRegressionTests(IsolatedTestCase):
+    """Defects found by the second independent rating."""
+
+    def test_retriage_that_drops_facts_is_flagged_and_logged(self):
+        base = ("route", "--engagement", "auth-fix", "--log", "--files", "2", "--lines", "30")
+        self.run_cli(*base, "--type", "bugfix", "--touches", "auth,database")
+        _, _, err = self.run_cli(*base, "--type", "bugfix", "--touches", "auth")
+        self.assertIn("re-triage dropped database", err)
+        last = json.loads((self.tmp / ".oeo" / "activation-log.jsonl").read_text().splitlines()[-1])
+        self.assertEqual(last["dropped_facts"], ["database"])
+
+    def test_mixed_case_template_slots_are_must_fix_but_links_are_not(self):
+        import checks  # noqa: PLC0415
+        self.assertTrue(any(f["severity"] == "must-fix" for f in checks.copy_lint("See [repository URL].")))
+        self.assertTrue(any(f["severity"] == "must-fix" for f in checks.copy_lint("File it at [Issues link].")))
+        self.assertEqual(checks.copy_lint("Read the [docs](https://example.org); the [API] is stable."), [])

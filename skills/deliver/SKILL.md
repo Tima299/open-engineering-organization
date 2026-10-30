@@ -37,7 +37,8 @@ Report each signal that is true of **this task**. Too few and the work is under-
   tell when it is done ("find out what they need"). The business analyst then runs as a subagent.
 - Others: `user-facing`, `production`, `new-dependency`, `breaking-change`, `ai-feature`,
   `multi-locale`.
-If the router warns that the estimate exceeds the budget, re-check the signals before starting.
+Never drop true signals or domains to fit a budget: if the plan is over budget, say so and ask the
+user (eval rating 2: three runs re-routed with fewer facts). The router flags a re-triage that drops facts.
 Domains include `frontend`, `ui`, `auth`, `database`, `api`, `personal-data` (full list in
 `org/routing.yaml`).
 Tell the user the class, rule and roles in 3-5 lines. Engagement files go to the printed
@@ -73,8 +74,9 @@ then the user). Never weaken a gate. Before each subagent call in Class B+, run
 `oeo cost --check`; the budget tiers belong to `oeo:finops`.
 
 ## 4. Report
-Class B+: `oeo verification-check .oeo/<engagement>/verification.md` must pass first.
-Lead with the verdict. At most 5 items per list, except gates and blocker/major findings.
+Verdict is DONE, BLOCKED or FAILED. DONE in Class B+ requires `oeo verification-check
+.oeo/<engagement>/verification.md` to pass. BLOCKED names the blocker, its evidence and owner, and
+lists every routed role that did not run, with the reason. Lead with the verdict. At most 5 items per list, except gates and blocker/major findings.
 1. Class, roles and why.
 2. Files changed.
 3. Gate table.

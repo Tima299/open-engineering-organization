@@ -51,3 +51,4 @@ agentic:
         expect: OK
     oeo_class: D
     oeo_command_used: [route]
+    routed_roles_run_or_reported: true

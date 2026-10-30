@@ -8,7 +8,8 @@ description: OEO release checklist - SemVer bump, changelog entry, release notes
 Nothing is published, pushed, tagged remotely or deployed without explicit user approval.
 
 ## Prepare
-1. **Gates**: all class gates PASS in `.oeo/<engagement>/verification.md` (QA or Security may veto).
+1. **Inputs ready**: the work being released passed its own gates (QA or Security may veto);
+   the release gates below are produced in steps 2-6 and checked before publishing.
 2. **Version**: SemVer from the change set since the last tag (`git log <last-tag>..HEAD`):
    breaking -> MAJOR (MINOR while 0.x), feature -> MINOR, fix -> PATCH. Update every version
    source the repo has (package manifest, plugin.json, etc.).

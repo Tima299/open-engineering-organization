@@ -122,6 +122,9 @@ def score(auto, work, arm, final="", trace=None, order_known=True):
         add(f"probe {probe['name']}", any(e in out for e in expected), (out + err).strip()[-200:])
     for s in auto.get("final_contains", []):
         add(f"final_contains {s!r}", s.lower() in final.lower())
+    if auto.get("final_contains_any"):
+        opts = auto["final_contains_any"]
+        add(f"final_contains_any {opts}", any(o.lower() in final.lower() for o in opts))
     if auto.get("copy_lint_glob"):
         hits = sorted({f for pattern in auto["copy_lint_glob"]
                        for f in glob.glob(str(work / pattern), recursive=True, include_hidden=True) if os.path.isfile(f)})
@@ -155,6 +158,12 @@ def score(auto, work, arm, final="", trace=None, order_known=True):
             add("oeo_class", plans and plans[-1].get("class") == auto["oeo_class"],
                 plans[-1].get("class") if plans else "no triage logged")
         subagents = checks.read_jsonl(work / ".oeo" / "finops.jsonl")
+        if auto.get("routed_roles_run_or_reported") and plans:
+            ran = {str(s.get("agent_type", "")).split(":")[-1] for s in subagents}
+            missing = [r["id"] for r in plans[-1].get("roles", [])
+                       if r.get("mode") == "subagent" and str(r.get("agent", "")).split(":")[-1] not in ran
+                       and r["id"] not in final]
+            add("routed_roles_run_or_reported", not missing, missing or "all routed subagents ran or are named")
         if "max_subagents" in auto:
             add("max_subagents", len(subagents) <= auto["max_subagents"], [s.get("agent_type") for s in subagents])
         if "ledger_glob" in auto:
@@ -209,6 +218,13 @@ def run(scenario_id, arm, model, profile, timeout, budget):
         "final_message": (result.get("result") or "")[:4000],
     }
     OUT.mkdir(parents=True, exist_ok=True)
+    n_preview = 1 + len(list(OUT.glob(f"{record['date']}-{scenario['id']}-{arm}-*.json")))
+    art = OUT / "artifacts" / f"{record['date']}-{scenario['id']}-{arm}-{n_preview}"
+    for f in (work / ".oeo").rglob("*") if (work / ".oeo").is_dir() else []:
+        rel = f.relative_to(work / ".oeo")
+        if f.is_file() and rel.parts[0] != "sessions" and "raw" not in rel.parts and f.stat().st_size < 200_000:
+            (art / rel).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(f, art / rel)
     n = 1 + len(list(OUT.glob(f"{record['date']}-{scenario['id']}-{arm}-*.json")))
     stem = f"{record['date']}-{scenario['id']}-{arm}-{n}"
     (OUT / f"{stem}.json").write_text(json.dumps(record, indent=1) + "\n", encoding="utf-8")

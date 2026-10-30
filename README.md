@@ -4,29 +4,33 @@ A Claude Code plugin that gives AI coding agents a **proportional operating mode
 are triaged, only the roles they need are activated, each role runs on a right-sized model, the
 implementer never verifies its own work, and every claim of success needs evidence.
 
-> Status: **v0.2.0, early.** The router, contracts, validation and hooks have 127 unit tests
-> (CI: Linux and macOS). The installed plugin has been run end to end against a plain-Claude
-> baseline on 4 scenarios (typo, auth fix, dashboard, competitor research). See the
-> [results and costs](evals/results/agentic/SUMMARY.md) and [what each run changed](evals/results/agentic/NOTES.md).
-> That is one or two runs per arm, so it is evidence, not a benchmark. See [ROADMAP.md](ROADMAP.md).
+> Status: **v0.2.0, early.** The router, contracts, checks and hooks have 176 unit tests
+> (CI: Linux and macOS). The installed plugin has run end to end on 9 scenarios, each against a
+> plain-Claude baseline: [results and costs](evals/results/agentic/SUMMARY.md) ·
+> [what each run changed](evals/results/agentic/NOTES.md). This is evidence, not a benchmark, and
+> it has limits:
+> - one baseline run per scenario and 1-5 OEO runs;
+> - the scenarios were used both to improve OEO and to evaluate it;
+> - the author wrote the fixture, the checks and the plugin;
+> - no grading was blind, and every run was headless, so human-approval steps are untested.
+>
+> See [ROADMAP.md](ROADMAP.md).
 
-**What the runs show.** These are 9 scenarios on the latest version, each with a plain-Claude
-baseline. Each OEO arm ran 1-5 times; the main session ran on `sonnet` and subagents on the
-`economy` profile. Data: [results](evals/results/agentic/SUMMARY.md) · [notes](evals/results/agentic/NOTES.md).
-
-- **Automated checks:** the latest OEO run passes all of its checks in every scenario.
+**What the runs show.** The main session ran on `sonnet` and subagents on the `economy` profile.
 - **Cost:** OEO costs 1.1-2.3x plain Claude for typo, verify-only, status and release work, and
-  3-7.4x for discovery, auth fix, research, launch and dashboard ($0.29-0.74 vs $0.07-0.11).
-- **Wall time:** up to about 10x longer.
+  3.3-7.7x for discovery, auth fix, research, launch and dashboard ($0.29-0.74 vs $0.07-0.11).
+- **Wall time:** up to 13x longer (launch: 455 s vs 34 s).
 - **Shared outcome checks:** these are files, tests and behavior probes. Plain Claude matches OEO
   on the typo, the auth fix, the dashboard, launch copy and the status brief.
 
-OEO's measurable edge is where process matters:
-- **Release:** OEO refused to publish a changelog claim the code contradicted; plain Claude
-  published it.
-- **Vague request:** OEO produced a brief that passes `brief-check`; plain Claude produced none.
-- **Auth fix:** an independent security review, plus a test proven to fail without the fix.
-- **Research:** a ledger tagging every claim observed, inferred or unknown, checked by QA.
+Where OEO behaved differently:
+- **Release:** OEO blocked a changelog claim the code contradicted; plain Claude prepared a
+  release containing it. Neither published, as instructed.
+- **Auth fix:** an independent security review, and a test shown to fail without the fix.
+- **Research:** a ledger tagging every claim observed, inferred or unknown; QA rejected
+  overclaims until they were fixed.
+- **Vague request:** OEO wrote a brief that passes `brief-check`. Plain Claude answered in chat
+  instead; it was not asked for a brief file, so this is not a quality comparison.
 
 Use OEO when being wrong costs more than the extra time and tokens.
 
@@ -88,7 +92,7 @@ Releases will be tagged `vX.Y.Z`; once one exists, pin it with
    `/oeo:deliver Users say they can delete other people's tasks. Fix it.` Expect Class C (auth
    domain): a short brief with acceptance criteria for you to approve, a fix with a regression
    test, a security review, and a verification table. This is the expensive path: the
-   installed-plugin auth run (eval 07) cost $0.40, about 4.6x plain Claude, with the economy profile.
+   latest installed-plugin auth run (eval 07) cost $0.49, about 5.5x plain Claude, with the economy profile.
 4. See what it cost: run `/oeo:finops`.
 
 Preview triage without running agents (from a clone of this repo):

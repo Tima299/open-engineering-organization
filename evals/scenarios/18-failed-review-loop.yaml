@@ -39,6 +39,7 @@ agentic:
   auto:
     tests_pass: true
     final_contains: [TaskNotFound]
+    final_contains_any: ["not ship", "nothing to ship", "did not ship", "won't ship", "FAIL", "fixed"]
     probes:
       - name: unknown id raises instead of returning None
         code: |

@@ -52,3 +52,4 @@ agentic:
     skill_used: [design-lead, qa-verifier]
     reverify_after_edit: true
     oeo_checks: [{cmd: verification-check, glob: ".oeo/*/verification.md"}]
+    routed_roles_run_or_reported: true

@@ -205,7 +205,9 @@ def format_status(s):
 # --------------------------------------------------------------------------- copy lint
 COPY_RULES = [
     ("must-fix", "placeholder or filler text", re.compile(r"lorem ipsum|\bTBD\b|\bTODO\b|\[insert|\bplaceholder\b", re.I)),
-    ("must-fix", "unfilled template slot", re.compile(r"\[[A-Z][A-Z0-9 _/-]{3,}\]|\{\{[^}]+\}\}|<[A-Z][A-Z0-9 _-]{3,}>")),
+    ("must-fix", "unfilled template slot", re.compile(
+        r"\[[A-Z][A-Z0-9 _/-]{3,}\](?!\()|\{\{[^}]+\}\}|<[A-Z][A-Z0-9 _-]{3,}>|"
+        r"\[[^\]\n]{0,30}\b(?i:url|link|date|name|email|version|number|here|tbd|xx+)\b[^\]\n]{0,30}\](?!\()")),
     ("must-fix", "testimonial or customer claim without a source",
      re.compile(r"(trusted by|loved by|used by|chosen by)\s+(over\s+|more than\s+)?[\d,.]+\+?\s*"
                 r"(k|m|thousand|million|billion)?\s*(teams|users|developers|companies|customers|people)", re.I)),

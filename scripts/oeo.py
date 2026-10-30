@@ -726,8 +726,17 @@ def cmd_route(args):
         eid = checks.engagement_id(args.summary, args.engagement)
         if not log_dir.is_symlink():
             (log_dir / eid).mkdir(parents=True, exist_ok=True)
+        earlier = [p for p in checks.read_jsonl(log_dir / "activation-log.jsonl") if p.get("engagement") == eid]
+        dropped = []
+        if earlier:
+            prev, now = earlier[-1].get("inputs", {}), plan["inputs"]
+            dropped = sorted((set(prev.get("touches", [])) | set(prev.get("signals", [])))
+                             - (set(now["touches"]) | set(now["signals"])))
+            if dropped:
+                print(f"WARNING: re-triage dropped {', '.join(dropped)} from the earlier plan; facts may not be "
+                      "dropped to fit a budget (record the reason in .oeo/decisions.md)", file=sys.stderr)
         entry = {"ts": _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds"), "session": args.session,
-                 "engagement": eid, "summary": args.summary, "class": plan["class"], "rule": plan["rule"], "inputs": plan["inputs"],
+                 "engagement": eid, "dropped_facts": dropped, "summary": args.summary, "class": plan["class"], "rule": plan["rule"], "inputs": plan["inputs"],
                  "roles": [{k: r.get(k) for k in ("id", "mode", "reason", "agent", "model", "effort", "estimate_tokens")}
                            for r in plan["roles"]],
                  "gates": [g["id"] for g in plan["gates"]],
