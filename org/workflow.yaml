@@ -1,0 +1,96 @@
+# OEO operating workflow (spec Section 5): stages, quality gates, memory artifacts.
+# `oeo route` prints the stages and gates that apply to the triaged class.
+
+version: 1
+
+stages:
+  - id: intake
+    n: 0
+    name: Intake & Triage
+    owner: project-manager
+    output: activation plan from `oeo route` (class, rule, roles, gates) logged to .oeo/activation-log.jsonl
+    exit: class recorded with rationale; misclassification later triggers re-triage, never silent scope creep
+  - id: discovery
+    n: 1
+    name: Business Discovery
+    owner: business-analyst
+    output: .oeo/brief.md (users, problem, outcome, metrics, scope/non-goals, constraints, evidence, risks)
+    exit: business-owner confirms the objective; Class B may use a 5-line brief (outcome + acceptance criteria)
+  - id: business-review
+    n: 2
+    name: Independent Business Review
+    owner: business-analyst
+    output: structured critique (finding, evidence, impact, severity, corrective action) or PASS
+    exit: criteria satisfied, or business-owner accepts a documented residual risk
+  - id: planning
+    n: 3
+    name: Product & Delivery Planning
+    owner: project-manager
+    output: .oeo/plan.md (deliverables, acceptance criteria, sequencing, owners, file partition, tests, risks, DoD)
+    exit: every task has one owner and testable acceptance criteria
+  - id: architecture
+    n: 4
+    name: Architecture & Engineering Review
+    owner: technical-architect
+    output: ADR in docs/adr/ (context, options, trade-offs, decision, consequences) for significant decisions
+    exit: CTO checklist passed; no new dependency, service or abstraction without demonstrated need
+  - id: implement
+    n: 5
+    name: Design & Implementation
+    owner: technical-lead
+    output: small diffs + handoffs; design acceptance criteria when UI is touched
+    exit: implementer handoff lists changed files, commands run and their real output
+  - id: verify
+    n: 6
+    name: Independent Verification
+    owner: qa-verifier
+    output: .oeo/verification.md (gate, command, result, evidence) and findings
+    exit: all class gates PASS; the implementer is never the sole authority on correctness
+  - id: release
+    n: 7
+    name: Release
+    owner: release-manager
+    output: SemVer bump, CHANGELOG entry, release notes, tag, rollback plan
+    exit: human authorization for publishing, deploying or any irreversible action
+  - id: outcome
+    n: 7
+    name: Business Outcome Review
+    owner: business-analyst
+    output: outcome report separating requirements met / tests passed / released / outcomes observed / outcomes unverified
+    exit: shipped code is never reported as business success by itself
+  - id: community
+    n: 8
+    name: Community & Feedback Loop
+    owner: oss-maintainer
+    output: labeled, reproducible issues; defects re-enter Stage 0, product gaps re-enter Stage 1
+    exit: decisions communicated publicly and respectfully per CODE_OF_CONDUCT.md
+
+gates:
+  acceptance-criteria-defined: Testable acceptance criteria exist before implementation starts.
+  business-review-passed: Business Analyst critique resolved or residual risk accepted by the business owner.
+  adr-recorded: Significant technical decisions have an ADR with alternatives and trade-offs.
+  diff-reviewed: Someone other than the implementer reviewed the diff.
+  checks-pass: Repository tests, lint, type-check and build pass (or are proven not applicable), with output.
+  regression-test: The fix or feature has a test that fails without the change.
+  domain-reviews-passed: Every activated Tier 2 reviewer (security, database, a11y, ...) returned PASS.
+  acceptance-criteria-met: Each acceptance criterion is mapped to evidence.
+  outcome-measurable: The success metric can actually be measured after release.
+  changelog-entry: CHANGELOG.md has an entry for the change.
+  version-bump: Version follows SemVer for the change type.
+  rollback-plan: A tested or reasoned rollback path is written down.
+  license-gate: Every new third-party license passes `oeo license <SPDX>`.
+
+# Shared memory (spec Section 7). Lives in the target project, under .oeo/.
+memory:
+  - {path: .oeo/brief.md, owner: business-analyst, freshness: per engagement; superseded briefs are deleted, not kept}
+  - {path: .oeo/plan.md, owner: project-manager, freshness: updated at every stage exit}
+  - {path: .oeo/decisions.md, owner: project-manager, freshness: append-only log of decisions, vetoes and deadlock resolutions}
+  - {path: .oeo/risks.md, owner: project-manager, freshness: reviewed at each stage exit; closed risks removed}
+  - {path: .oeo/verification.md, owner: qa-verifier, freshness: rewritten per verification run}
+  - {path: .oeo/activation-log.jsonl, owner: project-manager, freshness: append-only, written by `oeo route --log`}
+  - {path: .oeo/finops.jsonl, owner: finops-controller, freshness: append-only, written by the SubagentStop hook}
+  - {path: docs/adr/, owner: technical-architect, freshness: ADRs are superseded explicitly, never edited silently}
+
+handoff:
+  required: [objective, findings, evidence, changed, unresolved, risks, next]
+  rule: A handoff without evidence is a rumor. Evidence means commands run with real output, file paths, or links.

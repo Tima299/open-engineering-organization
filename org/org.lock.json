@@ -1,0 +1,1324 @@
+{
+ "decisions": [
+  {
+   "consulted": [
+    "business-analyst",
+    "project-manager"
+   ],
+   "decides": "business-owner",
+   "id": "business-scope",
+   "informed": [
+    "@leads"
+   ],
+   "name": "Business scope & priorities",
+   "veto": []
+  },
+  {
+   "consulted": [
+    "cto",
+    "principal-engineer"
+   ],
+   "decides": "technical-architect",
+   "fallback": "technical-lead",
+   "id": "architecture",
+   "informed": [
+    "project-manager",
+    "technical-lead"
+   ],
+   "name": "Architecture & ADRs",
+   "veto": [
+    {
+     "grounds": "strategy or technical risk",
+     "role": "cto"
+    }
+   ]
+  },
+  {
+   "consulted": [
+    "principal-engineer",
+    "technical-lead"
+   ],
+   "decides": "cto",
+   "id": "technical-standards",
+   "informed": [
+    "@engineers"
+   ],
+   "name": "Technical standards",
+   "veto": []
+  },
+  {
+   "consulted": [
+    "senior-developer"
+   ],
+   "decides": "technical-lead",
+   "id": "implementation-approach",
+   "informed": [
+    "project-manager"
+   ],
+   "name": "Implementation approach",
+   "veto": [
+    {
+     "grounds": "quality or complexity",
+     "role": "principal-engineer"
+    }
+   ]
+  },
+  {
+   "consulted": [
+    "business-analyst",
+    "senior-frontend-engineer"
+   ],
+   "decides": "design-lead",
+   "fallback": "business-owner",
+   "id": "ux-visual-direction",
+   "informed": [
+    "project-manager"
+   ],
+   "name": "UX & visual direction",
+   "veto": [
+    {
+     "grounds": "brand or business fit",
+     "role": "business-owner"
+    }
+   ]
+  },
+  {
+   "consulted": [
+    "cto"
+   ],
+   "decides": "security-engineer",
+   "fallback": "cto",
+   "id": "security-posture",
+   "informed": [
+    "cto",
+    "project-manager"
+   ],
+   "name": "Security posture",
+   "veto": [
+    {
+     "grounds": "unresolved vulnerability blocks release",
+     "role": "security-engineer"
+    }
+   ]
+  },
+  {
+   "consulted": [
+    "qa-verifier",
+    "security-engineer",
+    "project-manager"
+   ],
+   "decides": "release-manager",
+   "fallback": "oss-maintainer",
+   "id": "release-approval",
+   "informed": [
+    "business-owner"
+   ],
+   "name": "Release approval",
+   "veto": [
+    {
+     "grounds": "failed quality gate",
+     "role": "qa-verifier"
+    },
+    {
+     "grounds": "failed security gate",
+     "role": "security-engineer"
+    }
+   ]
+  },
+  {
+   "consulted": [
+    "oss-maintainer",
+    "cto"
+   ],
+   "decides": "legal-advisor",
+   "fallback": "oss-maintainer",
+   "id": "license-adoption",
+   "informed": [
+    "@leads"
+   ],
+   "name": "License / third-party adoption",
+   "veto": [
+    {
+     "grounds": "license conflict or unverified license",
+     "role": "legal-advisor"
+    }
+   ]
+  },
+  {
+   "consulted": [
+    "cto",
+    "project-manager"
+   ],
+   "decides": "finops-controller",
+   "fallback": "project-manager",
+   "id": "model-cost-budget",
+   "informed": [
+    "project-manager"
+   ],
+   "name": "Model / cost budget changes",
+   "veto": [
+    {
+     "grounds": "budget",
+     "role": "business-owner"
+    }
+   ]
+  },
+  {
+   "consulted": [
+    "@community"
+   ],
+   "decides": "oss-maintainer",
+   "id": "community-governance",
+   "informed": [
+    "@community"
+   ],
+   "name": "Community governance changes",
+   "veto": []
+  }
+ ],
+ "generated_by": "scripts/oeo.py build",
+ "models": {
+  "budgets": {
+   "max_effort_without_justification": "medium",
+   "per_class_tokens": {
+    "A": 100000,
+    "B": 300000,
+    "C": 900000,
+    "D": 250000
+   },
+   "per_invocation_tokens": {
+    "high": 120000,
+    "low": 25000,
+    "medium": 60000
+   }
+  },
+  "default_profile": "default",
+  "overrides": {
+   "all": {}
+  },
+  "profiles": {
+   "default": {
+    "provider": "anthropic",
+    "tiers": {
+     "advanced": {
+      "host_alias": "opus",
+      "model_id": "claude-opus-5-5"
+     },
+     "light": {
+      "host_alias": "haiku",
+      "model_id": "claude-haiku-5-5"
+     },
+     "standard": {
+      "host_alias": "sonnet",
+      "model_id": "claude-sonnet-5-5"
+     }
+    }
+   },
+   "economy": {
+    "provider": "anthropic",
+    "tiers": {
+     "advanced": {
+      "host_alias": "sonnet",
+      "model_id": "claude-sonnet-5-5"
+     },
+     "light": {
+      "host_alias": "haiku",
+      "model_id": "claude-haiku-5-5"
+     },
+     "standard": {
+      "host_alias": "haiku",
+      "model_id": "claude-haiku-5-5"
+     }
+    }
+   }
+  },
+  "version": 1
+ },
+ "roles": {
+  "a11y-auditor": {
+   "activation": {
+    "triggers": [
+     "user-facing+release"
+    ]
+   },
+   "agent": "advisor",
+   "contract": "org/roles/a11y-auditor.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "advanced",
+    "preferred_model": "standard"
+   },
+   "tier": 3,
+   "title": "Accessibility (a11y) Auditor"
+  },
+  "api-designer": {
+   "activation": {
+    "domains": [
+     "api"
+    ]
+   },
+   "agent": "specialist",
+   "contract": "org/roles/api-designer.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "human",
+    "preferred_model": "advanced"
+   },
+   "tier": 2,
+   "title": "API Designer / Integration Architect"
+  },
+  "business-analyst": {
+   "agent": "business-analyst",
+   "contract": "org/roles/business-analyst.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "advanced",
+    "preferred_model": "standard"
+   },
+   "tier": 1,
+   "title": "Business Analyst / Independent Outcome Reviewer"
+  },
+  "business-owner": {
+   "contract": "org/roles/business-owner.yaml",
+   "execution": "human",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "human",
+    "preferred_model": "standard"
+   },
+   "tier": 1,
+   "title": "Business Owner / Executive Sponsor"
+  },
+  "cto": {
+   "contract": "org/roles/cto.yaml",
+   "execution": "checklist",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "human",
+    "preferred_model": "advanced"
+   },
+   "tier": 1,
+   "title": "CTO / Engineering Executive"
+  },
+  "data-engineer": {
+   "activation": {
+    "domains": [
+     "analytics"
+    ]
+   },
+   "agent": "specialist",
+   "contract": "org/roles/data-engineer.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "advanced",
+    "preferred_model": "standard"
+   },
+   "tier": 2,
+   "title": "Data Engineer / Analytics Specialist"
+  },
+  "database-engineer": {
+   "activation": {
+    "domains": [
+     "database"
+    ]
+   },
+   "agent": "specialist",
+   "contract": "org/roles/database-engineer.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "human",
+    "preferred_model": "advanced"
+   },
+   "tier": 2,
+   "title": "Database Engineer"
+  },
+  "design-lead": {
+   "activation": {
+    "domains": [
+     "ui",
+     "new-surface"
+    ]
+   },
+   "agent": "design-lead",
+   "contract": "org/roles/design-lead.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "human",
+    "preferred_model": "advanced"
+   },
+   "tier": 2,
+   "title": "Design Lead / Senior Product Designer"
+  },
+  "developer-advocate": {
+   "activation": {
+    "triggers": [
+     "public-release",
+     "contribution-surge",
+     "community-docs",
+     "community"
+    ]
+   },
+   "agent": "advisor",
+   "contract": "org/roles/developer-advocate.yaml",
+   "execution": "checklist",
+   "model_routing": {
+    "effort": "low",
+    "escalate_to": "standard",
+    "preferred_model": "standard"
+   },
+   "tier": 3,
+   "title": "Developer Advocate / Community Manager"
+  },
+  "finops-controller": {
+   "activation": {
+    "triggers": [
+     "multi-agent",
+     "long-running"
+    ]
+   },
+   "agent": "advisor",
+   "contract": "org/roles/finops-controller.yaml",
+   "execution": "checklist",
+   "model_routing": {
+    "effort": "low",
+    "escalate_to": "standard",
+    "preferred_model": "light"
+   },
+   "tier": 3,
+   "title": "FinOps / Cost Controller"
+  },
+  "i18n-specialist": {
+   "activation": {
+    "triggers": [
+     "multi-locale"
+    ]
+   },
+   "agent": "advisor",
+   "contract": "org/roles/i18n-specialist.yaml",
+   "execution": "checklist",
+   "model_routing": {
+    "effort": "low",
+    "escalate_to": "standard",
+    "preferred_model": "standard"
+   },
+   "tier": 3,
+   "title": "Internationalization (i18n) Specialist"
+  },
+  "incident-commander": {
+   "activation": {
+    "triggers": [
+     "incident"
+    ]
+   },
+   "agent": "advisor",
+   "contract": "org/roles/incident-commander.yaml",
+   "execution": "checklist",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "advanced",
+    "preferred_model": "standard"
+   },
+   "tier": 3,
+   "title": "Incident Commander"
+  },
+  "junior-developer": {
+   "agent": "junior-developer",
+   "contract": "org/roles/junior-developer.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "low",
+    "escalate_to": "standard",
+    "preferred_model": "standard"
+   },
+   "seniority": "junior",
+   "tier": 1,
+   "title": "Junior Developer"
+  },
+  "junior-frontend-engineer": {
+   "activation": {
+    "delegated_by": "senior-frontend-engineer"
+   },
+   "agent": "specialist",
+   "contract": "org/roles/junior-frontend-engineer.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "low",
+    "escalate_to": "standard",
+    "preferred_model": "standard"
+   },
+   "seniority": "junior",
+   "tier": 2,
+   "title": "Junior Frontend Engineer"
+  },
+  "legal-advisor": {
+   "activation": {
+    "triggers": [
+     "new-dependency",
+     "redistribution",
+     "license-change",
+     "licensing"
+    ]
+   },
+   "agent": "advisor",
+   "contract": "org/roles/legal-advisor.yaml",
+   "execution": "checklist",
+   "model_routing": {
+    "effort": "low",
+    "escalate_to": "human",
+    "preferred_model": "standard"
+   },
+   "tier": 3,
+   "title": "Legal, Licensing & Compliance Advisor"
+  },
+  "middle-developer": {
+   "agent": "middle-developer",
+   "contract": "org/roles/middle-developer.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "advanced",
+    "preferred_model": "standard"
+   },
+   "seniority": "middle",
+   "tier": 1,
+   "title": "Middle Developer"
+  },
+  "middle-frontend-engineer": {
+   "activation": {
+    "delegated_by": "senior-frontend-engineer"
+   },
+   "agent": "specialist",
+   "contract": "org/roles/middle-frontend-engineer.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "advanced",
+    "preferred_model": "standard"
+   },
+   "seniority": "middle",
+   "tier": 2,
+   "title": "Middle Frontend Engineer"
+  },
+  "ml-engineer": {
+   "activation": {
+    "triggers": [
+     "ai-feature"
+    ]
+   },
+   "agent": "advisor",
+   "contract": "org/roles/ml-engineer.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "advanced",
+    "preferred_model": "standard"
+   },
+   "tier": 3,
+   "title": "ML/AI Engineer"
+  },
+  "oss-maintainer": {
+   "contract": "org/roles/oss-maintainer.yaml",
+   "execution": "checklist",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "human",
+    "preferred_model": "standard"
+   },
+   "tier": 1,
+   "title": "Open-Source Maintainer"
+  },
+  "performance-engineer": {
+   "activation": {
+    "domains": [
+     "performance"
+    ]
+   },
+   "agent": "specialist",
+   "contract": "org/roles/performance-engineer.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "advanced",
+    "preferred_model": "standard"
+   },
+   "tier": 2,
+   "title": "Performance Engineer"
+  },
+  "platform-engineer": {
+   "activation": {
+    "domains": [
+     "infra",
+     "ci"
+    ]
+   },
+   "agent": "specialist",
+   "contract": "org/roles/platform-engineer.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "advanced",
+    "preferred_model": "standard"
+   },
+   "tier": 2,
+   "title": "Platform / DevOps Engineer"
+  },
+  "principal-engineer": {
+   "activation": {
+    "domains": [
+     "high-risk",
+     "breaking-change"
+    ]
+   },
+   "agent": "specialist",
+   "contract": "org/roles/principal-engineer.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "human",
+    "preferred_model": "advanced"
+   },
+   "tier": 2,
+   "title": "Principal Engineer"
+  },
+  "project-manager": {
+   "contract": "org/roles/project-manager.yaml",
+   "execution": "orchestrator",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "advanced",
+    "preferred_model": "standard"
+   },
+   "tier": 1,
+   "title": "Project Manager / Delivery Orchestrator"
+  },
+  "qa-verifier": {
+   "agent": "qa-verifier",
+   "contract": "org/roles/qa-verifier.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "advanced",
+    "preferred_model": "standard"
+   },
+   "tier": 1,
+   "title": "QA & Independent Verifier"
+  },
+  "release-manager": {
+   "activation": {
+    "triggers": [
+     "release"
+    ]
+   },
+   "agent": "advisor",
+   "contract": "org/roles/release-manager.yaml",
+   "execution": "checklist",
+   "model_routing": {
+    "effort": "low",
+    "escalate_to": "advanced",
+    "preferred_model": "standard"
+   },
+   "tier": 3,
+   "title": "Release Manager"
+  },
+  "responsible-ai-reviewer": {
+   "activation": {
+    "triggers": [
+     "ai-feature",
+     "personal-data",
+     "content-automation"
+    ]
+   },
+   "agent": "advisor",
+   "contract": "org/roles/responsible-ai-reviewer.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "advanced",
+    "preferred_model": "standard"
+   },
+   "tier": 3,
+   "title": "Responsible AI / Ethics Reviewer"
+  },
+  "security-engineer": {
+   "activation": {
+    "domains": [
+     "auth",
+     "security",
+     "payments",
+     "personal-data"
+    ]
+   },
+   "agent": "security-engineer",
+   "contract": "org/roles/security-engineer.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "human",
+    "preferred_model": "advanced"
+   },
+   "tier": 2,
+   "title": "Application Security Engineer"
+  },
+  "senior-developer": {
+   "agent": "senior-developer",
+   "contract": "org/roles/senior-developer.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "human",
+    "preferred_model": "advanced"
+   },
+   "seniority": "senior",
+   "tier": 1,
+   "title": "Senior Developer"
+  },
+  "senior-frontend-engineer": {
+   "activation": {
+    "domains": [
+     "frontend",
+     "ui"
+    ]
+   },
+   "agent": "senior-frontend-engineer",
+   "contract": "org/roles/senior-frontend-engineer.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "human",
+    "preferred_model": "advanced"
+   },
+   "seniority": "senior",
+   "tier": 2,
+   "title": "Senior Frontend Engineer"
+  },
+  "sre": {
+   "activation": {
+    "triggers": [
+     "production"
+    ]
+   },
+   "agent": "advisor",
+   "contract": "org/roles/sre.yaml",
+   "execution": "checklist",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "advanced",
+    "preferred_model": "standard"
+   },
+   "tier": 3,
+   "title": "Site Reliability / Observability Engineer"
+  },
+  "support-engineer": {
+   "activation": {
+    "triggers": [
+     "user-feedback"
+    ]
+   },
+   "agent": "advisor",
+   "contract": "org/roles/support-engineer.yaml",
+   "execution": "checklist",
+   "model_routing": {
+    "effort": "low",
+    "escalate_to": "standard",
+    "preferred_model": "standard"
+   },
+   "tier": 3,
+   "title": "Support / Customer Success Engineer"
+  },
+  "technical-architect": {
+   "activation": {
+    "domains": [
+     "architecture",
+     "new-product",
+     "infra"
+    ]
+   },
+   "agent": "technical-architect",
+   "contract": "org/roles/technical-architect.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "human",
+    "preferred_model": "advanced"
+   },
+   "tier": 2,
+   "title": "Technical Architect"
+  },
+  "technical-lead": {
+   "contract": "org/roles/technical-lead.yaml",
+   "execution": "orchestrator",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "human",
+    "preferred_model": "advanced"
+   },
+   "tier": 1,
+   "title": "Technical Lead"
+  },
+  "technical-writer": {
+   "activation": {
+    "domains": [
+     "docs"
+    ]
+   },
+   "agent": "specialist",
+   "contract": "org/roles/technical-writer.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "low",
+    "escalate_to": "standard",
+    "preferred_model": "standard"
+   },
+   "tier": 2,
+   "title": "Technical Writer / Documentation Maintainer"
+  },
+  "ux-researcher": {
+   "activation": {
+    "triggers": [
+     "new-surface"
+    ],
+    "unless": [
+     "research-exists"
+    ]
+   },
+   "agent": "advisor",
+   "contract": "org/roles/ux-researcher.yaml",
+   "execution": "subagent",
+   "model_routing": {
+    "effort": "medium",
+    "escalate_to": "advanced",
+    "preferred_model": "standard"
+   },
+   "tier": 3,
+   "title": "UX Researcher"
+  }
+ },
+ "routing": {
+  "classes": {
+   "A": {
+    "description": "typo, config tweak, single-line fix. One developer + one verifier.",
+    "gates": [
+     "diff-reviewed",
+     "checks-pass"
+    ],
+    "name": "Trivial",
+    "roles": {
+     "junior-developer": "subagent",
+     "qa-verifier": "subagent"
+    },
+    "stages": [
+     "intake",
+     "implement",
+     "verify"
+    ],
+    "tier2": false,
+    "tier3": false
+   },
+   "B": {
+    "description": "well-defined feature or bug fix. Tier 1 core only.",
+    "gates": [
+     "acceptance-criteria-defined",
+     "diff-reviewed",
+     "checks-pass",
+     "regression-test",
+     "acceptance-criteria-met"
+    ],
+    "name": "Standard",
+    "roles": {
+     "business-analyst": "checklist",
+     "business-owner": "human",
+     "cto": "checklist",
+     "middle-developer": "subagent",
+     "oss-maintainer": "checklist",
+     "project-manager": "orchestrator",
+     "qa-verifier": "subagent",
+     "technical-lead": "orchestrator"
+    },
+    "stages": [
+     "intake",
+     "discovery",
+     "planning",
+     "implement",
+     "verify",
+     "outcome"
+    ],
+    "tier2": false,
+    "tier3": true
+   },
+   "C": {
+    "derive_signals": [
+     "multi-agent"
+    ],
+    "description": "new product surface, architecture change, security-sensitive. Full workflow + relevant Tier 2.",
+    "gates": [
+     "acceptance-criteria-defined",
+     "business-review-passed",
+     "adr-recorded",
+     "diff-reviewed",
+     "checks-pass",
+     "regression-test",
+     "domain-reviews-passed",
+     "acceptance-criteria-met",
+     "outcome-measurable"
+    ],
+    "name": "Significant",
+    "roles": {
+     "business-analyst": "subagent",
+     "business-owner": "human",
+     "cto": "checklist",
+     "oss-maintainer": "checklist",
+     "project-manager": "orchestrator",
+     "qa-verifier": "subagent",
+     "senior-developer": "subagent",
+     "technical-lead": "orchestrator"
+    },
+    "stages": [
+     "intake",
+     "discovery",
+     "business-review",
+     "planning",
+     "architecture",
+     "implement",
+     "verify",
+     "outcome"
+    ],
+    "tier2": true,
+    "tier3": true
+   },
+   "D": {
+    "description": "releases, governance, licensing, community. Maintainer-led with Tier 3 advisors.",
+    "gates": [
+     "changelog-entry",
+     "version-bump",
+     "rollback-plan",
+     "license-gate",
+     "checks-pass"
+    ],
+    "name": "Organizational",
+    "roles": {
+     "business-owner": "human",
+     "oss-maintainer": "orchestrator",
+     "project-manager": "orchestrator",
+     "qa-verifier": "subagent"
+    },
+    "stages": [
+     "intake",
+     "planning",
+     "verify",
+     "release",
+     "community"
+    ],
+    "tier2": false,
+    "tier3": true
+   }
+  },
+  "classification": [
+   {
+    "class": "D",
+    "rule": "organizational-work",
+    "when": {
+     "types_any": [
+      "release",
+      "governance",
+      "licensing",
+      "community"
+     ]
+    }
+   },
+   {
+    "class": "C",
+    "rule": "significant-type",
+    "when": {
+     "types_any": [
+      "architecture",
+      "new-product",
+      "incident"
+     ]
+    }
+   },
+   {
+    "class": "C",
+    "rule": "risky-domain",
+    "when": {
+     "risky_domain": true
+    }
+   },
+   {
+    "class": "C",
+    "rule": "risk-signal",
+    "when": {
+     "signals_any": [
+      "new-surface",
+      "breaking-change",
+      "high-risk",
+      "ai-feature"
+     ]
+    }
+   },
+   {
+    "class": "C",
+    "rule": "large-change",
+    "when": {
+     "files_gt": 15
+    }
+   },
+   {
+    "class": "A",
+    "rule": "trivial-change",
+    "when": {
+     "files_lte": 2,
+     "lines_lte": 20,
+     "no_triggers": true,
+     "types_any": [
+      "trivial"
+     ]
+    }
+   },
+   {
+    "class": "B",
+    "rule": "standard-default",
+    "when": {}
+   }
+  ],
+  "developer_by_class": {
+   "A": "junior-developer",
+   "B": "middle-developer",
+   "C": "senior-developer",
+   "D": null
+  },
+  "domains": {
+   "ai": {
+    "risky": true
+   },
+   "analytics": {
+    "risky": false
+   },
+   "api": {
+    "risky": true
+   },
+   "architecture": {
+    "risky": true
+   },
+   "auth": {
+    "risky": true
+   },
+   "backend": {
+    "risky": false
+   },
+   "ci": {
+    "risky": false
+   },
+   "database": {
+    "risky": true
+   },
+   "docs": {
+    "risky": false
+   },
+   "frontend": {
+    "risky": false
+   },
+   "i18n": {
+    "risky": false
+   },
+   "infra": {
+    "risky": true
+   },
+   "payments": {
+    "risky": true
+   },
+   "performance": {
+    "risky": false
+   },
+   "personal-data": {
+    "risky": true
+   },
+   "security": {
+    "risky": true
+   },
+   "tests": {
+    "risky": false
+   },
+   "ui": {
+    "risky": false
+   }
+  },
+  "generic_agents": {
+   "advisor": {
+    "description": "Runs one OEO Tier 3 advisor contract (release, legal, SRE, incident, UX research, responsible AI, a11y, i18n, FinOps, community, support) handed to it by the orchestrator. Use only when the OEO router activated that advisor.",
+    "effort": "low",
+    "preferred_model": "standard",
+    "tools": [
+     "read",
+     "search",
+     "execute"
+    ]
+   },
+   "specialist": {
+    "description": "Runs one OEO Tier 2 specialist contract (database, platform, API, performance, data, docs, principal engineer, frontend) handed to it by the orchestrator. Use only when the OEO router activated that role.",
+    "effort": "medium",
+    "preferred_model": "standard",
+    "tools": [
+     "read",
+     "search",
+     "edit",
+     "execute"
+    ]
+   }
+  },
+  "licenses": {
+   "allowed": [
+    "MIT",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "0BSD",
+    "Unlicense",
+    "CC0-1.0",
+    "Zlib",
+    "Python-2.0",
+    "CC-BY-4.0"
+   ],
+   "blocked": [
+    "GPL-2.0-only",
+    "GPL-2.0-or-later",
+    "GPL-3.0-only",
+    "GPL-3.0-or-later",
+    "AGPL-3.0-only",
+    "AGPL-3.0-or-later",
+    "SSPL-1.0",
+    "BUSL-1.1",
+    "CC-BY-NC-4.0",
+    "NOASSERTION",
+    "UNVERIFIED"
+   ],
+   "project": "Apache-2.0",
+   "review": [
+    "MPL-2.0",
+    "LGPL-2.1-only",
+    "LGPL-2.1-or-later",
+    "LGPL-3.0-only",
+    "LGPL-3.0-or-later",
+    "EPL-2.0",
+    "CC-BY-SA-4.0"
+   ]
+  },
+  "retry_budget": 2,
+  "signals": {
+   "ai-feature": "product itself contains AI functionality",
+   "breaking-change": "breaks a public contract or stored data format",
+   "community-docs": "community-facing documentation",
+   "content-automation": "automation that affects user-visible content",
+   "contribution-surge": "unusual inflow of community issues/PRs",
+   "high-risk": "explicit high business/technical risk",
+   "license-change": "changes the project's own license",
+   "long-running": "engagement spans many sessions",
+   "multi-agent": "more than two subagents will run (derived automatically)",
+   "multi-locale": "product targets more than one locale",
+   "new-dependency": "adds or upgrades a third-party dependency",
+   "new-surface": "new user-facing product surface",
+   "production": "production-facing service",
+   "public-release": "first or major public release of a product/package",
+   "redistribution": "redistributes third-party code or content",
+   "release": "a version will be published",
+   "research-exists": "user research already exists for this surface",
+   "user-facing": "change is visible to end users",
+   "user-feedback": "post-release feedback loop"
+  },
+  "skills": {
+   "adapters": {
+    "by_domain": {
+     "backend": [
+      "superpowers"
+     ],
+     "frontend": [
+      "frontend-design",
+      "impeccable",
+      "ui-ux-pro-max"
+     ],
+     "ui": [
+      "frontend-design",
+      "impeccable",
+      "taste-skill",
+      "emil-kowalski-skills"
+     ]
+    },
+    "by_type": {
+     "bugfix": [
+      "superpowers"
+     ],
+     "feature": [
+      "superpowers"
+     ],
+     "refactor": [
+      "superpowers",
+      "ponytail"
+     ]
+    }
+   },
+   "by_class": {
+    "A": [
+     "oeo:verify"
+    ],
+    "B": [
+     "oeo:deliver",
+     "oeo:verify"
+    ],
+    "C": [
+     "oeo:deliver",
+     "oeo:business-review",
+     "oeo:verify"
+    ],
+    "D": [
+     "oeo:deliver",
+     "oeo:release"
+    ]
+   },
+   "by_domain": {
+    "auth": [
+     "oeo:verify"
+    ],
+    "frontend": [
+     "oeo:design-direction"
+    ],
+    "security": [
+     "oeo:verify"
+    ],
+    "ui": [
+     "oeo:design-direction"
+    ]
+   },
+   "by_signal": {
+    "long-running": [
+     "oeo:finops"
+    ],
+    "multi-agent": [
+     "oeo:finops"
+    ],
+    "release": [
+     "oeo:release"
+    ]
+   }
+  },
+  "types": [
+   "trivial",
+   "bugfix",
+   "feature",
+   "refactor",
+   "architecture",
+   "new-product",
+   "incident",
+   "research",
+   "release",
+   "governance",
+   "licensing",
+   "community"
+  ],
+  "version": 1
+ },
+ "workflow": {
+  "gates": {
+   "acceptance-criteria-defined": "Testable acceptance criteria exist before implementation starts.",
+   "acceptance-criteria-met": "Each acceptance criterion is mapped to evidence.",
+   "adr-recorded": "Significant technical decisions have an ADR with alternatives and trade-offs.",
+   "business-review-passed": "Business Analyst critique resolved or residual risk accepted by the business owner.",
+   "changelog-entry": "CHANGELOG.md has an entry for the change.",
+   "checks-pass": "Repository tests, lint, type-check and build pass (or are proven not applicable), with output.",
+   "diff-reviewed": "Someone other than the implementer reviewed the diff.",
+   "domain-reviews-passed": "Every activated Tier 2 reviewer (security, database, a11y, ...) returned PASS.",
+   "license-gate": "Every new third-party license passes `oeo license <SPDX>`.",
+   "outcome-measurable": "The success metric can actually be measured after release.",
+   "regression-test": "The fix or feature has a test that fails without the change.",
+   "rollback-plan": "A tested or reasoned rollback path is written down.",
+   "version-bump": "Version follows SemVer for the change type."
+  },
+  "stages": [
+   {
+    "exit": "class recorded with rationale; misclassification later triggers re-triage, never silent scope creep",
+    "id": "intake",
+    "n": 0,
+    "name": "Intake & Triage",
+    "output": "activation plan from `oeo route` (class, rule, roles, gates) logged to .oeo/activation-log.jsonl",
+    "owner": "project-manager"
+   },
+   {
+    "exit": "business-owner confirms the objective; Class B may use a 5-line brief (outcome + acceptance criteria)",
+    "id": "discovery",
+    "n": 1,
+    "name": "Business Discovery",
+    "output": ".oeo/brief.md (users, problem, outcome, metrics, scope/non-goals, constraints, evidence, risks)",
+    "owner": "business-analyst"
+   },
+   {
+    "exit": "criteria satisfied, or business-owner accepts a documented residual risk",
+    "id": "business-review",
+    "n": 2,
+    "name": "Independent Business Review",
+    "output": "structured critique (finding, evidence, impact, severity, corrective action) or PASS",
+    "owner": "business-analyst"
+   },
+   {
+    "exit": "every task has one owner and testable acceptance criteria",
+    "id": "planning",
+    "n": 3,
+    "name": "Product & Delivery Planning",
+    "output": ".oeo/plan.md (deliverables, acceptance criteria, sequencing, owners, file partition, tests, risks, DoD)",
+    "owner": "project-manager"
+   },
+   {
+    "exit": "CTO checklist passed; no new dependency, service or abstraction without demonstrated need",
+    "id": "architecture",
+    "n": 4,
+    "name": "Architecture & Engineering Review",
+    "output": "ADR in docs/adr/ (context, options, trade-offs, decision, consequences) for significant decisions",
+    "owner": "technical-architect"
+   },
+   {
+    "exit": "implementer handoff lists changed files, commands run and their real output",
+    "id": "implement",
+    "n": 5,
+    "name": "Design & Implementation",
+    "output": "small diffs + handoffs; design acceptance criteria when UI is touched",
+    "owner": "technical-lead"
+   },
+   {
+    "exit": "all class gates PASS; the implementer is never the sole authority on correctness",
+    "id": "verify",
+    "n": 6,
+    "name": "Independent Verification",
+    "output": ".oeo/verification.md (gate, command, result, evidence) and findings",
+    "owner": "qa-verifier"
+   },
+   {
+    "exit": "human authorization for publishing, deploying or any irreversible action",
+    "id": "release",
+    "n": 7,
+    "name": "Release",
+    "output": "SemVer bump, CHANGELOG entry, release notes, tag, rollback plan",
+    "owner": "release-manager"
+   },
+   {
+    "exit": "shipped code is never reported as business success by itself",
+    "id": "outcome",
+    "n": 7,
+    "name": "Business Outcome Review",
+    "output": "outcome report separating requirements met / tests passed / released / outcomes observed / outcomes unverified",
+    "owner": "business-analyst"
+   },
+   {
+    "exit": "decisions communicated publicly and respectfully per CODE_OF_CONDUCT.md",
+    "id": "community",
+    "n": 8,
+    "name": "Community & Feedback Loop",
+    "output": "labeled, reproducible issues; defects re-enter Stage 0, product gaps re-enter Stage 1",
+    "owner": "oss-maintainer"
+   }
+  ]
+ }
+}

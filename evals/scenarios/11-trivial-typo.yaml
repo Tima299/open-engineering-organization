@@ -1,0 +1,21 @@
+id: 11-trivial-typo
+title: Triage a trivial typo as Class A (proportionality)
+spec_ref: Section 11, task 11
+request: Fix the typo "recieve" -> "receive" in examples/taskboard/README.md.
+router_input: {type: trivial, touches: [docs], signals: [], files: 1, lines: 1}
+expect:
+  class: A
+  roles_include: [junior-developer, qa-verifier]
+  roles_exclude: [business-analyst, project-manager, technical-architect, legal-advisor, finops-controller]
+  max_roles: 2
+  max_tier3: 0
+  gates_include: [diff-reviewed, checks-pass]
+  within_budget: true
+agentic:
+  fixture: examples/taskboard
+  prompt: /oeo:deliver Fix the typo "recieve" in the taskboard README
+  success_criteria:
+    - Only README.md changes; diff is one word
+    - Exactly two subagents run (junior-developer, qa-verifier); no brief or plan file is created
+    - Verifier reports the check it ran (e.g. grep or test suite) with output
+  measure: [total_tokens, agents_invoked, wall_time_s, files_changed]

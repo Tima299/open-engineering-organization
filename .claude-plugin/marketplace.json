@@ -1,0 +1,11 @@
+{
+  "name": "open-engineering-organization",
+  "owner": {"name": "Open Engineering Organization maintainers", "url": "https://github.com/Tima299/open-engineering-organization"},
+  "plugins": [
+    {
+      "name": "oeo",
+      "source": "./",
+      "description": "Proportional AI engineering organization: triage, role contracts, model routing, independent verification, cost tracking."
+    }
+  ]
+}

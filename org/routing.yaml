@@ -1,0 +1,171 @@
+# OEO routing policy: Stage 0 triage + role/skill activation.
+# Read by scripts/oeo.py (compiled into org/org.lock.json). Rules are data so they
+# can be reviewed, tested (evals/scenarios) and changed without touching code.
+
+version: 1
+
+# Task types the orchestrator may report (--type).
+types: [trivial, bugfix, feature, refactor, architecture, new-product, incident, research, release, governance, licensing, community]
+
+# Domains a change may touch (--touches). risky: true forces Class C.
+domains:
+  frontend: {risky: false}
+  ui: {risky: false}
+  backend: {risky: false}
+  docs: {risky: false}
+  tests: {risky: false}
+  ci: {risky: false}
+  performance: {risky: false}
+  analytics: {risky: false}
+  i18n: {risky: false}
+  architecture: {risky: true}
+  auth: {risky: true}
+  security: {risky: true}
+  database: {risky: true}
+  api: {risky: true}          # public API / webhook / external contract
+  infra: {risky: true}
+  ai: {risky: true}
+  payments: {risky: true}
+  personal-data: {risky: true}
+
+# Signals the orchestrator may report (--signals). Tier 3 triggers match signals,
+# touched domains and the task type (e.g. `personal-data`, `release`).
+signals:
+  new-surface: new user-facing product surface
+  research-exists: user research already exists for this surface
+  user-facing: change is visible to end users
+  multi-locale: product targets more than one locale
+  production: production-facing service
+  release: a version will be published
+  public-release: first or major public release of a product/package
+  new-dependency: adds or upgrades a third-party dependency
+  redistribution: redistributes third-party code or content
+  license-change: changes the project's own license
+  ai-feature: product itself contains AI functionality
+  content-automation: automation that affects user-visible content
+  contribution-surge: unusual inflow of community issues/PRs
+  community-docs: community-facing documentation
+  user-feedback: post-release feedback loop
+  breaking-change: breaks a public contract or stored data format
+  high-risk: explicit high business/technical risk
+  long-running: engagement spans many sessions
+  multi-agent: more than two subagents will run (derived automatically)
+
+# Stage 0 classification. First matching rule wins. Conditions in one `when` are ANDed.
+classification:
+  - {class: D, rule: organizational-work, when: {types_any: [release, governance, licensing, community]}}
+  - {class: C, rule: significant-type, when: {types_any: [architecture, new-product, incident]}}
+  - {class: C, rule: risky-domain, when: {risky_domain: true}}
+  - {class: C, rule: risk-signal, when: {signals_any: [new-surface, breaking-change, high-risk, ai-feature]}}
+  - {class: C, rule: large-change, when: {files_gt: 15}}
+  - {class: A, rule: trivial-change, when: {types_any: [trivial], files_lte: 2, lines_lte: 20, no_triggers: true}}
+  - {class: B, rule: standard-default, when: {}}
+
+classes:
+  A:
+    name: Trivial
+    description: typo, config tweak, single-line fix. One developer + one verifier.
+    stages: [intake, implement, verify]
+    roles: {junior-developer: subagent, qa-verifier: subagent}
+    gates: [diff-reviewed, checks-pass]
+    tier2: false
+    tier3: false
+  B:
+    name: Standard
+    description: well-defined feature or bug fix. Tier 1 core only.
+    stages: [intake, discovery, planning, implement, verify, outcome]
+    roles:
+      business-owner: human
+      business-analyst: checklist
+      project-manager: orchestrator
+      cto: checklist
+      technical-lead: orchestrator
+      middle-developer: subagent
+      qa-verifier: subagent
+      oss-maintainer: checklist
+    gates: [acceptance-criteria-defined, diff-reviewed, checks-pass, regression-test, acceptance-criteria-met]
+    tier2: false
+    tier3: true
+  C:
+    name: Significant
+    description: new product surface, architecture change, security-sensitive. Full workflow + relevant Tier 2.
+    stages: [intake, discovery, business-review, planning, architecture, implement, verify, outcome]
+    roles:
+      business-owner: human
+      business-analyst: subagent
+      project-manager: orchestrator
+      cto: checklist
+      technical-lead: orchestrator
+      senior-developer: subagent
+      qa-verifier: subagent
+      oss-maintainer: checklist
+    gates: [acceptance-criteria-defined, business-review-passed, adr-recorded, diff-reviewed, checks-pass, regression-test, domain-reviews-passed, acceptance-criteria-met, outcome-measurable]
+    tier2: true
+    tier3: true
+    derive_signals: [multi-agent]
+  D:
+    name: Organizational
+    description: releases, governance, licensing, community. Maintainer-led with Tier 3 advisors.
+    stages: [intake, planning, verify, release, community]
+    roles:
+      business-owner: human
+      project-manager: orchestrator
+      oss-maintainer: orchestrator
+      qa-verifier: subagent
+    gates: [changelog-entry, version-bump, rollback-plan, license-gate, checks-pass]
+    tier2: false
+    tier3: true
+
+# Skills chosen per class/domain. `oeo:*` ship with this plugin. `adapters` are
+# optional third-party skills (see third_party/registry.yaml): use only if the
+# session lists them as available; never install them automatically.
+skills:
+  by_class:
+    A: [oeo:verify]
+    B: [oeo:deliver, oeo:verify]
+    C: [oeo:deliver, oeo:business-review, oeo:verify]
+    D: [oeo:deliver, oeo:release]
+  by_domain:
+    frontend: [oeo:design-direction]
+    ui: [oeo:design-direction]
+    auth: [oeo:verify]
+    security: [oeo:verify]
+  by_signal:
+    release: [oeo:release]
+    multi-agent: [oeo:finops]
+    long-running: [oeo:finops]
+  adapters:
+    by_domain:
+      frontend: [frontend-design, impeccable, ui-ux-pro-max]
+      ui: [frontend-design, impeccable, taste-skill, emil-kowalski-skills]
+      backend: [superpowers]
+    by_type:
+      bugfix: [superpowers]
+      feature: [superpowers]
+      refactor: [superpowers, ponytail]
+
+# Developer seniority by class (Tier 1 implementing developer).
+developer_by_class: {A: junior-developer, B: middle-developer, C: senior-developer, D: null}
+
+# Gate retry budget before model/effort escalation, then human escalation.
+retry_budget: 2
+
+# Generic agents that run several contracts (anti-bloat: capabilities, not headcount).
+generic_agents:
+  specialist:
+    description: Runs one OEO Tier 2 specialist contract (database, platform, API, performance, data, docs, principal engineer, frontend) handed to it by the orchestrator. Use only when the OEO router activated that role.
+    tools: [read, search, edit, execute]
+    preferred_model: standard
+    effort: medium
+  advisor:
+    description: Runs one OEO Tier 3 advisor contract (release, legal, SRE, incident, UX research, responsible AI, a11y, i18n, FinOps, community, support) handed to it by the orchestrator. Use only when the OEO router activated that advisor.
+    tools: [read, search, execute]
+    preferred_model: standard
+    effort: low
+
+# License policy used by the legal gate (`oeo license <SPDX>`) and registry validation.
+licenses:
+  project: Apache-2.0
+  allowed: [MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, 0BSD, Unlicense, CC0-1.0, Zlib, Python-2.0, CC-BY-4.0]
+  review: [MPL-2.0, LGPL-2.1-only, LGPL-2.1-or-later, LGPL-3.0-only, LGPL-3.0-or-later, EPL-2.0, CC-BY-SA-4.0]
+  blocked: [GPL-2.0-only, GPL-2.0-or-later, GPL-3.0-only, GPL-3.0-or-later, AGPL-3.0-only, AGPL-3.0-or-later, SSPL-1.0, BUSL-1.1, CC-BY-NC-4.0, NOASSERTION, UNVERIFIED]

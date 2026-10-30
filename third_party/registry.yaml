@@ -1,0 +1,134 @@
+# Third-party provenance registry (spec Sections 6 and 10.1). Machine-readable source
+# of THIRD_PARTY.md (generated). OEO vendors NONE of these: every entry is an optional
+# adapter the user installs through the upstream's own installer. `oeo validate` applies
+# the legal gate (org/routing.yaml `licenses`) to anything not reference-only.
+#
+# Verification method (2026-10-30): LICENSE files read from raw.githubusercontent.com.
+# Commit SHAs could not be read (GitHub API blocked from the research environment), so
+# `revision` is UNVERIFIED unless a pin was confirmed from a second source. Re-verify
+# before relying on a pin: see CONTRIBUTING.md "Updating the provenance registry".
+
+version: 1
+resources:
+  - id: superpowers
+    name: Superpowers
+    domain: engineering
+    upstream_url: https://github.com/obra/superpowers
+    maintainer: Jesse Vincent (@obra)
+    license_spdx: MIT
+    license_evidence_url: https://raw.githubusercontent.com/obra/superpowers/main/LICENSE
+    revision: bb92a77741419a4ab5f06e711a283343f1ada0c3
+    revision_note: pin used by anthropics/claude-plugins-official marketplace (plugin 7.0.0); main had moved on
+    install: [/plugin install superpowers@claude-plugins-official]
+    environments: [Claude Code, other agent harnesses per upstream README]
+    limitations: Full methodology (brainstorm, plan, TDD, subagent workflow) that expects to drive the session; overlaps OEO stages 3-6.
+    rationale: Best-known TDD/debugging/plan-execution skills. OEO routes to it for bugfix/feature/refactor work when installed instead of duplicating it.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+  - id: everything-claude-code
+    name: Everything Claude Code (ECC)
+    domain: engineering
+    upstream_url: https://github.com/affaan-m/ECC
+    maintainer: Affaan Mustafa (@affaan-m)
+    license_spdx: MIT
+    license_evidence_url: https://raw.githubusercontent.com/affaan-m/ECC/main/LICENSE
+    revision: UNVERIFIED
+    install: [/plugin marketplace add https://github.com/affaan-m/ECC, /plugin install ecc@ecc]
+    environments: [Claude Code, other agent harnesses per upstream README]
+    limitations: Very large bundle (hundreds of skills, many agents, Node hook runtime); impersonating mirrors exist per upstream README.
+    rationale: Evaluated, NOT routed by default. Its size conflicts with OEO's context budget principle; users who already run it can keep it, and OEO's precedence policy governs conflicts.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+  - id: ponytail
+    name: Ponytail
+    domain: simplicity
+    upstream_url: https://github.com/DietrichGebert/ponytail
+    maintainer: Dietrich Gebert (@DietrichGebert)
+    license_spdx: MIT
+    license_evidence_url: https://raw.githubusercontent.com/DietrichGebert/ponytail/main/LICENSE
+    revision: 7801d061243d7b753bad0e0b3c057cd250b11755
+    revision_note: npm gitHead of @dietrichgebert/ponytail 5.3.3
+    install: [/plugin marketplace add DietrichGebert/ponytail, /plugin install ponytail@ponytail]
+    environments: [Claude Code, other agent harnesses per upstream README]
+    limitations: Runs Node.js lifecycle hooks and a UI band with a local cost ledger; benchmark claims are the author's own. Many unofficial copies exist.
+    rationale: Anti-overengineering pressure for refactors and simplification reviews. Never a reason to skip validation, security, a11y, error handling or tests (docs/precedence.md).
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+  - id: frontend-design
+    name: Anthropic frontend-design skill
+    domain: design
+    upstream_url: https://github.com/anthropics/claude-plugins-official/tree/main/plugins/frontend-design
+    maintainer: Anthropic
+    license_spdx: Apache-2.0
+    license_evidence_url: https://raw.githubusercontent.com/anthropics/claude-plugins-official/main/plugins/frontend-design/LICENSE
+    revision: UNVERIFIED
+    install: [/plugin install frontend-design@claude-plugins-official]
+    environments: [Claude Code; the same skill ships in anthropics/skills (example-skills) for Claude.ai and the API]
+    limitations: Guidance only (no checks). The anthropics/skills repo has no top-level license; only skills/frontend-design/LICENSE.txt (Apache-2.0) applies to this skill.
+    rationale: Strong aesthetic direction for new UI; complements oeo:design-direction, which owns acceptance criteria and a11y.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+  - id: impeccable
+    name: Impeccable
+    domain: design
+    upstream_url: https://github.com/pbakaus/impeccable
+    maintainer: Paul Bakaus (@pbakaus)
+    license_spdx: Apache-2.0
+    license_evidence_url: https://raw.githubusercontent.com/pbakaus/impeccable/main/LICENSE
+    revision: UNVERIFIED
+    install: [/plugin marketplace add pbakaus/impeccable]
+    environments: [Claude Code, other agent harnesses per upstream README]
+    limitations: Installer adds a hook that runs outside model approval and may download an engine binary; fetches a catalog from impeccable.style.
+    rationale: Design vocabulary and anti-pattern detection for frontend polish when installed.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+  - id: ui-ux-pro-max
+    name: UI UX Pro Max
+    domain: design
+    upstream_url: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
+    maintainer: nextlevelbuilder (GitHub organization)
+    license_spdx: MIT
+    license_evidence_url: https://raw.githubusercontent.com/nextlevelbuilder/ui-ux-pro-max-skill/main/LICENSE
+    revision: UNVERIFIED
+    install: [/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill, /plugin install ui-ux-pro-max@ui-ux-pro-max-skill]
+    environments: [Claude Code, other agent harnesses per upstream README]
+    limitations: Needs Python 3 for its search script; upstream also advertises a paid tier.
+    rationale: Searchable style/palette/typography database for dashboards and product UI.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+  - id: taste-skill
+    name: Taste (design-taste-frontend)
+    domain: design
+    upstream_url: https://github.com/Leonxlnx/taste-skill
+    maintainer: Leonxlnx
+    license_spdx: MIT
+    license_evidence_url: https://raw.githubusercontent.com/Leonxlnx/taste-skill/main/LICENSE
+    revision: UNVERIFIED
+    install: [/plugin marketplace add Leonxlnx/taste-skill, /plugin install taste-skill@taste-skill]
+    environments: [Claude Code, other agents via npx skills]
+    limitations: '"Taste" is ambiguous; this is the most-used candidate. Scripts need Node 22+ and a Chromium browser.'
+    rationale: Visual taste heuristics for UI surfaces; optional.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
+  - id: emil-kowalski-skills
+    name: Emil Kowalski design-engineering skills
+    domain: design
+    upstream_url: https://github.com/emilkowalski/skills
+    maintainer: Emil Kowalski (@emilkowalski)
+    license_spdx: MIT
+    license_evidence_url: https://raw.githubusercontent.com/emilkowalski/skills/main/LICENSE
+    revision: UNVERIFIED
+    install: [npx skills@latest add emilkowalski/skills]
+    environments: [Agent Skills format via the npx skills CLI; no Claude Code plugin manifest]
+    limitations: Many skills in one repo (animation, review-animations, design engineering); name the specific skill when using it. animations.dev course terms not verified.
+    rationale: Motion and interaction-detail principles for UI work.
+    distribution: reference-only
+    status: partially-verified
+    accessed: 2026-10-30
