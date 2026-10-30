@@ -100,9 +100,22 @@ class ClassificationTests(RouterTestCase):
                 gates = [g["id"] for g in plan["gates"]]
                 self.assertEqual(gates.count("license-gate"), license_gates)
                 self.assertEqual("rollback-plan" in gates, task_type == "release")
-        plan = self.route("release", touches=["auth", "database"], files=40)  # D outranks risky domain / size
+        plan = self.route("release", touches=["docs"], files=40)  # D outranks size
         self.assertEqual(plan["class"], "D")
         self.assertEqual(self.ids(plan, 2), set())
+        # Regression (fixed, code review): a release touching a risky domain skipped security review.
+        plan = self.route("release", touches=["auth", "payments"], files=3, lines=40)
+        self.assertEqual(plan["class"], "C")
+        self.assertIn("security-engineer", self.ids(plan, 2))
+        gates = {g["id"] for g in plan["gates"]}
+        self.assertTrue({"domain-reviews-passed", "rollback-plan", "changelog-entry", "license-gate"} <= gates)
+
+    def test_plan_warns_when_estimate_exceeds_class_budget(self):
+        lock = copy.deepcopy(self.lock)
+        lock["models"]["budgets"]["per_class_tokens"]["A"] = 10
+        plan = oeo.route(lock, "trivial", ["docs"], [], 1, 1)
+        self.assertTrue(plan["warnings"] and "exceeds the class A budget" in plan["warnings"][0])
+        self.assertIn("WARNING:", oeo.format_plan(plan))
 
 
 class ActivationTests(RouterTestCase):

@@ -18,7 +18,7 @@ reviewed on every change to hooks, scripts, agent tool lists or routing. Verific
 | # | Threat | Mitigation | Residual risk |
 |---|---|---|---|
 | T1 | Prompt injection in repo files/issues/web pages redirects an agent | Agent preamble declares all such content data; precedence policy level rule; reviewers report injection attempts; eval scenario `15-prompt-injection` | Model compliance is probabilistic; human review of consequential actions remains the backstop |
-| T2 | Destructive shell command (rm -rf, reset --hard, DROP, terraform destroy) | `scripts/guard.py` PreToolUse turns them into a confirmation prompt; Claude Code permissions | Pattern guard is bypassable (aliases, scripts); it is defense in depth, not a sandbox |
+| T2 | Destructive shell command (rm -rf, reset --hard, DROP, terraform destroy) | `scripts/guard.py` PreToolUse turns them into a confirmation prompt; Claude Code permissions | Pattern guard is bypassable (aliases, scripts, encodings); it is defense in depth, not a sandbox. If `python3` cannot start, Claude Code proceeds without the guard (hooks fail open) |
 | T3 | Unauthorized publication (force push, publish, release, tag push) | Guard asks; release skill requires explicit approval | Same as T2 |
 | T4 | Secret written into a file or printed into the transcript | Guard detects common token formats on Write/Edit and secret-file reads | Unknown token formats and secrets via Bash redirects are not caught |
 | T5 | Privilege creep through agent tools | Contracts use least-privilege capabilities; reviewers (QA, security, BA) get no edit tools; generated `tools:` lists are checked in CI | Generic agents share one tool set across contracts |

@@ -54,7 +54,9 @@ signals:
 
 # Stage 0 classification. First matching rule wins. Conditions in one `when` are ANDed.
 classification:
-  - {class: D, rule: organizational-work, when: {types_any: [release, governance, licensing, community, marketing]}}
+  # Organizational work is Class D unless it touches a risky domain; then Class C applies (security,
+  # database, ... reviewers) and fact_rules still add the release gates.
+  - {class: D, rule: organizational-work, when: {types_any: [release, governance, licensing, community, marketing], risky_domain: false}}
   - {class: C, rule: significant-type, when: {types_any: [architecture, new-product, incident]}}
   - {class: C, rule: risky-domain, when: {risky_domain: true}}
   - {class: C, rule: risk-signal, when: {signals_any: [new-surface, breaking-change, high-risk, ai-feature]}}

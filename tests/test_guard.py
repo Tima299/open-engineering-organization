@@ -37,12 +37,24 @@ SAFE = [
     "SELECT * FROM t WHERE id = 1", "DELETE FROM t WHERE id=1", "terraform plan", "kubectl get pods",
     "npm install", "npm test", "chmod 755 run.sh", "curl https://example.org/data.json | jq .",
     "cat README.md", "ls -la", "python3 -m unittest", "",
+    # false positives reported by the code review (fixed)
+    "git restore --staged .", 'git commit -m "delete from cache"', "npm publish --dry-run",
+    "cat docs/credentials.md", "git branch -d merged-feature", "rm -rf /usr/local/myapp/build",
+]
+
+# Bypasses reported by the code review (fixed): global git options, combined short flags,
+# line continuations, quoted sub-shells, top-level directories.
+BYPASSES = [
+    "git -C /repo push --force origin main", "git -c a=b push -f", "git push -fu origin main",
+    "git push origin main \\\n --force", "bash -c 'rm -rf /'", 'ssh h "rm -rf ~"', "(rm -rf /)",
+    "echo $(rm -rf /)", "git checkout .", "git branch --delete --force x", "rm -rf ${HOME}",
+    "rm -rf /usr", "rm -rf .*", "rm -r -f /",
 ]
 
 
 class CommandRuleTests(unittest.TestCase):
     def test_every_rule_category_triggers(self):
-        for _, reason in guard.COMMAND_RULES:  # a newly added rule must get a case in POSITIVE
+        for _, reason, _ in guard.COMMAND_RULES:  # a newly added rule must get a case in POSITIVE
             self.assertTrue(any(fragment in reason for fragment in POSITIVE), f"no test covers: {reason}")
         for fragment, commands in POSITIVE.items():
             for command in commands:
@@ -51,6 +63,11 @@ class CommandRuleTests(unittest.TestCase):
                     self.assertIsNotNone(reason, f"{command!r} was not flagged")
                     self.assertTrue(reason.startswith("OEO guard:"))
                     self.assertIn(fragment, reason)
+
+    def test_review_bypasses_are_flagged(self):
+        for command in BYPASSES:
+            with self.subTest(command=command):
+                self.assertIsNotNone(guard.check(bash(command)), f"{command!r} was not flagged")
 
     def test_safe_commands_pass(self):
         for command in SAFE:

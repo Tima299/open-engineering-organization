@@ -119,8 +119,13 @@ class LicenseTests(IsolatedTestCase):
     def test_verdicts_and_fail_closed_default(self):
         expected = {"MIT": "allowed", "Apache-2.0": "allowed", "MPL-2.0": "review", "LGPL-3.0-only": "review",
                     "GPL-3.0-only": "blocked", "AGPL-3.0-or-later": "blocked", "NOASSERTION": "blocked",
-                    "Foo-1.0": "blocked", "mit": "blocked", "MIT ": "blocked", "": "blocked", None: "blocked",
-                    "Apache-2.0 OR MIT": "blocked"}  # anything unknown or malformed fails closed
+                    "Foo-1.0": "blocked", "": "blocked", None: "blocked",
+                    # case-insensitive ids and SPDX expressions (OR = best option, AND = worst, WITH = base id)
+                    "mit": "allowed", "MIT ": "allowed", "Apache-2.0 OR MIT": "allowed",
+                    "GPL-3.0-only OR MIT": "allowed", "MIT AND GPL-3.0-only": "blocked",
+                    "MIT AND MPL-2.0": "review", "Apache-2.0 WITH LLVM-exception": "allowed",
+                    # nested expressions are judged by the worst license named (fail safe)
+                    "(MIT OR GPL-3.0-only) AND MPL-2.0": "blocked"}
         for spdx, verdict in expected.items():
             with self.subTest(spdx=spdx):
                 self.assertEqual(oeo.license_verdict(spdx, self.policy), verdict)

@@ -13,6 +13,9 @@ import os
 import sys
 from pathlib import Path
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from oeo import append_jsonl, project_dir  # noqa: E402  (stdlib-only part of the CLI)
+
 FIELDS = {"input_tokens": "input_tokens", "output_tokens": "output_tokens",
           "cache_read_input_tokens": "cache_read_tokens", "cache_creation_input_tokens": "cache_write_tokens"}
 
@@ -45,9 +48,9 @@ def main():
     if os.environ.get("OEO_FINOPS", "").lower() in ("off", "0", "false"):
         return 0
     try:
-        payload = json.load(sys.stdin)
-        project = Path(os.environ.get("CLAUDE_PROJECT_DIR") or payload.get("cwd") or os.getcwd())
-        log_dir = project / ".oeo"
+        raw = sys.stdin.buffer.read() if hasattr(sys.stdin, "buffer") else sys.stdin.read().encode("utf-8")
+        payload = json.loads(raw.decode("utf-8"))
+        log_dir = project_dir(payload.get("cwd")) / ".oeo"
         transcript = payload.get("agent_transcript_path")
         if not log_dir.is_dir() or not transcript or not Path(transcript).is_file():
             return 0
@@ -56,8 +59,7 @@ def main():
                   "session_id": payload.get("session_id"), "agent_type": payload.get("agent_type"),
                   "agent_id": payload.get("agent_id"), "models": models, "api_responses": responses,
                   **totals, "source": "best-effort transcript parse"}
-        with open(log_dir / "finops.jsonl", "a", encoding="utf-8") as fh:
-            fh.write(json.dumps(record) + "\n")
+        append_jsonl(log_dir / "finops.jsonl", record)
     except Exception:  # noqa: BLE001 - a logging hook must never break the session
         return 0
     return 0

@@ -6,6 +6,27 @@ While the version is 0.x, minor releases may contain breaking changes (called ou
 
 ## [Unreleased]
 
+### Fixed
+- Found by an independent code review:
+  - The guard caught too little: `git -C`/`-c` global options, combined `-fu` flags,
+    line continuations, `bash -c`/`ssh`/`$( )` sub-shells, `rm -rf /usr`, `${HOME}` and `.*`.
+  - The guard raised false alarms on `git restore --staged .`, `npm publish --dry-run`,
+    commit messages containing SQL, and `credentials.md`.
+  - `OEO_MODEL_PROFILE` no longer changes generated agent files (it applies to router output only).
+  - Logs and the FinOps hook share one project-root lookup (they no longer split across
+    sub-directories), and logs refuse to write through symlinks.
+  - `oeo cost` counts only the latest plan per session after a re-triage.
+  - A release touching a risky domain (auth, payments, ...) is Class C with security review and the
+    release gates.
+  - `oeo license` accepts lower-case ids and SPDX expressions (OR, AND, WITH); nested expressions
+    fail safe.
+  - `oeo validate` checks classification rules (conditions, types, signals, catch-all), reports
+    YAML errors with the file name, and skips virtualenvs in its link check.
+  - The router warns when a plan's estimate exceeds its class budget.
+  - Hooks read input as UTF-8 regardless of the system locale.
+- Found by an independent content review: 15 consistency and honesty fixes; see commit history.
+- CI also runs on macOS and has a 10-minute timeout.
+
 ## [0.2.0] - 2026-10-30
 
 ### Added

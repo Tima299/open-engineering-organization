@@ -51,13 +51,13 @@ def load_sources():
     yaml = _yaml()
 
     def load(rel):
-        with open(ROOT / rel, encoding="utf-8") as fh:
-            return yaml.safe_load(fh)
+        try:
+            with open(ROOT / rel, encoding="utf-8") as fh:
+                return yaml.safe_load(fh)
+        except yaml.YAMLError as exc:
+            sys.exit(f"{rel}: invalid YAML: {exc}")
 
-    roles = {}
-    for path in sorted((ROOT / "org" / "roles").glob("*.yaml")):
-        with open(path, encoding="utf-8") as fh:
-            roles[path.stem] = yaml.safe_load(fh)
+    roles = {path.stem: load(path.relative_to(ROOT)) for path in sorted((ROOT / "org" / "roles").glob("*.yaml"))}
     return {
         "roles": roles,
         "routing": load("org/routing.yaml"),
@@ -127,17 +127,29 @@ def profile_name(models, requested=None):
     return name
 
 
+SEVERITY = {"allowed": 0, "review": 1, "blocked": 2}
+
+
 def license_verdict(spdx, policy):
-    if spdx in policy["allowed"]:
-        return "allowed"
-    if spdx in policy["review"]:
-        return "review"
-    return "blocked"  # blocked list + anything unknown fails closed
+    """Verdict for an SPDX id or simple expression: OR takes the best option, AND the worst;
+    `X WITH exception` is judged as X. Unknown or unparseable input fails closed (blocked)."""
+    def single(lid):
+        lid = lid.strip().strip("()").split(" WITH ")[0].strip().lower()
+        for verdict in ("allowed", "review"):
+            if lid in (x.lower() for x in policy[verdict]):
+                return verdict
+        return "blocked"
+    expr = " ".join(str(spdx or "").replace("(", " ").replace(")", " ").split())
+    expr = expr.replace(" with ", " WITH ").replace(" or ", " OR ").replace(" and ", " AND ")
+    if not expr:
+        return "blocked"
+    if "(" in str(spdx):  # nested expressions: judge conservatively by the worst license named
+        return max((single(t) for alt in expr.split(" OR ") for t in alt.split(" AND ")), key=SEVERITY.get)
+    options = [max((single(t) for t in alt.split(" AND ")), key=SEVERITY.get) for alt in expr.split(" OR ")]
+    return min(options, key=SEVERITY.get)
 
 
 # --------------------------------------------------------------------------- build
-def agent_name(role):
-    return role.get("agent")
 
 
 def render_agent(name, description, tools, model, effort, color, body, src):
@@ -212,7 +224,8 @@ def generic_agent_body(name, spec, preamble):
 def build_outputs(src, profile=None):
     """Return {relative_path: content} for every generated file."""
     models, routing = src["models"], src["routing"]
-    profile = profile_name(models, profile)
+    # Generated files use --profile or the config default, never $OEO_MODEL_PROFILE (router-only).
+    profile = profile_name(models, profile) if profile else models["default_profile"]
     preamble = (ROOT / "org" / "agent-preamble.md").read_text(encoding="utf-8").strip()
     out = {}
     roles = {rid: doc["role"] for rid, doc in src["roles"].items()}
@@ -280,7 +293,7 @@ def render_role_catalog(roles, models, profile):
     for rid, c in sorted(roles.items(), key=lambda kv: (kv[1]["tier"], kv[0])):
         m = effective_model(c["model_routing"], rid, models, profile)
         runs = c["execution"] + (f" (`oeo:{c['agent']}`)" if c.get("agent") and c["execution"] == "subagent" else "")
-        act = c.get("activation", {})
+        act = c.get("activation") or {}
         if c["tier"] == 1:
             how = "class core set"
         elif "delegated_by" in act:
@@ -347,13 +360,13 @@ def validate_sources(src):
         if c.get("id") != rid:
             errs.append(f"{where}: id '{c.get('id')}' must match file name")
         for field in ("consults", "informs"):
-            for ref in c.get(field, []):
+            for ref in c.get(field) or []:
                 if ref not in role_ids or ref == rid:
                     errs.append(f"{where}: {field} references unknown or self role '{ref}'")
         for skill in c.get("relevant_skills", []):
             if skill not in skills and skill not in adapters:
                 errs.append(f"{where}: relevant skill '{skill}' is neither an oeo skill nor a registered adapter")
-        agent, execution, act = c.get("agent"), c.get("execution"), c.get("activation", {})
+        agent, execution, act = c.get("agent"), c.get("execution"), c.get("activation") or {}
         if execution == "subagent" and not agent:
             errs.append(f"{where}: subagent roles must name an agent")
         if agent and agent != rid and agent not in generic:
@@ -401,8 +414,15 @@ def validate_sources(src):
         errs += [f"org/routing.yaml fact_rules.{key}: unknown gate '{g}'" for g in rule.get("remove_gates", []) if g not in workflow["gates"]]
         errs += [f"org/routing.yaml fact_rules.{key}: unknown role '{r}'" for r in rule.get("remove_roles", []) if r not in role_ids]
     for rule in routing["classification"]:
+        w = f"org/routing.yaml classification '{rule.get('rule')}'"
         if rule["class"] not in routing["classes"]:
-            errs.append(f"org/routing.yaml: rule '{rule['rule']}' targets unknown class")
+            errs.append(f"{w}: unknown class")
+        when = rule.get("when") or {}
+        errs += [f"{w}: unknown condition '{k}'" for k in when if k not in CHECK_KEYS]
+        errs += [f"{w}: unknown type '{t}'" for t in when.get("types_any", []) if t not in routing["types"]]
+        errs += [f"{w}: unknown signal '{x}'" for x in when.get("signals_any", []) if x not in routing["signals"]]
+    if not routing["classification"] or routing["classification"][-1].get("when"):
+        errs.append("org/routing.yaml classification: the last rule must be a catch-all (`when: {}`)")
     for cls, dev in routing["developer_by_class"].items():
         if dev and dev not in role_ids:
             errs.append(f"org/routing.yaml developer_by_class.{cls}: unknown role '{dev}'")
@@ -473,7 +493,7 @@ def validate_sbom(policy):
     return errs
 
 
-REGISTRY_FIELDS = ("id", "name", "upstream_url", "maintainer", "license_spdx", "revision", "install",
+REGISTRY_FIELDS = ("id", "name", "upstream_url", "maintainer", "license_spdx", "license_evidence_url", "revision", "install",
                    "environments", "limitations", "rationale", "distribution", "status", "accessed")
 
 
@@ -499,7 +519,7 @@ def validate_links():
     errs = []
     for md in ROOT.rglob("*.md"):
         rel = md.relative_to(ROOT)
-        if rel.parts[0] in (".git", "node_modules") or "results" in rel.parts:
+        if set(rel.parts) & {".git", "node_modules", ".venv", "venv", "__pycache__", "results"}:
             continue
         for target in LINK.findall(md.read_text(encoding="utf-8")):
             path = target.split("#", 1)[0]
@@ -532,6 +552,9 @@ def _triggered(role, facts):
         if all(p in facts for p in trig.split("+")):
             return trig
     return None
+
+
+CHECK_KEYS = ("types_any", "risky_domain", "signals_any", "files_gt", "files_lte", "lines_lte", "no_triggers")
 
 
 def _matches(when, ctx):
@@ -634,6 +657,9 @@ def route(lock, task_type, touches=(), signals=(), files=None, lines=None, profi
         "gates": [{"id": g, "check": lock["workflow"]["gates"][g]} for g in gates],
         "retry_budget": routing["retry_budget"],
         "estimate_tokens": estimate, "budget_tokens": budgets["per_class_tokens"][cls],
+        "warnings": ([f"planned subagent estimate {estimate:,} exceeds the class {cls} budget "
+                      f"{budgets['per_class_tokens'][cls]:,}: drop roles or record a justification"]
+                     if estimate > budgets["per_class_tokens"][cls] else []),
     }
 
 
@@ -650,11 +676,31 @@ def format_plan(plan):
     out.append("Gates: " + ", ".join(g["id"] for g in plan["gates"]))
     out.append(f"Budget: est {plan['estimate_tokens']:,} subagent tokens of {plan['budget_tokens']:,} "
                f"(class {plan['class']}); retry budget {plan['retry_budget']} per gate")
+    out += [f"WARNING: {w}" for w in plan.get("warnings", [])]
     return "\n".join(out)
 
 
-def project_dir():
-    return Path(os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd())
+def project_dir(start=None):
+    """Project root: $CLAUDE_PROJECT_DIR, else the nearest ancestor of `start` (default: cwd)
+    holding .oeo/ or .git, else `start`. Shared by the CLI and the FinOps hook."""
+    if os.environ.get("CLAUDE_PROJECT_DIR"):
+        return Path(os.environ["CLAUDE_PROJECT_DIR"])
+    here = Path(start or os.getcwd()).resolve()
+    for d in (here, *here.parents):
+        if (d / ".oeo").is_dir() or (d / ".git").exists():
+            return d
+    return here
+
+
+def append_jsonl(path, record):
+    """Append one JSON line without following symlinks (a hostile repo could plant one)."""
+    path = Path(path)
+    if path.parent.is_symlink():
+        raise OSError(f"refusing to write through symlinked directory {path.parent}")
+    flags = os.O_WRONLY | os.O_APPEND | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0)
+    fd = os.open(path, flags, 0o600)
+    with os.fdopen(fd, "a", encoding="utf-8") as fh:
+        fh.write(json.dumps(record) + "\n")
 
 
 def cmd_route(args):
@@ -666,14 +712,17 @@ def cmd_route(args):
     print(json.dumps(plan, indent=1) if args.json else format_plan(plan))
     if args.log:
         log_dir = project_dir() / ".oeo"
-        log_dir.mkdir(exist_ok=True)
+        if not log_dir.is_symlink():
+            log_dir.mkdir(exist_ok=True)
         entry = {"ts": _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds"), "session": args.session,
                  "summary": args.summary, "class": plan["class"], "rule": plan["rule"], "inputs": plan["inputs"],
                  "roles": [{k: r.get(k) for k in ("id", "mode", "reason", "agent", "model", "effort", "estimate_tokens")}
                            for r in plan["roles"]],
                  "estimate_tokens": plan["estimate_tokens"], "budget_tokens": plan["budget_tokens"]}
-        with open(log_dir / "activation-log.jsonl", "a", encoding="utf-8") as fh:
-            fh.write(json.dumps(entry) + "\n")
+        try:
+            append_jsonl(log_dir / "activation-log.jsonl", entry)
+        except OSError as exc:
+            sys.exit(f"not logged: {exc}")
         print(f"(logged to {log_dir / 'activation-log.jsonl'})", file=sys.stderr)
 
 
@@ -683,10 +732,10 @@ def cmd_license(args):
     worst = 0
     for spdx in args.spdx:
         verdict = license_verdict(spdx, policy)
-        worst = max(worst, {"allowed": 0, "review": 3, "blocked": 1}[verdict] if verdict != "blocked" else 4)
+        worst = max(worst, SEVERITY[verdict])
         print(f"{spdx}: {verdict.upper()}" + {"review": " (human decision required; see legal-advisor contract)",
                                               "blocked": f" (incompatible with project policy {policy['project']})"}.get(verdict, ""))
-    sys.exit({0: 0, 3: 3, 4: 1}[worst])
+    sys.exit({0: 0, 1: 3, 2: 1}[worst])  # allowed 0, review 3, blocked 1
 
 
 def _read_jsonl(path):
@@ -710,6 +759,10 @@ def cmd_cost(args):
     if not usage and not plans:
         print(f"No FinOps data in {base} (logs appear after `oeo route --log` and subagent runs).")
         return
+    latest = {}
+    for p in plans:  # a re-triage supersedes the earlier plan of the same session
+        latest[p.get("session")] = p
+    plans = list(latest.values())
     per_agent = {}
     for u in usage:
         key = u.get("agent_type") or "unknown"

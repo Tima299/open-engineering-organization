@@ -12,29 +12,36 @@ import re
 import shlex
 import sys
 
-# (pattern, reason). Case-insensitive unless the pattern says (?-i:...).
+# git with optional global options before the subcommand (git -C dir / -c k=v / --no-pager ...).
+GIT = r"\bgit\b(?:\s+(?:-[Cc]\s+\S+|--?[\w.=/-]+))*\s+"
+
+# (pattern, reason, applies_to_git_commands). Case-insensitive unless the pattern says (?-i:...).
+# SQL rules skip git commands so commit messages such as "delete from cache" do not trigger them.
 COMMAND_RULES = [
-    (r"\bgit\s+push\b.*(\s--force\b|\s-f\b|\s--force-with-lease\b|\s\+\S)", "force push rewrites remote history"),
-    (r"\bgit\s+push\b.*(\s--tags\b|\s--mirror\b|\s--delete\b|\s:\S)", "pushes tags, mirrors or deletes remote refs"),
-    (r"\bgit\s+(reset\s+(.*\s)?--hard\b|checkout\s+--\s+\.|restore\s+(--\S+\s+)*\.)", "discards local work"),
-    (r"\bgit\s+clean\b(.*\s)?(-\w*f\w*|--force)\b", "deletes untracked files"),
-    (r"\bgit\s+branch\s+(.*\s)?(?-i:-D)(\s|$)", "force-deletes a branch"),
-    (r"\b(drop\s+(table|database|schema)|truncate\s+table)\b", "destructive SQL"),
-    (r"\bdelete\s+from\s+[\w.\"`\[\]]+\s*(;|\"|'|$)", "DELETE without WHERE"),
+    (GIT + r"push\b.*(\s--force(-with-lease)?\b|\s-[a-zA-Z]*f[a-zA-Z]*\b|\s\+\S)", "force push rewrites remote history", True),
+    (GIT + r"push\b.*(\s--tags\b|\s--mirror\b|\s--delete\b|\s:\S)", "pushes tags, mirrors or deletes remote refs", True),
+    (GIT + r"(reset\s+(.*\s)?--hard\b|checkout\s+(--\s+)?\.(\s|$)|restore\s+(?!.*--staged)(.*\s)?\.(\s|$))",
+     "discards local work", True),
+    (GIT + r"clean\b(.*\s)?(-\w*f\w*|--force)\b", "deletes untracked files", True),
+    (GIT + r"branch\s+(.*\s)?((?-i:-D)|--delete\s+--force|--force\s+--delete|-d\s+-f|-f\s+-d)(\s|$)",
+     "force-deletes a branch", True),
+    (r"\b(drop\s+(table|database|schema)|truncate\s+table)\b", "destructive SQL", False),
+    (r"\bdelete\s+from\s+[\w.\"`\[\]]+\s*(;|\"|'|$)", "DELETE without WHERE", False),
     (r"\b(terraform|tofu)\s+(destroy|apply)\b|\bkubectl\s+delete\b|\bhelm\s+(uninstall|delete)\b",
-     "changes or destroys infrastructure"),
-    (r"\b(npm|pnpm|yarn)\s+publish\b|\btwine\s+upload\b|\bcargo\s+publish\b|\bgem\s+push\b|\bdocker\s+push\b"
-     r"|\bgh\s+release\s+create\b|\bgh\s+repo\s+(delete|edit)\b", "publishes or changes something public"),
-    (r"\b(curl|wget)\b[^|]*\|\s*(sudo\s+)?(sh|bash|zsh|python3?)\b", "executes a remote script without review"),
-    (r"\bchmod\s+(-R\s+)?0?777\b|\bmkfs(\.\w+)?\b|\bdd\s+[^|]*of=/dev/", "dangerous permission or disk operation"),
+     "changes or destroys infrastructure", True),
+    (r"^(?!.*--dry-run\b).*(\b(npm|pnpm|yarn)\s+publish\b|\btwine\s+upload\b|\bcargo\s+publish\b|\bgem\s+push\b"
+     r"|\bdocker\s+push\b|\bgh\s+release\s+create\b|\bgh\s+repo\s+(delete|edit)\b)", "publishes or changes something public", True),
+    (r"\b(curl|wget)\b[^|]*\|\s*(sudo\s+)?(sh|bash|zsh|python3?)\b", "executes a remote script without review", True),
+    (r"\bchmod\s+(-R\s+)?0?777\b|\bmkfs(\.\w+)?\b|\bdd\s+[^|]*of=/dev/", "dangerous permission or disk operation", True),
     (r"(\bcat|\bless|\bmore|\bhead|\btail)\s+[^|;&]*"
-     r"(\.env(?!\.(example|sample|template|dist))\b|id_rsa|id_ed25519|\.pem\b|credentials\b)",
-     "prints a likely secrets file into the transcript"),
+     r"(\.env(?!\.(example|sample|template|dist))\b|id_rsa|id_ed25519|\.pem\b|credentials(?!\.md\b)\b)",
+     "prints a likely secrets file into the transcript", True),
 ]
 
 # rm targets that make a recursive force delete catastrophic.
-DANGEROUS_RM_TARGETS = {"/", "/*", "~", "~/", "~/*", "$HOME", "$HOME/", "$HOME/*", "*", ".", "./", "./*",
-                        "..", "../", "../*"}
+DANGEROUS_RM_TARGETS = {"/", "/*", "~", "~/", "~/*", "$HOME", "$HOME/", "$HOME/*", "${HOME}", "${HOME}/",
+                        "${HOME}/*", "*", ".", "./", "./*", ".*", "..", "../", "../*"}
+TOP_LEVEL_DIR = re.compile(r"^/[^/\s]+/?\*?$")  # /usr, /etc/, /home/* ...
 
 # (pattern, kind). Matched against content written by Write/Edit/MultiEdit.
 SECRET_RULES = [
@@ -50,13 +57,16 @@ SECRET_RULES = [
 ]
 
 
-def dangerous_rm(cmd):
-    """True if any `rm` in the command is recursive + forced and targets a root/home/parent/wildcard."""
-    for segment in re.split(r"[;&|]+|\$\(|`", cmd):
+def dangerous_rm(cmd, depth=0):
+    """True if any `rm` in the command is recursive + forced and targets a root/home/parent/wildcard
+    or a top-level directory. Quoted sub-commands (bash -c '...', ssh host "...") are checked too."""
+    for segment in re.split(r"[;&|()\n]+|\$\(|`", cmd):
         try:
             words = shlex.split(segment, posix=True)
         except ValueError:
             words = segment.split()
+        if depth < 3 and any(dangerous_rm(w, depth + 1) for w in words if " " in w.strip()):
+            return True
         for i, word in enumerate(words):
             if os.path.basename(word).lower() != "rm":  # case-insensitive filesystems run RM too
                 continue
@@ -73,7 +83,7 @@ def dangerous_rm(cmd):
                     force |= "f" in low
                 elif not arg.startswith("--"):
                     targets.append(arg)
-            if recursive and force and any(t in DANGEROUS_RM_TARGETS for t in targets):
+            if recursive and force and any(t in DANGEROUS_RM_TARGETS or TOP_LEVEL_DIR.match(t) for t in targets):
                 return True
     return False
 
@@ -89,10 +99,12 @@ def check(payload):
         cmd = inp.get("command")
         if not isinstance(cmd, str):
             return None
+        cmd = cmd.replace("\\\n", " ")  # join backslash-continued lines
         if dangerous_rm(cmd):
             return "OEO guard: recursive force delete of a root, home, parent or wildcard path. Confirm this is intended."
-        for pattern, reason in COMMAND_RULES:
-            if re.search(pattern, cmd, re.IGNORECASE):
+        is_git = re.match(r"\s*git\b", cmd) is not None
+        for pattern, reason, applies_to_git in COMMAND_RULES:
+            if (applies_to_git or not is_git) and re.search(pattern, cmd, re.IGNORECASE):
                 return f"OEO guard: {reason}. Confirm this is intended and authorized."
         return None
     if tool in ("Write", "Edit", "MultiEdit"):
@@ -110,7 +122,8 @@ def main():
     if os.environ.get("OEO_GUARD", "").lower() in ("off", "0", "false"):
         return 0
     try:
-        reason = check(json.load(sys.stdin))
+        raw = sys.stdin.buffer.read() if hasattr(sys.stdin, "buffer") else sys.stdin.read().encode("utf-8")
+        reason = check(json.loads(raw.decode("utf-8")))
     except Exception:  # noqa: BLE001 - fail open: a malformed event must not break the session
         return 0
     if reason:

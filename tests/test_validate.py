@@ -117,7 +117,7 @@ class ValidateSourcesTests(IsolatedTestCase):
             ("fact rule with unknown stage", lambda s: s["routing"]["fact_rules"]["release"]["stages"].append("no-stage"),
              "fact_rules.release: unknown stage 'no-stage'"),
             ("rule targets unknown class", lambda s: s["routing"]["classification"][0].update({"class": "Z"}),
-             "targets unknown class"),
+             ": unknown class"),
             ("developer_by_class unknown role", lambda s: s["routing"]["developer_by_class"].update(B="ghost"),
              "developer_by_class.B: unknown role 'ghost'"),
             ("unknown oeo skill in routing", lambda s: s["routing"]["skills"]["by_class"]["A"].append("oeo:nonexistent"),
@@ -197,7 +197,7 @@ class RegistryTests(unittest.TestCase):
         self.assertIn("distribution must be reference-only, vendored or dependency", self.errors(distribution="copied")[0])
         msg = ("third_party/registry.yaml thing: 'verified' needs license_evidence_url and a confirmed revision "
                "(else partially-verified)")
-        self.assertEqual(self.errors(status="verified"), [msg])
+        self.assertEqual(self.errors(status="verified", license_evidence_url=""), [msg])
         self.assertEqual(self.errors(status="verified", license_evidence_url="https://example.org/LICENSE",
                                      revision="UNVERIFIED"), [msg])
         self.assertEqual(self.errors(status="verified", license_evidence_url="https://example.org/LICENSE",

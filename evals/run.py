@@ -23,8 +23,11 @@ def check(scenario, lock):
     failures = []
     plan = None
     if inp:
-        plan = oeo.route(lock, inp["type"], inp.get("touches", []), inp.get("signals", []),
-                         inp.get("files"), inp.get("lines"), inp.get("profile"))
+        try:
+            plan = oeo.route(lock, inp["type"], inp.get("touches", []), inp.get("signals", []),
+                             inp.get("files"), inp.get("lines"), inp.get("profile"))
+        except ValueError as exc:
+            return [f"router rejected the scenario input: {exc}"], None
         ids = {r["id"] for r in plan["roles"]}
         gates = {g["id"] for g in plan["gates"]}
         if "class" in exp and plan["class"] != exp["class"]:

@@ -34,5 +34,4 @@ overrides:
 # INITIAL, UNCALIBRATED values: recalibrate from .oeo/finops.jsonl data (see evals/README.md).
 budgets:
   per_invocation_tokens: {low: 25000, medium: 60000, high: 120000}
-  per_class_tokens: {A: 100000, B: 300000, C: 900000, D: 250000}
-  max_effort_without_justification: medium
+  per_class_tokens: {A: 100000, B: 300000, C: 900000, D: 300000}

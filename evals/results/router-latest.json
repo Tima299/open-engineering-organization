@@ -89,7 +89,6 @@
     "oss-maintainer",
     "project-manager",
     "qa-verifier",
-    "senior-developer",
     "technical-lead",
     "platform-engineer",
     "security-engineer",
@@ -98,7 +97,7 @@
     "legal-advisor",
     "responsible-ai-reviewer"
    ],
-   "estimate_tokens": 420000
+   "estimate_tokens": 360000
   },
   {
    "id": "06-dashboard",
@@ -344,14 +343,13 @@
     "business-analyst",
     "business-owner",
     "cto",
-    "middle-developer",
     "oss-maintainer",
     "project-manager",
     "qa-verifier",
     "technical-lead",
     "market-researcher"
    ],
-   "estimate_tokens": 180000
+   "estimate_tokens": 120000
   },
   {
    "id": "20-marketing-launch",

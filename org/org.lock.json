@@ -179,12 +179,11 @@
  "generated_by": "scripts/oeo.py build",
  "models": {
   "budgets": {
-   "max_effort_without_justification": "medium",
    "per_class_tokens": {
     "A": 100000,
     "B": 300000,
     "C": 900000,
-    "D": 250000
+    "D": 300000
    },
    "per_invocation_tokens": {
     "high": 120000,
@@ -953,6 +952,7 @@
     "class": "D",
     "rule": "organizational-work",
     "when": {
+     "risky_domain": false,
      "types_any": [
       "release",
       "governance",
