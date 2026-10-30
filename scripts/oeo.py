@@ -420,6 +420,8 @@ def validate_sources(src):
         if missing:
             errs.append(f"config/models.yaml profile '{name}': missing tiers {missing}")
     for scope, table in (models.get("overrides") or {}).items():
+        if scope != "all" and scope not in models["profiles"]:
+            errs.append(f"config/models.yaml overrides: scope '{scope}' is neither 'all' nor a profile")
         for rid, over in (table or {}).items():
             if rid not in role_ids:
                 errs.append(f"config/models.yaml overrides.{scope}: unknown role '{rid}'")
@@ -643,7 +645,7 @@ def cmd_route(args):
                  "estimate_tokens": plan["estimate_tokens"], "budget_tokens": plan["budget_tokens"]}
         with open(log_dir / "activation-log.jsonl", "a", encoding="utf-8") as fh:
             fh.write(json.dumps(entry) + "\n")
-        print(f"(logged to {log_dir / 'activation-log.jsonl'})")
+        print(f"(logged to {log_dir / 'activation-log.jsonl'})", file=sys.stderr)
 
 
 # --------------------------------------------------------------------------- license / cost / models
