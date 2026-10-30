@@ -31,9 +31,9 @@ flowchart LR
 | `third_party/registry.yaml` | source | provenance registry → `THIRD_PARTY.md` |
 | `org/org.lock.json`, `agents/*.md`, `docs/roles.md`, `THIRD_PARTY.md` | generated | `oeo build`; CI fails on drift |
 | `skills/*/SKILL.md` | host | `deliver`, `business-review`, `research`, `design-direction`, `verify`, `release`, `launch`, `finops`, `chief-of-staff` ([ADR 0008](adr/0008-one-owner-per-capability.md)) |
-| `scripts/oeo.py` | tool | validate, build, route, license, cost, models |
+| `scripts/oeo.py`, `scripts/checks.py` | tool | validate, build, route, license, cost, models; status, copy-lint, ledger-check ([ADR 0009](adr/0009-engagement-folders-and-deterministic-checks.md)) |
 | `scripts/guard.py`, `scripts/finops_hook.py` | hooks | confirmation guard; token logging |
-| `evals/` | tests | deterministic routing scenarios + agentic scenario specs |
+| `evals/` | tests | deterministic routing scenarios (`run.py`, CI) and real Claude Code runs vs. a baseline (`agentic.py`) |
 
 ## Runtime flow
 1. **Triage**: the orchestrator inspects the repo, reports facts, runs `route`. Unknown vocabulary

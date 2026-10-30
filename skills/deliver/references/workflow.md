@@ -65,7 +65,7 @@ product gaps Stage 1.
 `.oeo/` holds one current brief, plan, risk list and verification file per engagement; replace
 stale content instead of appending contradictions. Decisions log is append-only. Owners and
 paths: `org/workflow.yaml` `memory`. Suggested `.gitignore` (same list as the README):
-`.oeo/*.jsonl`, `.oeo/<engagement>/evidence/`, `.oeo/research/*/raw/`. Commit briefs, plans and ADRs if the
+`.oeo/*.jsonl`, `.oeo/sessions/`, `.oeo/*/evidence/`, `.oeo/research/*/raw/`. Commit briefs, plans and ADRs if the
 team wants them public.
 
 ## Delegation

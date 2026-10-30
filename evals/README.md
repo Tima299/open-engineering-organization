@@ -19,7 +19,18 @@ python3 evals/run.py            # writes results/router-latest.json
 python3 evals/run.py --no-write # CI mode
 ```
 
-## Run an agentic scenario
+## Run an agentic scenario (automated)
+```bash
+python3 evals/agentic.py 11 --arm oeo        # OEO plugin loaded with --plugin-dir
+python3 evals/agentic.py 11 --arm baseline   # same request, plain Claude Code
+python3 evals/agentic.py --summary           # writes results/agentic/SUMMARY.md
+```
+Each run uses a fresh copy of the fixture, real `claude -p` (costs money; `--max-budget-usd`
+caps it), scores the scenario's `agentic.auto` checks (changed files, tests, probes, triage class,
+subagent count, ledger rules), and writes raw JSON plus the diff to `results/agentic/`. Main
+session model defaults to `sonnet` for both arms; OEO subagents use the `economy` profile.
+
+## Run an agentic scenario (manual)
 1. Copy the fixture so runs never share state: `cp -r examples/taskboard /tmp/tb && cd /tmp/tb && git init -q && git add -A && git commit -qm base`.
    If the scenario has `agentic.setup`, apply it to the copy first: create each `files` entry
    (path + content), apply each `edits` entry once (replace `old` with `new` in `path`), and export

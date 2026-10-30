@@ -19,3 +19,10 @@ agentic:
     - Exactly two subagents run (junior-developer, qa-verifier); no brief or plan file is created
     - Verifier reports the check it ran (e.g. grep or test suite) with output
   measure: [total_tokens, agents_invoked, wall_time_s, files_changed]
+  auto:
+    max_files_changed: 1
+    files_changed_subset: [README.md]
+    diff_contains: [receive]
+    tests_pass: true
+    oeo_class: A
+    max_subagents: 2

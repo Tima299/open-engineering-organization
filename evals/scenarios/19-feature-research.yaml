@@ -23,3 +23,7 @@ agentic:
     - "The hand-off to the business review gives adopt / avoid / differentiate for taskboard and ties it to the fixture: a recurrence column in a new entry of MIGRATIONS (taskboard/db.py) and the behavior of TaskStore.add and complete (taskboard/store.py), as proposals only"
     - No file under examples/taskboard changes and no dependency is added; this is a research task and the report does not claim that recurring tasks were implemented
   measure: [total_tokens, agents_invoked, tier3_roles_activated, wall_time_s, ledger_rows, findings_without_evidence_url, sources_failed_reported_as_empty]
+  auto:
+    max_files_changed: 0
+    oeo_class: B
+    ledger_glob: .oeo/research/*/ledger.md

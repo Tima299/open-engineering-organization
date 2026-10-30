@@ -6,6 +6,18 @@ While the version is 0.x, minor releases may contain breaking changes (called ou
 
 ## [Unreleased]
 
+### Added
+- One folder per engagement (`.oeo/<engagement>/`), created by `oeo route --log`; ADR 0009.
+- `oeo status`: deterministic cross-engagement brief behind `oeo:chief-of-staff`.
+- `oeo copy-lint` (copy gate for `oeo:launch`) and `oeo ledger-check` (finding-ledger rules for
+  `oeo:research`).
+- Stop hook snapshot of main-session tokens; `oeo cost` reports subagents, main session and total.
+- `evals/agentic.py`: real Claude Code runs, OEO vs. baseline, with automatic scoring.
+- Design-review scoring anchors (0/2/5/8/10).
+
+### Changed
+- `deliver` shortened from 95 to 57 lines; details moved to its workflow reference.
+
 ### Fixed
 - Found by an independent code review:
   - The guard caught too little: `git -C`/`-c` global options, combined `-fu` flags,
